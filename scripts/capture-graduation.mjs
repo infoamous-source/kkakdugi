@@ -20,7 +20,7 @@ const SCREENSHOTS_DIR = path.join(__dirname, '..', 'screenshots');
 const BASE_URL = 'https://kkakdugischool.vercel.app';
 
 const EMAIL = process.argv[2] || 'tndls7529@naver.com';
-const PASSWORD = process.argv[3] || 'qwer1234';
+const PASSWORD = process.argv[3] || 'qwer1234!';
 
 if (!fs.existsSync(SCREENSHOTS_DIR)) {
   fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
