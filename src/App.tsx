@@ -36,7 +36,7 @@ export default function App() {
     <AuthProvider>
       <EnrollmentProvider>
       <VisibilityProvider>
-      <BrowserRouter basename="/kiosk">
+      <BrowserRouter>
         <GlobalLogoutButton />
         <Routes>
           {/* Gateway (첫 페이지 - 트리오 카드) */}
