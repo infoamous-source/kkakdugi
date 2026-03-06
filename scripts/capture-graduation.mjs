@@ -40,21 +40,37 @@ async function login(page) {
   console.log('  [로그인] 시도 중...');
   await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle', timeout: 30000 });
   await page.waitForTimeout(1500);
-  await page.evaluate(() => localStorage.setItem('i18nextLng', 'ko'));
 
-  await page.locator('input[type="email"]').fill(EMAIL);
-  await page.locator('input[type="password"]').fill(PASSWORD);
-  await page.locator('button[type="submit"]').click();
+  // 한국어 설정 (localStorage에 주입)
+  await page.evaluate(() => {
+    localStorage.setItem('i18nextLng', 'ko');
+  });
 
-  for (let i = 0; i < 20; i++) {
+  const emailInput = page.locator('input[type="email"]');
+  await emailInput.waitFor({ state: 'visible', timeout: 10000 });
+  await emailInput.fill(EMAIL);
+
+  const passwordInput = page.locator('input[type="password"]');
+  await passwordInput.waitFor({ state: 'visible', timeout: 10000 });
+  await passwordInput.fill(PASSWORD);
+
+  await page.waitForTimeout(500);
+
+  const loginButton = page.locator('button[type="submit"]');
+  await loginButton.waitFor({ state: 'visible', timeout: 10000 });
+  await loginButton.click();
+
+  // 로그인 완료 대기 - URL이 /login이 아닌 곳으로 이동할 때까지
+  for (let i = 0; i < 30; i++) {
     await page.waitForTimeout(500);
-    if (!page.url().includes('/login')) {
-      console.log(`  [로그인] 성공! URL: ${page.url()}`);
+    const url = page.url();
+    if (!url.includes('/login')) {
+      console.log(`  [로그인] 성공! URL: ${url}`);
       await page.waitForTimeout(2000);
       return true;
     }
   }
-  console.log('  [로그인] 실패');
+  console.log('  [로그인] 실패 - 15초 후에도 로그인 페이지에 머물러 있음');
   return false;
 }
 
