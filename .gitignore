@@ -25,3 +25,5 @@ npm-debug.log*
 
 # PWA dev
 dev-dist/
+.vercel
+.env*.local

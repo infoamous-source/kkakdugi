@@ -21,79 +21,105 @@ export async function generateSalesPlan(
 ): Promise<{ result: PerfectPlannerResult['output']; isMock: boolean }> {
   if (isGeminiEnabled()) {
     try {
-      const prompt = `당신은 한국 이커머스 판매 전략 전문가예요.
-상세페이지 기획안과 라이브커머스 큐시트를 동시에 만들어주세요.
+      const prompt = `# 역할
+당신은 쿠팡 로켓그로스, 네이버 스마트스토어, 카카오 선물하기에서 월 매출 1억 이상 셀러들의 상세페이지와 라이브방송을 기획해온 한국 이커머스 전문 기획자예요.
+당신의 카피는 스크롤을 멈추게 하고, 당신의 라이브 대본은 시청자가 "지금 안 사면 손해"라고 느끼게 만들어요.
 
-상품/브랜드: ${productName}
-핵심 타겟: ${coreTarget}
-차별점(USP): ${usp}
-강력한 혜택/제안: ${strongOffer}
+# 상품 정보
+- 상품/브랜드: ${productName}
+- 핵심 타겟: ${coreTarget}
+- 차별점(USP): ${usp}
+- 강력한 혜택/제안: ${strongOffer}
 
+# 사고 과정 (Chain of Thinking)
+응답을 만들기 전에 아래 순서로 먼저 생각하세요 (이 사고 과정은 JSON에 포함하지 마세요):
+1단계) "${coreTarget}"이 평소 어떤 불만을 갖고 있고, 어떤 순간에 검색하는지 상상하세요.
+2단계) "${productName}"의 USP("${usp}")가 그 불만을 어떻게 해결하는지 연결하세요.
+3단계) 고객의 구매 여정을 설계하세요: 발견 → 관심 → 비교 → 확신 → 결제. 각 단계에서 어떤 말이 마음을 움직이는지 정하세요.
+4단계) 이 설득 포인트를 상세페이지 카피와 라이브 대본에 자연스럽게 녹이세요.
+
+# 카피라이팅 가이드
+- headline: "${coreTarget}"이 스크롤하다 멈출 만큼 구체적이고 감각적인 한 줄. "${productName}"과 핵심 혜택을 반드시 포함하세요. (예: "칙칙한 피부, 3일 만에 광채가 돌아왔어요" 수준의 구체성)
+- subheadline: headline을 보고 "정말?" 하는 사람에게 "${usp}"로 바로 증거를 보여주는 한 줄.
+- painPoints: "${coreTarget}"이 "맞아, 나도 그래!"라고 고개를 끄덕일 현실적이고 구체적인 불만 3가지.
+- features: 단순 스펙 나열이 아니라 "이 기능이 당신의 일상에서 이렇게 달라져요" 형태. benefit은 감정에 호소하세요.
+- trustSignals: 실감나는 리뷰 톤, 구체적 수치(%), 실제 있을 법한 인증/수상명을 만드세요.
+- closingCTA: "${strongOffer}"를 활용해서 "지금 안 사면 후회한다"는 느낌을 주세요.
+
+# 라이브커머스 대본 가이드
+- 말투: 실제 한국 라이브커머스 진행자처럼 에너지 넘치고, 감탄사("대박!", "이거 진짜예요?!") 자연스럽게 사용하세요.
+- hook: 시청자가 방송을 떠나지 못하게 호기심을 자극하는 한마디. "${productName}"의 가장 놀라운 특징을 활용하세요.
+- demoPoints: 각 구간의 talkingPoint에 "${usp}"와 "${strongOffer}"를 자연스럽게 녹이세요. 시청자에게 말 거는 톤("여러분 보이세요?", "이거 실화예요!")을 사용하세요.
+- qnaHandling: "${coreTarget}"이 실제로 물어볼 법한 현실적인 질문과, 안심시키면서 구매를 유도하는 답변.
+- closing: 마지막 15초 안에 "지금 바로 주문해야 하는 이유"를 강하게 전달하세요.
+
+# 응답 형식
 다음 JSON 형식으로 정확히 응답하세요 (다른 텍스트 없이 JSON만):
 {
   "landingPage": {
-    "headline": "메인 헤드라인 (주목을 끄는 한 줄)",
-    "subheadline": "서브 헤드라인 (보충 설명)",
+    "headline": "(스크롤을 멈추게 하는 구체적 카피)",
+    "subheadline": "(USP를 증거로 보여주는 보충 카피)",
     "problemSection": {
       "title": "이런 고민 있으세요?",
-      "painPoints": ["고객 불만1", "고객 불만2", "고객 불만3"]
+      "painPoints": ["구체적 불만1", "구체적 불만2", "구체적 불만3"]
     },
     "features": [
-      { "title": "특장점1 제목", "description": "설명", "benefit": "고객이 얻는 이점" },
-      { "title": "특장점2 제목", "description": "설명", "benefit": "고객이 얻는 이점" },
-      { "title": "특장점3 제목", "description": "설명", "benefit": "고객이 얻는 이점" }
+      { "title": "특장점1 제목", "description": "기능 설명", "benefit": "감정에 호소하는 고객 이점" },
+      { "title": "특장점2 제목", "description": "기능 설명", "benefit": "감정에 호소하는 고객 이점" },
+      { "title": "특장점3 제목", "description": "기능 설명", "benefit": "감정에 호소하는 고객 이점" }
     ],
     "trustSignals": [
-      { "type": "review", "content": "고객 리뷰 예시" },
-      { "type": "stats", "content": "통계 수치 예시" },
-      { "type": "certification", "content": "인증/수상 예시" }
+      { "type": "review", "content": "실감나는 고객 후기 (구체적 상황 포함)" },
+      { "type": "stats", "content": "구체적 수치가 포함된 통계" },
+      { "type": "certification", "content": "신뢰를 주는 인증/수상 정보" }
     ],
     "closingCTA": {
-      "mainCopy": "마감 카피",
-      "buttonText": "버튼 텍스트",
-      "urgency": "긴급성 문구"
+      "mainCopy": "지금 행동하게 만드는 마감 카피",
+      "buttonText": "클릭하고 싶은 버튼 텍스트",
+      "urgency": "긴급성 문구 (수량/기간 한정)"
     },
-    "checklist": ["상세페이지 체크 항목1", "항목2", "항목3", "항목4", "항목5"]
+    "checklist": ["실전 체크 항목1", "항목2", "항목3", "항목4", "항목5"]
   },
   "liveCommerce": {
     "opening": {
-      "greeting": "인사말",
-      "hook": "시청자 관심 끄는 한마디",
-      "todaysOffer": "오늘의 특별 제안"
+      "greeting": "에너지 넘치는 인사말",
+      "hook": "시청자가 못 떠나게 하는 호기심 한마디",
+      "todaysOffer": "오늘만의 특별 제안 (구체적 혜택)"
     },
     "demoPoints": [
-      { "timestamp": "0-1분", "action": "무엇을 보여줄지", "talkingPoint": "무슨 말을 할지" },
-      { "timestamp": "1-3분", "action": "...", "talkingPoint": "..." },
-      { "timestamp": "3-5분", "action": "...", "talkingPoint": "..." },
-      { "timestamp": "5-7분", "action": "...", "talkingPoint": "..." }
+      { "timestamp": "0-1분", "action": "무엇을 보여줄지", "talkingPoint": "에너지 넘치는 실제 멘트" },
+      { "timestamp": "1-3분", "action": "무엇을 보여줄지", "talkingPoint": "USP를 녹인 실제 멘트" },
+      { "timestamp": "3-5분", "action": "무엇을 보여줄지", "talkingPoint": "비교하며 설득하는 멘트" },
+      { "timestamp": "5-7분", "action": "무엇을 보여줄지", "talkingPoint": "구매 욕구를 자극하는 멘트" }
     ],
     "qnaHandling": [
-      { "commonQuestion": "예상 질문1", "answer": "답변" },
-      { "commonQuestion": "예상 질문2", "answer": "답변" },
-      { "commonQuestion": "예상 질문3", "answer": "답변" }
+      { "commonQuestion": "현실적 예상 질문1", "answer": "안심+구매유도 답변" },
+      { "commonQuestion": "현실적 예상 질문2", "answer": "안심+구매유도 답변" },
+      { "commonQuestion": "현실적 예상 질문3", "answer": "안심+구매유도 답변" }
     ],
     "closing": {
-      "finalOffer": "마지막 제안",
-      "urgencyTactic": "긴박감 전략",
-      "farewell": "마무리 인사"
+      "finalOffer": "마지막 결정타 제안",
+      "urgencyTactic": "지금 안 사면 못 사는 이유",
+      "farewell": "다음 방송 기대하게 하는 마무리"
     },
     "checklist": ["라이브 준비 항목1", "항목2", "항목3", "항목4", "항목5"]
   },
   "salesLogic": "**레포트 요약:**\\n1. (핵심 전략 1)\\n2. (핵심 전략 2)\\n3. (핵심 전략 3)\\n4. (핵심 전략 4)\\n5. (핵심 전략 5)\\n\\n(아래에 20줄 상세 세일즈 전략 레포트를 이어서 작성)"
 }
 
-규칙:
+# 규칙 (반드시 지키세요)
 - 상세페이지는 AIDA 공식 (Attention→Interest→Desire→Action) 기반
 - 라이브커머스는 오프닝→시연→Q&A→클로징 구조
 - 모든 텍스트는 TOPIK 3급 수준 쉬운 한국어 (~해요 체)
-- 실제 한국 이커머스에서 쓰는 자연스러운 카피
-- 체크리스트는 마케팅 초보가 놓치기 쉬운 실전 항목
+- "${productName}"과 "${usp}"를 결과물 곳곳에 자연스럽게 녹이세요 (억지로 넣지 말고 문맥에 맞게)
+- 교과서적이고 일반적인 표현 금지. "${productName}"에만 해당하는 구체적이고 생생한 카피를 쓰세요.
+- 체크리스트는 마케팅 초보가 놓치기 쉬운 실전 항목 (상품 특성에 맞게)
 - salesLogic은 반드시 아래 형식을 따르세요:
   * 맨 위에 "**레포트 요약:**" (굵은 글씨 마크다운)
   * 바로 아래에 핵심 전략 5가지를 번호 매겨서 정리 (각 1줄)
   * 빈 줄 1개
   * 그 아래에 20줄 상세 세일즈 전략 레포트 (\\n으로 줄바꿈)
-  * 이 상세페이지와 라이브커머스 전략이 왜 효과적인지, 고객이 어떤 과정으로 구매를 결정하는지, 어떤 채널에 집중해야 하는지 설명
+  * "${productName}"의 구매 여정(발견→관심→비교→확신→결제)을 중심으로, 이 상세페이지와 라이브 전략이 각 단계에서 어떻게 작동하는지 설명
   * 하나의 레포트처럼 자연스럽게 이어지도록 작성
   * TOPIK 3급 수준 외국인이 이해하기 쉬운 한국어 (~해요 체)`;
 
