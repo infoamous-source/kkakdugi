@@ -17,7 +17,7 @@ export default function EdgeMakerTool() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const {
-    hasStamp, autoStamp,
+    hasStamp, autoStamp, isLoading,
     marketScannerResult: savedScannerResult,
     edgeMakerResult: savedEdgeResult,
     saveEdgeMakerResult,
@@ -50,7 +50,7 @@ export default function EdgeMakerTool() {
 
   // 마운트 시 MarketScanner 결과 로드
   useEffect(() => {
-    if (!user) return;
+    if (!user || isLoading) return;
 
     // 이전 EdgeMaker 결과가 있으면 바로 표시
     if (savedEdgeResult) {
@@ -59,6 +59,7 @@ export default function EdgeMakerTool() {
       setStrengths(savedEdgeResult.input.myStrengths);
       setCompetitors(savedEdgeResult.input.competitors || []);
       setPhase('result');
+      setNoScannerData(false);
       return;
     }
 
@@ -66,10 +67,11 @@ export default function EdgeMakerTool() {
     if (savedScannerResult) {
       setPainPoints(savedScannerResult.output.painPoints);
       setCompetitors(savedScannerResult.output.competitors || []);
+      setNoScannerData(false);
     } else {
       setNoScannerData(true);
     }
-  }, [user, savedEdgeResult, savedScannerResult]);
+  }, [user, isLoading, savedEdgeResult, savedScannerResult]);
 
   const addStrength = () => {
     const trimmed = strengthInput.trim();
