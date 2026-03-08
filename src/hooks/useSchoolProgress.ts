@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEnrollments } from '../contexts/EnrollmentContext';
 import {
@@ -45,6 +45,11 @@ export function useSchoolProgress() {
   const [progress, setProgress] = useState<SchoolProgress | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Ref to track latest progress synchronously across rapid successive calls
+  // (prevents stale closure when saveResult + autoStamp are called back-to-back)
+  const progressRef = useRef<SchoolProgress | null>(null);
+  progressRef.current = progress;
+
   // Load on mount / userId change
   useEffect(() => {
     if (!userId) {
@@ -70,12 +75,15 @@ export function useSchoolProgress() {
   // Helper to update progress (optimistic + persist)
   const updateProgress = useCallback(
     async (updater: (prev: SchoolProgress) => SchoolProgress) => {
-      if (!userId || !progress || !enrollmentId) return;
-      const updated = updater(progress);
+      if (!userId || !enrollmentId) return;
+      const current = progressRef.current;
+      if (!current) return;
+      const updated = updater(current);
+      progressRef.current = updated; // sync update for next caller
       setProgress(updated); // optimistic
       await upsertSchoolProgress(userId, updated, enrollmentId, 'marketing');
     },
-    [userId, progress, enrollmentId],
+    [userId, enrollmentId],
   );
 
   // ─── Stamp functions ───
