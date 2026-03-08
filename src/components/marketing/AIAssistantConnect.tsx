@@ -45,7 +45,7 @@ export default function AIAssistantConnect() {
 
     try {
       const genAI = new GoogleGenerativeAI(apiKey.trim());
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
       // 짧은 프롬프트로 빠르게 검증
       const result = await model.generateContent('안녕하세요');

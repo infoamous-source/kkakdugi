@@ -60,6 +60,11 @@ export function isGeminiConnected(): boolean {
   }
 }
 
+export function restoreGeminiConnection(apiKey: string): void {
+  setStoredApiKey(apiKey);
+  setGeminiConnected(true);
+}
+
 export function clearGeminiConnection(): void {
   try {
     localStorage.removeItem(API_KEY_STORAGE);
@@ -90,7 +95,7 @@ export function getGeminiClient(): GoogleGenerativeAI | null {
   }
 }
 
-export function getGeminiModel(modelName: string = 'gemini-2.0-flash') {
+export function getGeminiModel(modelName: string = 'gemini-2.5-flash') {
   const client = getGeminiClient();
   if (!client) return null;
 

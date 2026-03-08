@@ -4,6 +4,7 @@ import type { User, AuthState } from '../types/auth';
 import type { ProfileRow } from '../types/database';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { updateProfile, validateInstructorCode } from '../services/profileService';
+import { getStoredApiKey, restoreGeminiConnection, clearGeminiConnection } from '../services/gemini/geminiClient';
 import { createEnrollment } from '../services/enrollmentService';
 
 interface AuthContextType extends AuthState {
@@ -60,6 +61,14 @@ function sessionToUser(su: SupabaseUser): User {
   };
 }
 
+/** Supabase에 키가 있고 localStorage에 없으면 복원 */
+function syncGeminiKey(profile: ProfileRow | null): void {
+  if (!profile?.gemini_api_key) return;
+  if (getStoredApiKey()) return; // 이미 로컬에 있으면 skip
+  restoreGeminiConnection(profile.gemini_api_key);
+  console.debug('[Auth] Gemini API key restored from Supabase');
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -83,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         const profile = await fetchProfile(session.user.id);
         const user = profile ? profileToUser(profile) : sessionToUser(session.user);
+        syncGeminiKey(profile);
         setState({ user, isAuthenticated: true, isLoading: false });
         return;
       }
@@ -95,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (event === 'SIGNED_IN' && session?.user) {
           const profile = await fetchProfile(session.user.id);
           const user = profile ? profileToUser(profile) : sessionToUser(session.user);
+          syncGeminiKey(profile);
           setState({ user, isAuthenticated: true, isLoading: false });
           // 대기 중인 login() Promise를 resolve
           if (loginResolveRef.current) {
@@ -135,6 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
+    clearGeminiConnection();
     await supabase.auth.signOut();
     setState({ user: null, isAuthenticated: false, isLoading: false });
   }, []);
