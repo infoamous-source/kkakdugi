@@ -12,7 +12,8 @@ export function extractJSON(text: string): string {
 /**
  * Robustly parse JSON from AI responses, handling unescaped characters
  */
-export function safeParseJSON(text: string): unknown {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function safeParseJSON(text: string): any {
   const raw = extractJSON(text);
   try { return JSON.parse(raw); } catch { /* continue */ }
   const fixed = raw.replace(
