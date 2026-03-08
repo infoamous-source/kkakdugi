@@ -244,11 +244,12 @@ export async function getMyTeam(userId: string): Promise<{
   classroom: ClassroomGroup;
   members: TeamMember[];
 } | null> {
-  // 1. team_members에서 내가 속한 팀 찾기
+  // 1. team_members에서 내가 속한 팀 찾기 (가장 최근 배정된 팀 우선)
   const { data: myMembership, error: memberError } = await supabase
     .from('team_members')
     .select('team_id')
     .eq('user_id', userId)
+    .order('joined_at', { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -268,23 +269,26 @@ export async function getMyTeam(userId: string): Promise<{
     return null;
   }
 
-  // 3. 교실 정보 조회
-  const { data: classroom, error: classroomError } = await supabase
+  // 3. 교실 정보 조회 (실패해도 팀 정보는 반환)
+  const { data: classroom } = await supabase
     .from('classroom_groups')
     .select('*')
     .eq('id', (team as TeamGroup).classroom_group_id)
     .single();
-
-  if (classroomError || !classroom) {
-    return null;
-  }
 
   // 4. 팀원 목록 조회
   const members = await getTeamMembers(myMembership.team_id);
 
   return {
     team: team as TeamGroup,
-    classroom: classroom as ClassroomGroup,
+    classroom: (classroom as ClassroomGroup) ?? {
+      id: (team as TeamGroup).classroom_group_id,
+      org_code: '',
+      track: 'marketing',
+      classroom_name: '',
+      instructor_id: '',
+      created_at: '',
+    },
     members,
   };
 }
