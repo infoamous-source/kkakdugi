@@ -81,36 +81,46 @@ export async function getStudentsByInstructorCode(instructorCode: string): Promi
   return data as ProfileRow[];
 }
 
-/** 선생님코드 유효성 검증 */
-export async function validateInstructorCode(code: string): Promise<boolean> {
+/** 선생님코드 유효성 검증 + 이름 조회 */
+export async function validateInstructorCode(code: string): Promise<{ valid: boolean; instructorName: string | null }> {
   const { data, error } = await supabase
-    .from('profiles')
+    .from('instructors')
     .select('id')
-    .eq('role', 'instructor')
-    .eq('instructor_code', code)
+    .eq('instructor_code', code.toUpperCase())
     .limit(1);
 
-  if (error) {
-    console.error('Validate instructor code error:', error.message);
-    return false;
+  if (error || !data?.length) {
+    return { valid: false, instructorName: null };
   }
-  return (data?.length ?? 0) > 0;
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('name')
+    .eq('id', data[0].id)
+    .single();
+
+  return { valid: true, instructorName: profile?.name || null };
 }
 
 /** 선생님코드로 선생님 이름 조회 */
 export async function getInstructorNameByCode(code: string): Promise<string | null> {
   const { data, error } = await supabase
-    .from('profiles')
-    .select('name')
-    .eq('role', 'instructor')
-    .eq('instructor_code', code)
-    .single();
+    .from('instructors')
+    .select('id')
+    .eq('instructor_code', code.toUpperCase())
+    .limit(1);
 
-  if (error) {
-    console.error('Get instructor name error:', error.message);
+  if (error || !data?.length) {
     return null;
   }
-  return data?.name || null;
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('name')
+    .eq('id', data[0].id)
+    .single();
+
+  return profile?.name || null;
 }
 
 /** Gemini API 키 저장 */

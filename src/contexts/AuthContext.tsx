@@ -156,8 +156,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // 0) 선생님코드 유효성 검증 (이중 안전장치)
     if (data.instructorCode) {
-      const isValid = await validateInstructorCode(data.instructorCode);
-      if (!isValid) {
+      const result = await validateInstructorCode(data.instructorCode);
+      if (!result.valid) {
         throw new Error('invalid_instructor_code');
       }
     }

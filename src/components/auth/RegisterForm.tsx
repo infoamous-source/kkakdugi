@@ -54,6 +54,24 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<AuthError | null>(null);
 
+  // 선생님코드 실시간 검증
+  const [instructorValidation, setInstructorValidation] = useState<{ valid: boolean; instructorName: string | null } | null>(null);
+  const [isValidatingInstructor, setIsValidatingInstructor] = useState(false);
+
+  useEffect(() => {
+    if (formData.instructorCode.length < 2) {
+      setInstructorValidation(null);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      setIsValidatingInstructor(true);
+      const result = await validateInstructorCode(formData.instructorCode);
+      setInstructorValidation(result);
+      setIsValidatingInstructor(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [formData.instructorCode]);
+
   // 기관코드 실시간 검증
   const [orgValidation, setOrgValidation] = useState<{ valid: boolean; orgName: string | null } | null>(null);
   const [isValidatingOrg, setIsValidatingOrg] = useState(false);
@@ -123,8 +141,8 @@ export default function RegisterForm() {
     setIsLoading(true);
     try {
       // 선생님코드 유효성 검증
-      const isValidCode = await validateInstructorCode(formData.instructorCode);
-      if (!isValidCode) {
+      const codeResult = await validateInstructorCode(formData.instructorCode);
+      if (!codeResult.valid) {
         setError({
           title: '선생님코드 오류 (Teacher Code Error)',
           reason: '유효하지 않은 선생님코드입니다 (Invalid teacher code)',
@@ -404,10 +422,29 @@ export default function RegisterForm() {
                     }));
                   }}
                   placeholder={t('register.instructorCodePlaceholder', '선생님에게 받은 코드를 입력하세요 (Enter the code from your teacher)')}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-kk-red focus:border-transparent transition-all"
+                  className={`w-full pl-11 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-kk-red focus:border-transparent transition-all ${
+                    instructorValidation?.valid ? 'border-green-400 bg-green-50' :
+                    instructorValidation && !instructorValidation.valid ? 'border-red-400 bg-red-50' :
+                    'border-gray-200'
+                  }`}
                   required
                 />
+                {isValidatingInstructor && (
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-400" />
+                )}
               </div>
+              {instructorValidation?.valid && (
+                <p className="text-xs text-green-600 mt-1 ml-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  {instructorValidation.instructorName}
+                </p>
+              )}
+              {instructorValidation && !instructorValidation.valid && formData.instructorCode.length >= 2 && (
+                <p className="text-xs text-red-500 mt-1 ml-1 flex items-center gap-1">
+                  <XCircle className="w-3 h-3" />
+                  {t('register.invalidInstructorCode', '유효하지 않은 선생님코드 (Invalid teacher code)')}
+                </p>
+              )}
             </div>
 
             {/* 9. 기관코드 */}
