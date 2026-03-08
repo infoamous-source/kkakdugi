@@ -19,6 +19,55 @@ import type {
 } from '../types/school';
 import { SCHOOL_CURRICULUM, PRO_DURATION_DAYS } from '../types/school';
 
+// ─── Auto-repair: 결과 데이터는 있는데 stamp가 false인 경우 보정 ───
+
+function repairMissingStamps(prog: SchoolProgress): SchoolProgress {
+  const resultChecks: { periodId: PeriodId; hasResult: boolean; completedAt?: string }[] = [
+    {
+      periodId: 'aptitude-test',
+      hasResult: !!prog.aptitudeResult,
+      completedAt: prog.aptitudeResult?.completedAt,
+    },
+    {
+      periodId: 'market-scanner',
+      hasResult: !!prog.marketCompassData?.marketScannerResult,
+      completedAt: prog.marketCompassData?.marketScannerResult?.completedAt,
+    },
+    {
+      periodId: 'edge-maker',
+      hasResult: !!prog.marketCompassData?.edgeMakerResult,
+      completedAt: prog.marketCompassData?.edgeMakerResult?.completedAt,
+    },
+    {
+      periodId: 'viral-card-maker',
+      hasResult: !!prog.marketCompassData?.viralCardResult,
+      completedAt: prog.marketCompassData?.viralCardResult?.completedAt,
+    },
+    {
+      periodId: 'perfect-planner',
+      hasResult: !!prog.marketCompassData?.perfectPlannerResult,
+      completedAt: prog.marketCompassData?.perfectPlannerResult?.completedAt,
+    },
+    {
+      periodId: 'roas-simulator',
+      hasResult: !!prog.simulationResult,
+      completedAt: prog.simulationResult?.completedAt,
+    },
+  ];
+
+  let needsRepair = false;
+  const stamps = prog.stamps.map((s) => {
+    const check = resultChecks.find((c) => c.periodId === s.periodId);
+    if (check?.hasResult && !s.completed) {
+      needsRepair = true;
+      return { ...s, completed: true, completedAt: check.completedAt || new Date().toISOString() };
+    }
+    return s;
+  });
+
+  return needsRepair ? { ...prog, stamps } : prog;
+}
+
 // ─── 기본값 ───
 
 function createDefaultProgress(): SchoolProgress {
@@ -63,8 +112,15 @@ export function useSchoolProgress() {
       setIsLoading(true);
       const data = await fetchSchoolProgress(userId!);
       if (!cancelled) {
-        setProgress(data || createDefaultProgress());
+        const prog = data || createDefaultProgress();
+        // Auto-repair: 결과 데이터는 있는데 stamp가 false인 경우 보정
+        const repaired = repairMissingStamps(prog);
+        setProgress(repaired);
         setIsLoading(false);
+        // 보정이 있었으면 DB에도 저장
+        if (repaired !== prog && enrollmentId) {
+          upsertSchoolProgress(userId!, repaired, enrollmentId, 'marketing');
+        }
       }
     }
 
