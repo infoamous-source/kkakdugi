@@ -1,17 +1,6 @@
 import { generateText, isGeminiEnabled } from './geminiClient';
 import type { MarketScannerResult, EdgeMakerResult, CompetitorInfo } from '../../types/school';
-
-// ─── JSON 파싱 헬퍼 ───
-
-function extractJSON(text: string): string {
-  // ```json ... ``` 블록 제거
-  const codeBlock = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (codeBlock) return codeBlock[1].trim();
-  // 순수 JSON인 경우
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (jsonMatch) return jsonMatch[0];
-  return text;
-}
+import { safeParseJSON } from './jsonHelper';
 
 // ─── Market Scanner ───
 
@@ -72,7 +61,7 @@ export async function generateMarketAnalysis(
 
       const text = await generateText(prompt);
       if (text) {
-        const parsed = JSON.parse(extractJSON(text));
+        const parsed = safeParseJSON(text);
         if (parsed.relatedKeywords && parsed.competitors && parsed.painPoints) {
           return { result: parsed, isMock: false };
         }
@@ -153,7 +142,7 @@ ${myStrengths.length > 0 ? myStrengths.map((s, i) => `${i + 1}. ${s}`).join('\n'
 
       const text = await generateText(prompt);
       if (text) {
-        const parsed = JSON.parse(extractJSON(text));
+        const parsed = safeParseJSON(text);
         if (parsed.usp && parsed.brandNames && parsed.slogan && parsed.brandMood) {
           return { result: parsed, isMock: false };
         }

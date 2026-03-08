@@ -1,15 +1,6 @@
 import { generateText, isGeminiEnabled } from './geminiClient';
 import type { PerfectPlannerResult } from '../../types/school';
-
-// ─── JSON 파싱 헬퍼 ───
-
-function extractJSON(text: string): string {
-  const codeBlock = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (codeBlock) return codeBlock[1].trim();
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (jsonMatch) return jsonMatch[0];
-  return text;
-}
+import { safeParseJSON } from './jsonHelper';
 
 // ─── 판매 계획 생성 ───
 
@@ -125,7 +116,7 @@ export async function generateSalesPlan(
 
       const text = await generateText(prompt);
       if (text) {
-        const parsed = JSON.parse(extractJSON(text));
+        const parsed = safeParseJSON(text);
         if (parsed.landingPage && parsed.liveCommerce && parsed.salesLogic) {
           return { result: parsed, isMock: false };
         }

@@ -1,16 +1,7 @@
 import { generateText, isGeminiEnabled, getStoredApiKey } from './geminiClient';
 import { GoogleGenAI } from '@google/genai';
 import type { ViralCardSlide, ViralCardResult, ViralTone, ImageStyle } from '../../types/school';
-
-// ─── JSON 파싱 헬퍼 ───
-
-function extractJSON(text: string): string {
-  const codeBlock = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (codeBlock) return codeBlock[1].trim();
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (jsonMatch) return jsonMatch[0];
-  return text;
-}
+import { safeParseJSON } from './jsonHelper';
 
 // ─── 이미지 스타일 프리픽스 ───
 
@@ -150,7 +141,7 @@ export async function generateViralCards(
 
       const text = await generateText(prompt);
       if (text) {
-        const parsed = JSON.parse(extractJSON(text));
+        const parsed = safeParseJSON(text);
         if (parsed.slides && parsed.slides.length === 4 && parsed.overallStrategy) {
           return { result: parsed, isMock: false };
         }
