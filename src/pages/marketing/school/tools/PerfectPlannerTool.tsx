@@ -410,11 +410,6 @@ export default function PerfectPlannerTool() {
               </div>
             )}
 
-            {/* Sales Logic */}
-            <div className="bg-kk-cream border border-kk-warm rounded-xl p-4">
-              <SimpleMarkdown content={result.salesLogic} className="text-sm text-kk-brown font-medium" />
-            </div>
-
             {/* Mode Tabs */}
             <div className="flex gap-2">
               <button
