@@ -52,8 +52,12 @@ export default function EdgeMakerTool() {
   useEffect(() => {
     if (!user || isLoading) return;
 
-    // 이전 EdgeMaker 결과가 있으면 바로 표시
-    if (savedEdgeResult) {
+    // 시장 탐색기가 Edge Maker 이후에 재실행됐으면 이전 결과 무시 (새 입력 필요)
+    const scannerIsNewer = savedScannerResult?.completedAt && savedEdgeResult?.completedAt
+      && savedScannerResult.completedAt > savedEdgeResult.completedAt;
+
+    // 이전 EdgeMaker 결과가 있고, 시장 탐색기가 재실행되지 않았으면 바로 표시
+    if (savedEdgeResult && !scannerIsNewer) {
       setResult(savedEdgeResult);
       setPainPoints(savedEdgeResult.input.painPoints);
       setStrengths(savedEdgeResult.input.myStrengths);
