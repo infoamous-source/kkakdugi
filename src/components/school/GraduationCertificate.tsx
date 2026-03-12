@@ -1,8 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Download, FileText } from 'lucide-react';
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
 
 interface GraduationCertificateProps {
   userName: string;
@@ -301,6 +299,7 @@ export default function GraduationCertificate({ userName, userOrg, teamName, onC
 
   const renderToCanvas = async (): Promise<HTMLCanvasElement | null> => {
     if (!certRef.current) return null;
+    const { default: html2canvas } = await import('html2canvas');
     return html2canvas(certRef.current, {
       scale: 3,
       useCORS: true,
@@ -327,6 +326,7 @@ export default function GraduationCertificate({ userName, userOrg, teamName, onC
       const canvas = await renderToCanvas();
       if (!canvas) return;
       const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = await import('jspdf');
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();

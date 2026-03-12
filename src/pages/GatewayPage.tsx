@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Globe, ChevronDown, ChevronRight, UserCircle, LogIn } from 'lucide-react';
 import TrackCard from '../components/gateway/TrackCard';
+import AnimatedList from '../components/common/AnimatedList';
 import { tracks } from '../data/tracks';
 import { useVisibility } from '../contexts/VisibilityContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -181,13 +182,15 @@ export default function GatewayPage() {
           <p className="text-sm text-kk-brown/50 text-center mb-4">
             {t('gateway.selectPrompt', '아래에서 학과를 선택하세요')}
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          <AnimatedList className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {tracks
               .filter((track) => isTrackVisible(track.id))
               .map((track, index) => (
-              <TrackCard key={track.id} track={track} delay={index * 100} />
+              <div key={track.id} className="animate-on-scroll" style={{ transitionDelay: `${index * 80}ms` }}>
+                <TrackCard track={track} delay={index * 100} />
+              </div>
             ))}
-          </div>
+          </AnimatedList>
         </div>
       </section>
 

@@ -1,35 +1,39 @@
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { EnrollmentProvider } from './contexts/EnrollmentContext';
 import { VisibilityProvider } from './contexts/VisibilityContext';
 import MainLayout from './components/common/MainLayout';
 import GlobalLogoutButton from './components/common/GlobalLogoutButton';
+import LoadingSkeleton from './components/common/LoadingSkeleton';
+import PageTransition from './components/common/PageTransition';
 import GatewayPage from './pages/GatewayPage';
-import TrackPage from './pages/TrackPage';
 import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import AdminPage from './pages/AdminPage';
-import OrganizationDetailPage from './pages/OrganizationDetailPage';
-import KoreaAppsPage from './pages/KoreaAppsPage';
-// MarketingLandingPage 제거됨 — /marketing은 /marketing/hub로 리다이렉트
-import MarketingModuleDetailPage from './pages/marketing/MarketingModuleDetailPage';
-import MarketingToolRouter from './pages/marketing/MarketingToolRouter';
-import MarketingHubPage from './pages/marketing/MarketingHubPage';
-import MarketingSchoolLayout from './pages/marketing/school/MarketingSchoolLayout';
-import AttendanceTab from './pages/marketing/school/AttendanceTab';
-import CurriculumTab from './pages/marketing/school/CurriculumTab';
-import LabTab from './pages/marketing/school/LabTab';
-import SchoolToolRouter from './pages/marketing/school/SchoolToolRouter';
-import PeriodDetailPage from './pages/marketing/school/PeriodDetailPage';
-import ProToolsDashboard from './pages/marketing/ProToolsDashboard';
-import AISetupPage from './pages/marketing/school/AISetupPage';
-import GraduationProjectPage from './pages/marketing/school/GraduationProjectPage';
-import ProfilePage from './pages/ProfilePage';
-import DigitalModulePage from './pages/DigitalModulePage';
-import KioskPracticePage from './pages/KioskPracticePage';
-import AIWelcomePage from './pages/AIWelcomePage';
-import RegisterCompletePage from './pages/RegisterCompletePage';
-import AboutPage from './pages/AboutPage';
+
+// Lazy-loaded pages
+const TrackPage = lazy(() => import('./pages/TrackPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const OrganizationDetailPage = lazy(() => import('./pages/OrganizationDetailPage'));
+const KoreaAppsPage = lazy(() => import('./pages/KoreaAppsPage'));
+const MarketingModuleDetailPage = lazy(() => import('./pages/marketing/MarketingModuleDetailPage'));
+const MarketingToolRouter = lazy(() => import('./pages/marketing/MarketingToolRouter'));
+const MarketingHubPage = lazy(() => import('./pages/marketing/MarketingHubPage'));
+const MarketingSchoolLayout = lazy(() => import('./pages/marketing/school/MarketingSchoolLayout'));
+const AttendanceTab = lazy(() => import('./pages/marketing/school/AttendanceTab'));
+const CurriculumTab = lazy(() => import('./pages/marketing/school/CurriculumTab'));
+const LabTab = lazy(() => import('./pages/marketing/school/LabTab'));
+const SchoolToolRouter = lazy(() => import('./pages/marketing/school/SchoolToolRouter'));
+const PeriodDetailPage = lazy(() => import('./pages/marketing/school/PeriodDetailPage'));
+const ProToolsDashboard = lazy(() => import('./pages/marketing/ProToolsDashboard'));
+const AISetupPage = lazy(() => import('./pages/marketing/school/AISetupPage'));
+const GraduationProjectPage = lazy(() => import('./pages/marketing/school/GraduationProjectPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const DigitalModulePage = lazy(() => import('./pages/DigitalModulePage'));
+const KioskPracticePage = lazy(() => import('./pages/KioskPracticePage'));
+const AIWelcomePage = lazy(() => import('./pages/AIWelcomePage'));
+const RegisterCompletePage = lazy(() => import('./pages/RegisterCompletePage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
 
 export default function App() {
   return (
@@ -38,6 +42,8 @@ export default function App() {
       <VisibilityProvider>
       <BrowserRouter>
         <GlobalLogoutButton />
+        <Suspense fallback={<LoadingSkeleton />}>
+        <PageTransition>
         <Routes>
           {/* Gateway (첫 페이지 - 트리오 카드) */}
           <Route path="/" element={<GatewayPage />} />
@@ -98,6 +104,8 @@ export default function App() {
             <Route path="/settings" element={<div className="text-gray-500">Settings page (Coming soon)</div>} />
           </Route>
         </Routes>
+        </PageTransition>
+        </Suspense>
       </BrowserRouter>
       </VisibilityProvider>
       </EnrollmentProvider>

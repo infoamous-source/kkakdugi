@@ -29,7 +29,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { getStudentsByInstructorCode, resetStudentApiKey } from '../../services/profileService';
-import { getStudentAssignments } from '../../services/teamService';
+import { getStudentAssignments, getStudentAssignmentsBatch } from '../../services/teamService';
 import { getClassroomGroups, addClassroomMember } from '../../services/teamService';
 import { SCHOOL_NAMES, type SchoolId } from '../../types/enrollment';
 import type { ProfileRow } from '../../types/database';
@@ -100,23 +100,19 @@ export default function AdminDashboard() {
       setIsLoading(true);
       try {
         const profiles = await getStudentsByInstructorCode(user.instructorCode);
-        const enriched = await Promise.all(
-          profiles.map(async (p: ProfileRow) => {
-            const assignments = await getStudentAssignments(p.id);
-            return {
-              id: p.id,
-              name: p.name,
-              email: p.email,
-              organization: p.organization || '',
-              orgCode: p.org_code || '',
-              instructorCode: p.instructor_code || '',
-              assignments,
-              country: p.country,
-              createdAt: p.created_at,
-              hasApiKey: !!p.gemini_api_key,
-            };
-          }),
-        );
+        const assignmentsMap = await getStudentAssignmentsBatch(profiles.map((p: ProfileRow) => p.id));
+        const enriched = profiles.map((p: ProfileRow) => ({
+          id: p.id,
+          name: p.name,
+          email: p.email,
+          organization: p.organization || '',
+          orgCode: p.org_code || '',
+          instructorCode: p.instructor_code || '',
+          assignments: assignmentsMap[p.id] || [],
+          country: p.country,
+          createdAt: p.created_at,
+          hasApiKey: !!p.gemini_api_key,
+        }));
         setRealtimeStudents(enriched);
         setLastUpdate(new Date());
       } catch (err) {
@@ -275,23 +271,19 @@ export default function AdminDashboard() {
     if (!user?.instructorCode) return;
     setIsLoading(true);
     const profiles = await getStudentsByInstructorCode(user.instructorCode);
-    const enriched = await Promise.all(
-      profiles.map(async (p: ProfileRow) => {
-        const assignments = await getStudentAssignments(p.id);
-        return {
-          id: p.id,
-          name: p.name,
-          email: p.email,
-          organization: p.organization || '',
-          orgCode: p.org_code || '',
-          instructorCode: p.instructor_code || '',
-          assignments,
-          country: p.country,
-          createdAt: p.created_at,
-          hasApiKey: !!p.gemini_api_key,
-        };
-      }),
-    );
+    const assignmentsMap = await getStudentAssignmentsBatch(profiles.map((p: ProfileRow) => p.id));
+    const enriched = profiles.map((p: ProfileRow) => ({
+      id: p.id,
+      name: p.name,
+      email: p.email,
+      organization: p.organization || '',
+      orgCode: p.org_code || '',
+      instructorCode: p.instructor_code || '',
+      assignments: assignmentsMap[p.id] || [],
+      country: p.country,
+      createdAt: p.created_at,
+      hasApiKey: !!p.gemini_api_key,
+    }));
     setRealtimeStudents(enriched);
     setLastUpdate(new Date());
     setIsLoading(false);

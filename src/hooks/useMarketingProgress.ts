@@ -12,6 +12,7 @@ export function useMarketingProgress() {
   const [progress, setProgress] = useState<Record<string, ModuleProgress>>({});
   const [isLoading, setIsLoading] = useState(false);
   const skipPersist = useRef(true);
+  const changedModulesRef = useRef<Set<string>>(new Set());
 
   // Load from Supabase on mount / user change
   useEffect(() => {
@@ -39,7 +40,7 @@ export function useMarketingProgress() {
       .finally(() => setIsLoading(false));
   }, [user?.id]);
 
-  // Persist changes to Supabase
+  // Persist only changed modules to Supabase
   useEffect(() => {
     if (skipPersist.current) {
       skipPersist.current = false;
@@ -47,7 +48,12 @@ export function useMarketingProgress() {
     }
     if (!user?.id) return;
 
-    Object.entries(progress).forEach(([moduleId, mod]) => {
+    const changed = changedModulesRef.current;
+    if (changed.size === 0) return;
+
+    changed.forEach((moduleId) => {
+      const mod = progress[moduleId];
+      if (!mod) return;
       upsertMarketingProgress(user.id, moduleId, {
         viewedAt: mod.viewedAt,
         toolUsedAt: mod.toolUsedAt,
@@ -55,9 +61,11 @@ export function useMarketingProgress() {
         completedAt: mod.completedAt,
       });
     });
+    changed.clear();
   }, [progress, user?.id]);
 
   const markViewed = useCallback((moduleId: string) => {
+    changedModulesRef.current.add(moduleId);
     setProgress((prev) => ({
       ...prev,
       [moduleId]: {
@@ -68,6 +76,7 @@ export function useMarketingProgress() {
   }, []);
 
   const markToolUsed = useCallback((moduleId: string) => {
+    changedModulesRef.current.add(moduleId);
     setProgress((prev) => ({
       ...prev,
       [moduleId]: {
@@ -79,6 +88,7 @@ export function useMarketingProgress() {
   }, []);
 
   const markCompleted = useCallback((moduleId: string) => {
+    changedModulesRef.current.add(moduleId);
     setProgress((prev) => ({
       ...prev,
       [moduleId]: {

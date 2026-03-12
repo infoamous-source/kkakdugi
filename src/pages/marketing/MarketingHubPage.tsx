@@ -7,6 +7,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import AnimatedList from '../../components/common/AnimatedList';
 import { useSchoolProgress } from '../../hooks/useSchoolProgress';
 import { isGeminiConnected } from '../../services/gemini/geminiClient';
 import CountdownBadge from '../../components/school/CountdownBadge';
@@ -76,8 +77,9 @@ export default function MarketingHubPage() {
 
       {/* 교실 카드 그리드 */}
       <section className="relative pb-24 px-4 sm:px-8">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        <AnimatedList className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* 카드 A: 예비 마케터 교실 */}
+          <div className="animate-on-scroll">
           <button
             onClick={handleSchoolClick}
             className="group relative w-full rounded-2xl border-2 border-purple-200 hover:border-purple-400 bg-white overflow-hidden
@@ -115,8 +117,10 @@ export default function MarketingHubPage() {
 
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-pink-500/0 group-hover:from-purple-500/[0.03] group-hover:to-pink-500/[0.03] transition-all duration-300 pointer-events-none" />
           </button>
+          </div>
 
           {/* 카드 B: 프로 마케터 교실 */}
+          <div className="animate-on-scroll" style={{ transitionDelay: '80ms' }}>
           <button
             onClick={handleProClick}
             className={`group relative w-full rounded-2xl border-2 bg-white overflow-hidden
@@ -175,7 +179,8 @@ export default function MarketingHubPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-amber-500/0 to-yellow-500/0 group-hover:from-amber-500/[0.03] group-hover:to-yellow-500/[0.03] transition-all duration-300 pointer-events-none" />
             )}
           </button>
-        </div>
+          </div>
+        </AnimatedList>
       </section>
     </div>
   );

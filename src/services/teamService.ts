@@ -367,7 +367,7 @@ export async function isStudentAssignedToTrack(
 
   if (error) {
     console.error('Check student assignment error:', error.message);
-    return false;
+    throw new Error(error.message);
   }
   return data === true;
 }
@@ -395,4 +395,40 @@ export async function getStudentAssignments(userId: string): Promise<
       groupId: cg.id,
     };
   });
+}
+
+/** 여러 학생의 배정 정보를 한 번에 조회 (N+1 방지) */
+export async function getStudentAssignmentsBatch(
+  userIds: string[],
+): Promise<Record<string, { track: string; classroomName: string; groupId: string }[]>> {
+  if (userIds.length === 0) return {};
+
+  const { data, error } = await supabase
+    .from('classroom_members')
+    .select('user_id, group_id, classroom_groups!inner(id, track, classroom_name)')
+    .in('user_id', userIds)
+    .eq('status', 'active');
+
+  if (error) {
+    console.error('Get student assignments batch error:', error.message);
+    return {};
+  }
+
+  const result: Record<string, { track: string; classroomName: string; groupId: string }[]> = {};
+  for (const uid of userIds) {
+    result[uid] = [];
+  }
+
+  (data ?? []).forEach((row: Record<string, unknown>) => {
+    const userId = row.user_id as string;
+    const cg = row.classroom_groups as Record<string, string>;
+    if (!result[userId]) result[userId] = [];
+    result[userId].push({
+      track: cg.track,
+      classroomName: cg.classroom_name,
+      groupId: cg.id,
+    });
+  });
+
+  return result;
 }

@@ -2,6 +2,7 @@ import { Outlet, useParams } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopHeader from './TopHeader';
 import MobileTabBar from './MobileTabBar';
+import PageTransition from './PageTransition';
 import type { TrackId } from '../../types/track';
 
 export default function MainLayout() {
@@ -16,7 +17,9 @@ export default function MainLayout() {
         <TopHeader />
 
         <main className="p-3 sm:p-4 md:p-6 pb-20 md:pb-6">
-          <Outlet />
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         </main>
       </div>
 

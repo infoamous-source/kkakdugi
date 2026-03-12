@@ -72,8 +72,9 @@ export default function TrackCard({ track, delay = 0 }: TrackCardProps) {
       } else {
         showToast('학과 배정 대기중이에요! 선생님에게 문의하세요');
       }
-    } catch {
-      navigate(trackHubPath[track.id] || `/track/${track.id}`);
+    } catch (err) {
+      console.error('Track assignment check failed:', err);
+      showToast('네트워크 오류가 발생했어요. 다시 시도해주세요.');
     } finally {
       setChecking(false);
     }
@@ -113,9 +114,9 @@ export default function TrackCard({ track, delay = 0 }: TrackCardProps) {
       disabled={checking}
       className={`
         group relative w-full rounded-2xl border-2 bg-white overflow-hidden
-        transition-all duration-300 ease-out cursor-pointer text-left
+        transition-all duration-300 ease-out text-left
         hover:-translate-y-2 hover:shadow-xl
-        ${checking ? 'opacity-70' : ''}
+        animate-card-enter ${checking ? 'opacity-70 cursor-wait' : 'cursor-pointer'}
         ${theme.border}
       `}
       style={{ animationDelay: `${delay}ms` }}
@@ -144,6 +145,13 @@ export default function TrackCard({ track, delay = 0 }: TrackCardProps) {
 
       {/* 호버 그라데이션 오버레이 */}
       <div className={`absolute inset-0 bg-gradient-to-br from-transparent to-transparent ${theme.hoverBg} transition-all duration-300 pointer-events-none`} />
+
+      {/* 로딩 스피너 */}
+      {checking && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10">
+          <div className="w-6 h-6 border-2 border-kk-brown/20 border-t-kk-brown rounded-full animate-spin" />
+        </div>
+      )}
     </button>
   );
 }

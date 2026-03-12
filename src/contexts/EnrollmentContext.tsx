@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import type { Enrollment, SchoolId } from '../types/enrollment';
 import { getEnrollments, submitSchoolProfile } from '../services/enrollmentService';
@@ -42,8 +42,8 @@ export function EnrollmentProvider({ children }: { children: ReactNode }) {
     }
   }, [isAuthenticated, user, fetchEnrollments]);
 
-  const activeEnrollments = enrollments.filter((e) => e.status === 'active');
-  const pendingEnrollments = enrollments.filter((e) => e.status === 'pending_info');
+  const activeEnrollments = useMemo(() => enrollments.filter((e) => e.status === 'active'), [enrollments]);
+  const pendingEnrollments = useMemo(() => enrollments.filter((e) => e.status === 'pending_info'), [enrollments]);
 
   const getEnrollment = useCallback(
     (schoolId: SchoolId) => enrollments.find((e) => e.school_id === schoolId),
@@ -80,7 +80,7 @@ export function EnrollmentProvider({ children }: { children: ReactNode }) {
 
   return (
     <EnrollmentContext.Provider
-      value={{
+      value={useMemo(() => ({
         enrollments,
         activeEnrollments,
         pendingEnrollments,
@@ -90,7 +90,7 @@ export function EnrollmentProvider({ children }: { children: ReactNode }) {
         hasPendingFor,
         submitSchoolInfo,
         refreshEnrollments: fetchEnrollments,
-      }}
+      }), [enrollments, activeEnrollments, pendingEnrollments, isLoading, getEnrollment, isEnrolledIn, hasPendingFor, submitSchoolInfo, fetchEnrollments])}
     >
       {children}
     </EnrollmentContext.Provider>

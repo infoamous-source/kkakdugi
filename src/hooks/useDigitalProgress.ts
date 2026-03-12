@@ -14,6 +14,7 @@ export function useDigitalProgress() {
   const [progress, setProgress] = useState<Record<string, DigitalProgress>>({});
   const [isLoading, setIsLoading] = useState(false);
   const skipPersist = useRef(true);
+  const changedModulesRef = useRef<Set<string>>(new Set());
 
   // Load from Supabase on mount / user change
   useEffect(() => {
@@ -40,7 +41,7 @@ export function useDigitalProgress() {
       .finally(() => setIsLoading(false));
   }, [user?.id]);
 
-  // Persist changes to Supabase
+  // Persist only changed modules to Supabase
   useEffect(() => {
     if (skipPersist.current) {
       skipPersist.current = false;
@@ -48,17 +49,23 @@ export function useDigitalProgress() {
     }
     if (!user?.id) return;
 
-    // Persist all modules that have data
-    Object.entries(progress).forEach(([moduleId, mod]) => {
+    const changed = changedModulesRef.current;
+    if (changed.size === 0) return;
+
+    changed.forEach((moduleId) => {
+      const mod = progress[moduleId];
+      if (!mod) return;
       upsertDigitalProgress(user.id, moduleId, {
         completedSteps: mod.completedSteps,
         completedPractices: mod.completedPractices,
         completedAt: mod.completedAt,
       });
     });
+    changed.clear();
   }, [progress, user?.id]);
 
   const markStepCompleted = useCallback((moduleId: string, stepId: string) => {
+    changedModulesRef.current.add(moduleId);
     setProgress((prev) => {
       const mod = getDefault(moduleId, prev[moduleId]);
       if (mod.completedSteps.includes(stepId)) return prev;
@@ -73,6 +80,7 @@ export function useDigitalProgress() {
   }, []);
 
   const toggleStep = useCallback((moduleId: string, stepId: string) => {
+    changedModulesRef.current.add(moduleId);
     setProgress((prev) => {
       const mod = getDefault(moduleId, prev[moduleId]);
       const has = mod.completedSteps.includes(stepId);
@@ -89,6 +97,7 @@ export function useDigitalProgress() {
   }, []);
 
   const markPracticeCompleted = useCallback((moduleId: string, practiceId: string) => {
+    changedModulesRef.current.add(moduleId);
     setProgress((prev) => {
       const mod = getDefault(moduleId, prev[moduleId]);
       if (mod.completedPractices.includes(practiceId)) return prev;
@@ -103,6 +112,7 @@ export function useDigitalProgress() {
   }, []);
 
   const togglePractice = useCallback((moduleId: string, practiceId: string) => {
+    changedModulesRef.current.add(moduleId);
     setProgress((prev) => {
       const mod = getDefault(moduleId, prev[moduleId]);
       const has = mod.completedPractices.includes(practiceId);
@@ -119,6 +129,7 @@ export function useDigitalProgress() {
   }, []);
 
   const markModuleCompleted = useCallback((moduleId: string) => {
+    changedModulesRef.current.add(moduleId);
     setProgress((prev) => ({
       ...prev,
       [moduleId]: {

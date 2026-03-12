@@ -82,6 +82,7 @@ html {
 }
 
 body {
+  font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, sans-serif;
   background-color: var(--color-kk-bg);
   -webkit-tap-highlight-color: transparent;
 }
@@ -275,4 +276,63 @@ body {
     #d4a06020 28px
   );
   background-size: 100% 28px;
+}
+
+/* ═══════════════════════════════════════════
+   페이지 전환 + 입장 애니메이션
+   ═══════════════════════════════════════════ */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes staggerIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 페이지 입장 애니메이션 */
+.animate-page-enter {
+  animation: fadeSlideUp 0.35s ease-out both;
+}
+
+/* 카드 입장 애니메이션 */
+.animate-card-enter {
+  animation: staggerIn 0.4s ease-out both;
+}
+
+/* 스크롤 등장 */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 터치 피드백 */
+.touch-ripple {
+  transition: transform 0.15s ease;
+}
+.touch-ripple:active {
+  transform: scale(0.97);
 }

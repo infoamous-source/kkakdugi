@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import type { TrackId } from '../types/track';
 import {
@@ -181,7 +181,7 @@ export function VisibilityProvider({ children }: { children: ReactNode }) {
 
   return (
     <VisibilityContext.Provider
-      value={{
+      value={useMemo(() => ({
         settings,
         isLoading,
         isTrackVisible,
@@ -190,7 +190,7 @@ export function VisibilityProvider({ children }: { children: ReactNode }) {
         setTrackVisible,
         setModuleVisible,
         setToolVisible,
-      }}
+      }), [settings, isLoading, isTrackVisible, isModuleVisible, isToolVisible, setTrackVisible, setModuleVisible, setToolVisible])}
     >
       {children}
     </VisibilityContext.Provider>
