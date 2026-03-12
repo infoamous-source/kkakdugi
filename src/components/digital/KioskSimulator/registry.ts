@@ -156,8 +156,17 @@ const cinemaConfig: KioskConfig = {
     headerBg: 'bg-gradient-to-r from-purple-800 to-indigo-900',
     buttonStyle: 'square',
   },
-  screens: [],
-  comingSoon: true,
+  screens: [
+    { id: 'welcome',     labelKey: 'cinema.screens.welcome.title',     helperKey: 'kiosk.helper.cinema.welcome' },
+    { id: 'movieSelect', labelKey: 'cinema.screens.movieSelect.title', helperKey: 'kiosk.helper.cinema.movieSelect' },
+    { id: 'timeSelect',  labelKey: 'cinema.screens.timeSelect.title',  helperKey: 'kiosk.helper.cinema.timeSelect' },
+    { id: 'seatSelect',  labelKey: 'cinema.screens.seatSelect.title',  helperKey: 'kiosk.helper.cinema.seatSelect' },
+    { id: 'personCount', labelKey: 'cinema.screens.personCount.title', helperKey: 'kiosk.helper.cinema.personCount' },
+    { id: 'snackSelect', labelKey: 'cinema.screens.snackSelect.title', helperKey: 'kiosk.helper.cinema.snackSelect' },
+    { id: 'payment',     labelKey: 'cinema.screens.payment.title',     helperKey: 'kiosk.helper.cinema.payment' },
+    { id: 'processing',  labelKey: 'cinema.screens.processing.title',  helperKey: 'kiosk.helper.cinema.processing' },
+    { id: 'complete',    labelKey: 'cinema.screens.complete.title',    helperKey: 'kiosk.helper.cinema.complete' },
+  ],
 };
 
 const convenienceConfig: KioskConfig = {
@@ -175,8 +184,16 @@ const convenienceConfig: KioskConfig = {
     headerBg: 'bg-gradient-to-r from-green-600 to-green-700',
     buttonStyle: 'square',
   },
-  screens: [],
-  comingSoon: true,
+  screens: [
+    { id: 'welcome',     labelKey: 'kiosk.convenience.screens.welcome.title',     helperKey: 'kiosk.helper.convenience.welcome' },
+    { id: 'scan',        labelKey: 'kiosk.convenience.screens.scan.title',        helperKey: 'kiosk.helper.convenience.scan' },
+    { id: 'ageVerify',   labelKey: 'kiosk.convenience.screens.ageVerify.title',   helperKey: 'kiosk.helper.convenience.ageVerify' },
+    { id: 'bags',        labelKey: 'kiosk.convenience.screens.bags.title',        helperKey: 'kiosk.helper.convenience.bags' },
+    { id: 'orderReview', labelKey: 'kiosk.convenience.screens.orderReview.title', helperKey: 'kiosk.helper.convenience.orderReview' },
+    { id: 'payment',     labelKey: 'kiosk.convenience.screens.payment.title',     helperKey: 'kiosk.helper.convenience.payment' },
+    { id: 'receipt',     labelKey: 'kiosk.convenience.screens.receipt.title',     helperKey: 'kiosk.helper.convenience.receipt' },
+    { id: 'complete',    labelKey: 'kiosk.convenience.screens.complete.title',    helperKey: 'kiosk.helper.convenience.complete' },
+  ],
 };
 
 const airportConfig: KioskConfig = {
@@ -222,11 +239,11 @@ export const kioskRegistry: Record<KioskType, KioskRegistryEntry> = {
   },
   cinema: {
     config: cinemaConfig,
-    component: lazy(() => import('./kiosks/cafe/CafeKiosk')), // placeholder
+    component: lazy(() => import('./kiosks/cinema/CinemaKiosk')),
   },
   convenience: {
     config: convenienceConfig,
-    component: lazy(() => import('./kiosks/cafe/CafeKiosk')), // placeholder
+    component: lazy(() => import('./kiosks/convenience/ConvenienceKiosk')),
   },
   airport: {
     config: airportConfig,
