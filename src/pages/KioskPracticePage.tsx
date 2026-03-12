@@ -1,21 +1,35 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Monitor, Coffee, CreditCard, ShoppingCart, CheckCircle2 } from 'lucide-react';
-import KioskSimulator from '../components/digital/KioskSimulator/KioskSimulator';
+import { ArrowLeft, Monitor, Coffee, CreditCard, ShoppingCart, CheckCircle2, Loader2 } from 'lucide-react';
+import KioskSelector from '../components/digital/KioskSimulator/KioskSelector';
+import { kioskRegistry } from '../components/digital/KioskSimulator/registry';
 import { useDigitalProgress } from '../hooks/useDigitalProgress';
+import type { KioskType } from '../components/digital/KioskSimulator/core/types';
 
 export default function KioskPracticePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [showSimulator, setShowSimulator] = useState(false);
-  const [completed, setCompleted] = useState(false);
+  const [activeKiosk, setActiveKiosk] = useState<KioskType | null>(null);
+  const [completedKiosks, setCompletedKiosks] = useState<KioskType[]>([]);
   const { markPracticeCompleted } = useDigitalProgress();
 
+  const handleSelectKiosk = (type: KioskType) => {
+    setActiveKiosk(type);
+  };
+
   const handleComplete = () => {
-    setShowSimulator(false);
-    setCompleted(true);
-    markPracticeCompleted('db-02', 'db-02-practice-1');
+    if (activeKiosk) {
+      setCompletedKiosks(prev =>
+        prev.includes(activeKiosk) ? prev : [...prev, activeKiosk]
+      );
+      markPracticeCompleted('db-02', 'db-02-practice-1');
+    }
+    setActiveKiosk(null);
+  };
+
+  const handleClose = () => {
+    setActiveKiosk(null);
   };
 
   const learningPoints = [
@@ -24,6 +38,31 @@ export default function KioskPracticePage() {
     { icon: ShoppingCart, textKey: 'kiosk.learn.cart', fallback: '장바구니 확인 및 수량 조절' },
     { icon: CreditCard, textKey: 'kiosk.learn.payment', fallback: '결제 수단 선택 및 결제하기' },
   ];
+
+  // Render active kiosk simulator as a modal overlay
+  const renderActiveKiosk = () => {
+    if (!activeKiosk) return null;
+    const entry = kioskRegistry[activeKiosk];
+    if (!entry) return null;
+    const KioskComponent = entry.component;
+
+    return (
+      <Suspense
+        fallback={
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+            <div className="bg-white rounded-2xl p-8 flex flex-col items-center gap-4">
+              <Loader2 size={36} className="text-purple-500 animate-spin" />
+              <p className="text-gray-600 font-medium">
+                {t('kiosk.loading', '키오스크를 불러오는 중...')}
+              </p>
+            </div>
+          </div>
+        }
+      >
+        <KioskComponent onClose={handleClose} onComplete={handleComplete} />
+      </Suspense>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
@@ -47,7 +86,7 @@ export default function KioskPracticePage() {
                 {t('kiosk.title', '키오스크 연습')}
               </h1>
               <p className="text-sm text-gray-600">
-                {t('kiosk.subtitle', '카페에서 음료 주문해보기')}
+                {t('kiosk.subtitleGeneral', '다양한 키오스크 사용법을 익혀보세요')}
               </p>
             </div>
           </div>
@@ -56,30 +95,25 @@ export default function KioskPracticePage() {
 
       {/* 메인 콘텐츠 */}
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* 완료 축하 */}
-        {completed && (
+        {/* 완료 축하 메시지 */}
+        {completedKiosks.length > 0 && (
           <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-6 mb-6 text-center">
             <CheckCircle2 size={48} className="text-green-500 mx-auto mb-3" />
             <h2 className="text-xl font-bold text-green-900 mb-2">
-              {t('kiosk.screens.complete.congrats', '키오스크 주문 연습 완료!')}
+              {t('kiosk.screens.complete.congrats', '키오스크 연습 완료!')}
             </h2>
             <p className="text-green-700 mb-4">
-              {t('kiosk.screens.complete.message', '이제 실제 카페에서도 자신있게 주문할 수 있어요!')}
+              {t(
+                'kiosk.completedMessage',
+                `${completedKiosks.length}개 키오스크 연습을 완료했어요! 다른 키오스크도 도전해보세요.`
+              )}
             </p>
-            <div className="flex justify-center gap-3">
-              <button
-                onClick={() => setShowSimulator(true)}
-                className="px-5 py-2.5 bg-white text-green-700 border-2 border-green-200 rounded-xl font-medium text-sm hover:bg-green-50 transition-colors"
-              >
-                {t('kiosk.retryPractice', '다시 연습하기')}
-              </button>
-              <button
-                onClick={() => navigate('/track/digital-basics/module/db-02')}
-                className="px-5 py-2.5 bg-green-600 text-white rounded-xl font-medium text-sm hover:bg-green-700 transition-colors"
-              >
-                {t('kiosk.backToModule', '모듈로 돌아가기')}
-              </button>
-            </div>
+            <button
+              onClick={() => navigate('/track/digital-basics/module/db-02')}
+              className="px-5 py-2.5 bg-green-600 text-white rounded-xl font-medium text-sm hover:bg-green-700 transition-colors"
+            >
+              {t('kiosk.backToModule', '모듈로 돌아가기')}
+            </button>
           </div>
         )}
 
@@ -120,32 +154,17 @@ export default function KioskPracticePage() {
           </div>
         </section>
 
-        {/* 연습 시작 버튼 */}
-        {!completed && (
-          <div className="text-center">
-            <button
-              onClick={() => setShowSimulator(true)}
-              className="px-8 py-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-2xl font-bold text-lg hover:shadow-xl transition-all border-b-4 border-purple-700 active:scale-[0.98]"
-            >
-              <span className="flex items-center gap-2">
-                <Monitor size={24} />
-                {t('kiosk.startPractice', '키오스크 연습 시작하기')}
-              </span>
-            </button>
-            <p className="text-sm text-gray-500 mt-3">
-              {t('kiosk.practiceNote', '실제 카페와 비슷한 화면으로 연습합니다')}
-            </p>
-          </div>
-        )}
+        {/* 키오스크 선택 그리드 */}
+        <section className="bg-white rounded-2xl shadow-sm p-6">
+          <KioskSelector
+            onSelectKiosk={handleSelectKiosk}
+            completedKiosks={completedKiosks}
+          />
+        </section>
       </div>
 
       {/* 키오스크 시뮬레이터 모달 */}
-      {showSimulator && (
-        <KioskSimulator
-          onClose={() => setShowSimulator(false)}
-          onComplete={handleComplete}
-        />
-      )}
+      {renderActiveKiosk()}
     </div>
   );
 }

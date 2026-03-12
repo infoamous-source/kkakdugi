@@ -26,7 +26,7 @@ export interface GraduationStatus {
   isGraduated: boolean;
   graduatedAt?: string;      // ISO date string
   review?: string;           // "선생님께 한마디"
-  proExpiresAt?: string;     // Pro 도구 만료일 (졸업 후 180일)
+  proExpiresAt?: string;     // Pro 도구 만료일 (졸업 후 30일)
 }
 
 export type PersonaId = 'CEO' | 'PM' | 'CPO' | 'CMO' | 'CSL';
@@ -262,7 +262,7 @@ export const SCHOOL_CURRICULUM: SchoolPeriod[] = [
 ];
 
 /** Pro 도구 사용 가능 기간 (일) */
-export const PRO_DURATION_DAYS = 180;
+export const PRO_DURATION_DAYS = 30;
 
 /** 총 교시 수 */
 export const TOTAL_PERIODS = SCHOOL_CURRICULUM.length;
