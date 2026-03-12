@@ -20,7 +20,7 @@ interface Props {
 export default function ScanScreen({ scannedItems, onScanItem, onDone, onBack }: Props) {
   const { t } = useTranslation();
   const [scanFlash, setScanFlash] = useState<string | null>(null);
-  const scanTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const scanTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Group items by category
   const grouped = CONVENIENCE_ITEMS.reduce<Record<string, ConvenienceItem[]>>((acc, item) => {

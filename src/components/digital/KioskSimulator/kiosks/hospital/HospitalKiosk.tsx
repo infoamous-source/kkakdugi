@@ -28,7 +28,7 @@ export default function HospitalKiosk({ onClose, onComplete }: KioskComponentPro
   // ── Navigation ──────────────────────────────────────────────────────────────
   const [screen, setScreenRaw] = useState<HospitalScreen>('welcome');
   const [screenFade, setScreenFade] = useState(false);
-  const fadeTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const fadeTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Screen transition with fade effect + helper reset
   const setScreen = useCallback((next: HospitalScreen) => {

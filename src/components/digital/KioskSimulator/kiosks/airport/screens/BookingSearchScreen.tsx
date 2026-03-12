@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { feedbackTap, feedbackConfirm } from '../../../core/haptics';
 import { AIRPORT_THEME } from '../data';
@@ -49,7 +49,7 @@ export default function BookingSearchScreen({ onNext, onBack }: Props) {
     }, 1200);
   };
 
-  const methods: { id: SearchMethod; label: string; icon: JSX.Element }[] = [
+  const methods: { id: SearchMethod; label: string; icon: React.ReactNode }[] = [
     {
       id: 'booking',
       label: t('airport.search.booking', '예약번호'),

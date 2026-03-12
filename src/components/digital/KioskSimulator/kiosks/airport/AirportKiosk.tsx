@@ -31,7 +31,7 @@ export default function AirportKiosk({ onClose, onComplete }: KioskComponentProp
   // ── Navigation ──────────────────────────────────────────────────────────────
   const [screen, setScreenRaw] = useState<AirportScreen>('welcome');
   const [screenFade, setScreenFade] = useState(false);
-  const fadeTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const fadeTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const setScreen = useCallback((next: AirportScreen) => {
     setScreenFade(true);

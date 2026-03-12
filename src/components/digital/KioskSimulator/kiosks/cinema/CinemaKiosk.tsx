@@ -28,7 +28,7 @@ export default function CinemaKiosk({ onClose, onComplete }: KioskComponentProps
   // ── Navigation ──────────────────────────────────────────────────────────────
   const [screen, setScreenRaw] = useState<CinemaScreen>('welcome');
   const [screenFade, setScreenFade] = useState(false);
-  const fadeTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const fadeTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const setScreen = useCallback((next: CinemaScreen) => {
     setScreenFade(true);

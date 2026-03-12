@@ -28,7 +28,7 @@ export default function GovernmentKiosk({ onClose, onComplete }: KioskComponentP
   // ── Navigation ──────────────────────────────────────────────────────────────
   const [screen, setScreenRaw] = useState<GovernmentScreen>('welcome');
   const [screenFade, setScreenFade] = useState(false);
-  const fadeTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const fadeTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Screen transition with fade effect + helper reset
   const setScreen = useCallback((next: GovernmentScreen) => {

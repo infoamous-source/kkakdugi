@@ -1,3 +1,4 @@
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { feedbackTap } from '../../../core/haptics';
 import { BANK_THEME, type BankService } from '../data';
@@ -56,7 +57,7 @@ function TransferIcon() {
   );
 }
 
-const services: { id: BankService; labelKey: string; label: string; descKey: string; desc: string; Icon: () => JSX.Element }[] = [
+const services: { id: BankService; labelKey: string; label: string; descKey: string; desc: string; Icon: () => React.ReactNode }[] = [
   { id: 'queue',    labelKey: 'bank.service.queue',    label: '번호표 뽑기', descKey: 'bank.service.queueDesc',    desc: '대기 번호표를 발급합니다', Icon: QueueIcon },
   { id: 'deposit',  labelKey: 'bank.service.deposit',  label: '입금',       descKey: 'bank.service.depositDesc',  desc: '계좌에 입금합니다',       Icon: DepositIcon },
   { id: 'withdraw', labelKey: 'bank.service.withdraw', label: '출금',       descKey: 'bank.service.withdrawDesc', desc: '계좌에서 출금합니다',     Icon: WithdrawIcon },
