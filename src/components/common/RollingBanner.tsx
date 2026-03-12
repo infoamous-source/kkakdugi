@@ -71,12 +71,12 @@ export default function RollingBanner() {
     >
       {/* 배너 컨텐츠 */}
       <div
-        className={`bg-gradient-to-r ${current.gradient} px-8 py-6 text-white transition-all duration-500`}
+        className={`bg-gradient-to-r ${current.gradient} px-4 py-4 sm:px-8 sm:py-6 text-white transition-all duration-500`}
       >
-        <div className="flex items-center gap-6">
-          <span className="text-5xl">{current.emoji}</span>
+        <div className="flex items-center gap-3 sm:gap-6">
+          <span className="text-3xl sm:text-5xl">{current.emoji}</span>
           <div>
-            <h3 className="text-xl font-bold mb-1">
+            <h3 className="text-base sm:text-xl font-bold mb-1">
               {t(current.titleKey)}
             </h3>
             <p className="text-white/80 text-sm">

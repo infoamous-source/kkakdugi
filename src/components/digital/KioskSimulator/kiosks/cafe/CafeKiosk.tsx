@@ -205,7 +205,7 @@ export default function CafeKiosk({ onClose, onComplete }: KioskComponentProps) 
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4">
       {/* Kiosk frame */}
       <div
         className="w-full flex flex-col overflow-hidden shadow-2xl"

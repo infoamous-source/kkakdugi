@@ -181,7 +181,7 @@ export default function TrackPage() {
         <h1 className="text-3xl font-bold text-gray-800 mb-3">{t(track.nameKey)}</h1>
         <p className="text-gray-500 text-lg">{t(track.descriptionKey)}</p>
 
-        <div className="flex items-center gap-6 mt-4">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-4">
           <span className="flex items-center gap-2 text-sm text-gray-600">
             <BookOpen className="w-4 h-4" />
             {track.modules.length} {t('track.modules')}
