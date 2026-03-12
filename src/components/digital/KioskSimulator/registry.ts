@@ -211,8 +211,18 @@ const airportConfig: KioskConfig = {
     headerBg: 'bg-gradient-to-r from-sky-700 to-blue-800',
     buttonStyle: 'square',
   },
-  screens: [],
-  comingSoon: true,
+  screens: [
+    { id: 'welcome',       labelKey: 'airport.screens.welcome.title',       helperKey: 'kiosk.helper.airport.welcome' },
+    { id: 'bookingSearch', labelKey: 'airport.screens.bookingSearch.title', helperKey: 'kiosk.helper.airport.bookingSearch' },
+    { id: 'flightInfo',    labelKey: 'airport.screens.flightInfo.title',    helperKey: 'kiosk.helper.airport.flightInfo' },
+    { id: 'seatSelect',    labelKey: 'airport.screens.seatSelect.title',    helperKey: 'kiosk.helper.airport.seatSelect' },
+    { id: 'baggage',       labelKey: 'airport.screens.baggage.title',       helperKey: 'kiosk.helper.airport.baggage' },
+    { id: 'extras',        labelKey: 'airport.screens.extras.title',        helperKey: 'kiosk.helper.airport.extras' },
+    { id: 'confirmAll',    labelKey: 'airport.screens.confirmAll.title',    helperKey: 'kiosk.helper.airport.confirmAll' },
+    { id: 'payment',       labelKey: 'airport.screens.payment.title',       helperKey: 'kiosk.helper.airport.payment' },
+    { id: 'processing',    labelKey: 'airport.screens.processing.title',    helperKey: 'kiosk.helper.airport.processing' },
+    { id: 'complete',      labelKey: 'airport.screens.complete.title',      helperKey: 'kiosk.helper.airport.complete' },
+  ],
 };
 
 // Registry
@@ -247,7 +257,7 @@ export const kioskRegistry: Record<KioskType, KioskRegistryEntry> = {
   },
   airport: {
     config: airportConfig,
-    component: lazy(() => import('./kiosks/cafe/CafeKiosk')), // placeholder
+    component: lazy(() => import('./kiosks/airport/AirportKiosk')),
   },
 };
 
