@@ -2000,6 +2000,305 @@
       }
     }
   },
+  "digitalSchool": {
+    "hub": {
+      "badge": "Digital Basics Training",
+      "title": "Digital Department",
+      "description": "From smartphone basics to kiosk practice, your first step into the digital world!",
+      "schoolTitle": "Digital Classroom",
+      "schoolDescription": "Learn digital basics through a 6-period curriculum with kiosk practice!",
+      "schoolBadge": "2-Day 6-Period Course",
+      "graduated": "Completed",
+      "kioskTitle": "Kiosk Practice Lab",
+      "kioskDescription": "Practice 8 types of kiosks freely — cafe, fast food, hospital, and more.",
+      "kioskBadge": "8 Simulators"
+    },
+    "layout": {
+      "title": "Digital Classroom"
+    },
+    "nav": {
+      "attendance": "Attendance",
+      "curriculum": "Schedule",
+      "lab": "Practice Lab"
+    },
+    "stamps": {
+      "title": "Attendance Stamp Board",
+      "period": "th"
+    },
+    "attendance": {
+      "viewStudentCard": "View My Student Card",
+      "graduationSection": "Completion",
+      "alreadyGraduated": "Congratulations on your completion!",
+      "readyToGraduate": "You have completed all periods! You are ready to graduate.",
+      "graduateButton": "Complete Course",
+      "notReady": "You have not yet met the completion requirements.",
+      "notReadyHint": "Please complete all period practices"
+    },
+    "curriculum": {
+      "title": "Schedule",
+      "subtitle": "Digital Basics 2-Day Course",
+      "period": "Period"
+    },
+    "lab": {
+      "title": "Practice Lab",
+      "subtitle": "Kiosk Simulators & Korean Life Apps",
+      "kioskSection": "Kiosk Simulators",
+      "kioskDesc": "Practice 8 types of kiosks just like the real thing",
+      "appsSection": "Essential Korean Life Apps",
+      "appsDesc": "Install and learn how to use apps needed for life in Korea",
+      "viewAllApps": "View All Apps"
+    },
+    "periods": {
+      "smartphoneSetup": {
+        "name": "Smartphone Basic Setup",
+        "description": "Create a Naver account and learn how to type email addresses and special characters"
+      },
+      "kakaoAuth": {
+        "name": "Kakao & Identity Verification",
+        "description": "Issue a KakaoTalk certificate, set up KakaoPay, and manage security"
+      },
+      "kioskChallenge": {
+        "name": "Kiosk Challenge",
+        "description": "Practice with 8 kiosk simulators in real-life situations"
+      },
+      "gov24Docs": {
+        "name": "Gov24 & Document Issuance",
+        "description": "Sign up for Gov24, search for documents, and save as PDF"
+      },
+      "translationAi": {
+        "name": "Translation & AI Tools",
+        "description": "Learn how to use Papago, Google Translate, and ChatGPT"
+      },
+      "digitalSafety": {
+        "name": "Digital Safety & App Management",
+        "description": "Manage app permissions, prevent spam/phishing, and do a safety check"
+      }
+    },
+    "sections": {
+      "entrance": {
+        "title": "Orientation",
+        "subtitle": "Welcome to the Digital Department",
+        "step1": {
+          "title": "Digital Department Introduction",
+          "desc": "Learn what you will study over 2 days and the learning goals"
+        },
+        "step2": {
+          "title": "2-Day Course Overview",
+          "desc": "Day 1: 3 periods + Day 2: 3 periods = 6 periods total"
+        },
+        "step3": {
+          "title": "Check My Student Card",
+          "desc": "View your student information and attendance status"
+        }
+      },
+      "period1": {
+        "title": "Smartphone Basic Setup",
+        "subtitle": "Day 1 · Period 1",
+        "step1": {
+          "title": "Create a Naver Account",
+          "desc": "Install the Naver app and create an account"
+        },
+        "step2": {
+          "title": "Email & Special Character Input",
+          "desc": "Learn how to type email addresses and find special characters like @ and #"
+        },
+        "step3": {
+          "title": "Setup Completion Checklist",
+          "desc": "Confirm that all basic setup steps are done"
+        }
+      },
+      "period2": {
+        "title": "Kakao & Identity Verification",
+        "subtitle": "Day 1 · Period 2",
+        "step1": {
+          "title": "KakaoTalk & Certificate Issuance",
+          "desc": "Install KakaoTalk and issue a Kakao certificate"
+        },
+        "step2": {
+          "title": "KakaoPay & Security Settings",
+          "desc": "Register KakaoPay and configure password and security settings"
+        },
+        "step3": {
+          "title": "Verification Completion Checklist",
+          "desc": "Check that all Kakao verification settings are complete"
+        }
+      },
+      "period3": {
+        "title": "Kiosk Challenge",
+        "subtitle": "Day 1 · Period 3",
+        "step1": {
+          "title": "What Is a Kiosk?",
+          "desc": "Learn about the types and usage of kiosks"
+        },
+        "step2": {
+          "title": "Kiosk UI Patterns",
+          "desc": "Understand touchscreen interaction, menu selection, and payment flow"
+        },
+        "step3": {
+          "title": "Kiosk Simulator Practice",
+          "desc": "Practice with 8 kiosk simulators just like the real thing"
+        }
+      },
+      "period4": {
+        "title": "Gov24 & Document Issuance",
+        "subtitle": "Day 2 · Period 4",
+        "step1": {
+          "title": "Sign Up for Gov24",
+          "desc": "How to install the Gov24 app and register as a member"
+        },
+        "step2": {
+          "title": "Document Search & PDF Save",
+          "desc": "How to find the documents you need and save them as PDF"
+        },
+        "step3": {
+          "title": "Document Issuance Checklist",
+          "desc": "Check the Gov24 document issuance process"
+        }
+      },
+      "period5": {
+        "title": "Translation & AI Tools",
+        "subtitle": "Day 2 · Period 5",
+        "step1": {
+          "title": "Papago & Google Translate",
+          "desc": "Compare how to use Naver Papago and Google Translate"
+        },
+        "step2": {
+          "title": "Using ChatGPT",
+          "desc": "How to ask questions and get help from an AI chatbot"
+        },
+        "step3": {
+          "title": "Translation Comparison Checklist",
+          "desc": "Compare and try various translation and AI tools"
+        }
+      },
+      "period6": {
+        "title": "Digital Safety & App Management",
+        "subtitle": "Day 2 · Period 6",
+        "step1": {
+          "title": "App Permissions & Storage Management",
+          "desc": "Revoke unnecessary app permissions and clean up storage"
+        },
+        "step2": {
+          "title": "Spam/Phishing Prevention",
+          "desc": "How to identify and block spam messages and phishing links"
+        },
+        "step3": {
+          "title": "Safety Check Checklist",
+          "desc": "Confirm that all digital safety settings are complete"
+        }
+      },
+      "finalProject": {
+        "title": "Final Project",
+        "subtitle": "Review of 2 Days of Learning",
+        "step1": {
+          "title": "Review of Learning",
+          "desc": "Summarize the key content learned during the 6 periods"
+        },
+        "step2": {
+          "title": "Digital Life Action Plan",
+          "desc": "Make a plan for practicing digital life going forward"
+        },
+        "step3": {
+          "title": "Submit to Teacher",
+          "desc": "Submit your action plan to the teacher"
+        }
+      },
+      "graduation": {
+        "title": "Graduation Ceremony",
+        "subtitle": "Completing the Digital Basics Course",
+        "step1": {
+          "title": "Certificate Presentation",
+          "desc": "Congratulations on completing the Digital Department!"
+        },
+        "step2": {
+          "title": "A Word for the Teacher",
+          "desc": "Please share your words of gratitude"
+        },
+        "step3": {
+          "title": "Completion Celebration",
+          "desc": "Celebrate your completion and begin your new digital life"
+        }
+      }
+    },
+    "checklist": {
+      "title": "Checklist",
+      "complete": "Mark Complete",
+      "completed": "Completed",
+      "progress": "{{done}}/{{total}} completed",
+      "allDone": "All items completed!",
+      "earnStamp": "Get Stamp"
+    },
+    "tools": {
+      "smartphoneSetup": {
+        "title": "Smartphone Basic Setup Checklist",
+        "items": [
+          "Naver app installed",
+          "Naver account created",
+          "Email address typing practice",
+          "Special character (@, #, !) typing practice",
+          "App search & install from App Store",
+          "Wi-Fi connection setup"
+        ]
+      },
+      "kakaoAuth": {
+        "title": "Kakao Verification Checklist",
+        "items": [
+          "KakaoTalk installed & registered",
+          "Kakao certificate issued",
+          "KakaoPay registered",
+          "Lock screen password set",
+          "Two-step verification enabled",
+          "Emergency contact registered"
+        ]
+      },
+      "kioskChallenge": {
+        "title": "Kiosk Challenge Checklist",
+        "items": [
+          "Cafe kiosk completed",
+          "Fast food kiosk completed",
+          "Convenience store kiosk completed",
+          "Movie theater kiosk completed",
+          "Hospital kiosk completed",
+          "Bank kiosk completed",
+          "Government office kiosk completed",
+          "Airport kiosk completed"
+        ]
+      },
+      "gov24Docs": {
+        "title": "Gov24 Document Issuance Checklist",
+        "items": [
+          "Gov24 app installed",
+          "Sign up & identity verified",
+          "Resident registration certificate issuance practice",
+          "Document saved as PDF",
+          "Issuance history checked",
+          "Frequently used documents bookmarked"
+        ]
+      },
+      "translationAi": {
+        "title": "Translation & AI Tools Checklist",
+        "items": [
+          "Naver Papago installed & translated",
+          "Google Translate camera translation",
+          "ChatGPT question asked",
+          "Translation results compared",
+          "Voice translation used",
+          "Conversation translation attempted"
+        ]
+      },
+      "digitalSafety": {
+        "title": "Digital Safety Check Checklist",
+        "items": [
+          "Unnecessary app permissions revoked",
+          "Unused apps deleted",
+          "Spam message blocking set up",
+          "Phishing link identification learned",
+          "Privacy protection settings reviewed",
+          "Password changed & managed"
+        ]
+      }
+    }
+  },
   "footer": {
     "madeWith": "Growing together at Kkakdugi School",
     "disclaimer": "© 2024 Kkakdugi School. Education school for migrants and international students"

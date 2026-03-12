@@ -5,6 +5,7 @@ import { ArrowLeft, Monitor, Coffee, CreditCard, ShoppingCart, CheckCircle2, Loa
 import KioskSelector from '../components/digital/KioskSimulator/KioskSelector';
 import { kioskRegistry } from '../components/digital/KioskSimulator/registry';
 import { useDigitalProgress } from '../hooks/useDigitalProgress';
+import { useDigitalSchoolProgress } from '../hooks/useDigitalSchoolProgress';
 import type { KioskType } from '../components/digital/KioskSimulator/core/types';
 
 export default function KioskPracticePage() {
@@ -13,6 +14,7 @@ export default function KioskPracticePage() {
   const [activeKiosk, setActiveKiosk] = useState<KioskType | null>(null);
   const [completedKiosks, setCompletedKiosks] = useState<KioskType[]>([]);
   const { markPracticeCompleted } = useDigitalProgress();
+  const { autoStamp } = useDigitalSchoolProgress();
 
   const handleSelectKiosk = (type: KioskType) => {
     setActiveKiosk(type);
@@ -24,6 +26,8 @@ export default function KioskPracticePage() {
         prev.includes(activeKiosk) ? prev : [...prev, activeKiosk]
       );
       markPracticeCompleted('db-02', 'db-02-practice-1');
+      // 디지털 학교 3교시(키오스크 도전) 자동 스탬프
+      autoStamp('kiosk-challenge');
     }
     setActiveKiosk(null);
   };
@@ -70,11 +74,11 @@ export default function KioskPracticePage() {
       <div className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <button
-            onClick={() => navigate('/track/digital-basics/module/db-02')}
+            onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
           >
             <ArrowLeft size={20} />
-            <span>{t('kiosk.backToModule', '모듈로 돌아가기')}</span>
+            <span>{t('kiosk.backToModule', '돌아가기')}</span>
           </button>
 
           <div className="flex items-center gap-3 mb-2">
@@ -109,10 +113,10 @@ export default function KioskPracticePage() {
               )}
             </p>
             <button
-              onClick={() => navigate('/track/digital-basics/module/db-02')}
+              onClick={() => navigate(-1)}
               className="px-5 py-2.5 bg-green-600 text-white rounded-xl font-medium text-sm hover:bg-green-700 transition-colors"
             >
-              {t('kiosk.backToModule', '모듈로 돌아가기')}
+              {t('kiosk.backToModule', '돌아가기')}
             </button>
           </div>
         )}

@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털학과 구조 개편 계획 — 깍두기 학교</title>
+  <style>
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:        #fef3dc;
+      --warm:         #fce8c3;
+      --red:          #e8816b;
+      --red-deep:     #c43025;
+      --peach:        #f5b89a;
+      --brown:        #4a3a2e;
+      --bg:           #faf7f2;
+      --gold:         #f7c88a;
+      --navy:         #2c3e6b;
+      --navy-deep:    #1e2d52;
+      --chalkboard:   #2d5a3d;
+      --chalk-light:  #3a7a52;
+      --cork:         #d4a060;
+      --paper:        #fffef9;
+      --digital-blue: #3B82F6;
+      --mktg-purple:  #8B5CF6;
+      --text-main:    #2d1f14;
+      --text-sub:     #6b5a4e;
+      --border:       #e8d5c0;
+      --shadow-sm:    0 2px 8px rgba(74,58,46,0.08);
+      --shadow-md:    0 4px 20px rgba(74,58,46,0.12);
+      --shadow-lg:    0 8px 40px rgba(74,58,46,0.16);
+      --radius:       16px;
+      --radius-sm:    10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', '맑은 고딕', 'Malgun Gothic',
+                   'Nanum Gothic', sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* ─── Header ─── */
+    .site-header {
+      background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 50%, #3d5491 100%);
+      color: #fff;
+      padding: 56px 24px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .site-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 50%, rgba(247,200,138,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 80% 30%, rgba(232,129,107,0.10) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(247,200,138,0.20);
+      border: 1px solid rgba(247,200,138,0.40);
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    .site-header h1 {
+      font-size: clamp(24px, 5vw, 40px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    .site-header .subtitle {
+      font-size: 15px;
+      color: rgba(255,255,255,0.72);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    .header-meta {
+      margin-top: 20px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .meta-chip {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.20);
+      color: rgba(255,255,255,0.85);
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* ─── Table of Contents ─── */
+    .toc-wrap {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 28px 32px;
+      margin: 32px auto;
+      max-width: 900px;
+    }
+    .toc-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 8px;
+    }
+    .toc-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-main);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13.5px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .toc-item:hover {
+      background: var(--cream);
+      border-color: var(--peach);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    .toc-num {
+      width: 24px;
+      height: 24px;
+      background: var(--navy);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ─── Main Layout ─── */
+    .main { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; }
+
+    /* ─── Sections ─── */
+    .section {
+      margin-bottom: 56px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--border);
+    }
+    .section-num {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--navy), #3d5491);
+      color: #fff;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 3px 10px rgba(44,62,107,0.30);
+    }
+    .section-title {
+      font-size: clamp(18px, 3vw, 24px);
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .section-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    /* ─── Cards ─── */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    /* ─── Problem Tags ─── */
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+      margin: 2px;
+    }
+    .tag-red    { background: #fde8e4; color: var(--red-deep); border: 1px solid #f5c4bc; }
+    .tag-green  { background: #e4f5ea; color: #16743a; border: 1px solid #b8e6c8; }
+    .tag-blue   { background: #e4eeff; color: var(--navy); border: 1px solid #c4d4f8; }
+    .tag-gold   { background: #fef5e0; color: #8a6200; border: 1px solid #f7e0a0; }
+    .tag-purple { background: #f0e8ff; color: #5b3a9e; border: 1px solid #d8c4f5; }
+
+    /* ─── Module Grid (Current 4 modules) ─── */
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .module-card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+    .module-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--digital-blue);
+    }
+    .module-id {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--digital-blue);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .module-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .step-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .step-list li {
+      font-size: 12px;
+      color: var(--text-sub);
+      padding: 3px 0 3px 12px;
+      position: relative;
+    }
+    .step-list li::before {
+      content: '·';
+      position: absolute;
+      left: 2px;
+      color: var(--digital-blue);
+      font-weight: 900;
+    }
+    .problem-badge {
+      margin-top: 12px;
+      background: #fde8e4;
+      border: 1px solid #f5c4bc;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 11.5px;
+      color: var(--red-deep);
+      font-weight: 600;
+    }
+
+    /* ─── Problem List ─── */
+    .problem-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .problem-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: #fff8f6;
+      border: 1px solid #f5c4bc;
+      border-left: 4px solid var(--red);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .problem-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .problem-text strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--red-deep);
+      margin-bottom: 3px;
+    }
+    .problem-text span {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    /* ─── Comparison Grid ─── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 640px) { .compare-grid { grid-template-columns: 1fr; } }
+    .compare-card {
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+    }
+    .compare-card.good {
+      background: linear-gradient(135deg, #f0fdf4, #e4f5ea);
+      border: 1px solid #b8e6c8;
+    }
+    .compare-card.bad {
+      background: linear-gradient(135deg, #fff8f6, #fde8e4);
+      border: 1px solid #f5c4bc;
+    }
+    .compare-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+    .compare-card.good .compare-label { background: #16743a; color: #fff; }
+    .compare-card.bad  .compare-label { background: var(--red-deep); color: #fff; }
+    .compare-card h3 {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+    .compare-card.good h3 { color: #16743a; }
+    .compare-card.bad  h3 { color: var(--red-deep); }
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .feature-list li {
+      font-size: 13.5px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .compare-card.good .feature-list li { background: rgba(255,255,255,0.7); color: #16743a; }
+    .compare-card.bad  .feature-list li { background: rgba(255,255,255,0.7); color: var(--red-deep); }
+    .feature-list li::before {
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .compare-card.good .feature-list li::before { content: '✓'; font-weight: 900; }
+    .compare-card.bad  .feature-list li::before { content: '✗'; font-weight: 900; }
+    .arch-path {
+      font-size: 12.5px;
+      font-family: 'Courier New', monospace;
+      background: rgba(255,255,255,0.8);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 12px;
+      color: var(--text-main);
+      line-height: 1.8;
+    }
+
+    /* ─── Period Table ─── */
+    .period-table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+    }
+    .period-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--paper);
+      font-size: 13.5px;
+    }
+    .period-table thead tr {
+      background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+      color: #fff;
+    }
+    .period-table th {
+      padding: 14px 16px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .period-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .period-table tr:last-child td { border-bottom: none; }
+    .period-table tbody tr:nth-child(odd)  { background: var(--paper); }
+    .period-table tbody tr:nth-child(even) { background: var(--cream); }
+    .period-table tbody tr:hover { background: var(--warm); }
+    .period-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: var(--navy);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .day-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .day1 { background: #dbeafe; color: #1e40af; }
+    .day2 { background: #ede9fe; color: #5b21b6; }
+    .tool-highlight {
+      background: linear-gradient(135deg, #fef5e0, #fde8d0);
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #8a5200;
+      display: inline-block;
+    }
+
+    /* ─── Flow Diagram ─── */
+    .flow-diagram {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      box-shadow: var(--shadow-md);
+    }
+    .flow-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .flow-node {
+      background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+      color: #fff;
+      border-radius: var(--radius-sm);
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      white-space: nowrap;
+    }
+    .flow-node.hub {
+      background: linear-gradient(135deg, var(--chalkboard), var(--chalk-light));
+    }
+    .flow-node.school {
+      background: linear-gradient(135deg, var(--navy), #3d5491);
+      padding: 14px 24px;
+      font-size: 15px;
+    }
+    .flow-node.tab {
+      background: linear-gradient(135deg, var(--cork), var(--gold));
+      color: var(--brown);
+      font-size: 12.5px;
+    }
+    .flow-node.leaf {
+      background: var(--cream);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      padding: 7px 12px;
+      box-shadow: none;
+    }
+    .flow-node.special {
+      background: linear-gradient(135deg, #e55b3c, var(--red-deep));
+    }
+    .flow-arrow {
+      color: var(--text-sub);
+      font-size: 18px;
+      font-weight: 300;
+    }
+    .flow-split {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .flow-divider {
+      border: none;
+      border-top: 1px dashed var(--border);
+      margin: 20px 0;
+    }
+    .flow-label {
+      font-size: 11.5px;
+      color: var(--text-sub);
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .flow-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .flow-branch-wrap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 12px;
+    }
+    @media (max-width: 600px) { .flow-branch-wrap { grid-template-columns: 1fr; } }
+    .flow-branch {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* ─── Wireframe Mockups ─── */
+    .mockup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .mockup {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .mockup-bar {
+      background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 11.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mockup-dots {
+      display: flex;
+      gap: 4px;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    .mockup-url {
+      flex: 1;
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 10.5px;
+      color: rgba(255,255,255,0.7);
+    }
+    .mockup-body { padding: 16px; }
+    .wf-heading {
+      background: var(--warm);
+      border: 1px dashed var(--peach);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--brown);
+      text-align: center;
+    }
+    .wf-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .wf-tab {
+      flex: 1;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px 8px 0 0;
+      padding: 7px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text-sub);
+    }
+    .wf-tab.active {
+      background: var(--paper);
+      border-bottom-color: var(--paper);
+      color: var(--navy);
+    }
+    .wf-block {
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+    .wf-block.accent {
+      background: linear-gradient(135deg, #e4eeff, #dbeafe);
+      border-color: #bfdbfe;
+      color: var(--navy);
+      font-weight: 600;
+    }
+    .wf-block.highlight {
+      background: linear-gradient(135deg, #fef5e0, #fde8d0);
+      border-color: var(--gold);
+      color: #8a5200;
+      font-weight: 700;
+    }
+    .wf-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .wf-stamp-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin: 10px 0;
+    }
+    .wf-stamp {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--peach);
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .wf-stamp.filled {
+      background: var(--red);
+      border-color: var(--red-deep);
+    }
+    .kiosk-grid-mini {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .kiosk-cell {
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: 6px 4px;
+      font-size: 10px;
+      text-align: center;
+      color: var(--text-sub);
+    }
+    .period-mini {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .period-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: 5px 8px;
+    }
+    .period-dot {
+      width: 20px; height: 20px;
+      background: var(--navy);
+      border-radius: 50%;
+      font-size: 9px;
+      font-weight: 900;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .period-dot.intro { background: var(--chalkboard); }
+    .period-dot.grad  { background: var(--red-deep); }
+    .period-text { font-size: 11px; color: var(--text-main); font-weight: 600; }
+
+    /* ─── File Structure ─── */
+    .file-tree {
+      background: #1e2d52;
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      box-shadow: var(--shadow-lg);
+      overflow-x: auto;
+    }
+    .file-tree pre {
+      font-family: 'Courier New', 'Consolas', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #c9d8ff;
+      white-space: pre;
+    }
+    .ft-new    { color: #86efac; }
+    .ft-mod    { color: #fde68a; }
+    .ft-keep   { color: #93c5fd; }
+    .ft-dir    { color: #f9a8d4; font-weight: 700; }
+    .ft-cmt    { color: #64748b; font-style: italic; }
+
+    /* ─── Before/After ─── */
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr;
+      gap: 0;
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .before-after { grid-template-columns: 1fr; }
+      .ba-arrow { transform: rotate(90deg); }
+    }
+    .ba-col {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .ba-header {
+      padding: 14px 18px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .ba-col.before .ba-header { background: var(--red-deep); color: #fff; }
+    .ba-col.after  .ba-header { background: var(--chalkboard); color: #fff; }
+    .ba-body {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ba-col.before .ba-body { background: #fff8f6; }
+    .ba-col.after  .ba-body { background: #f0fdf4; }
+    .ba-item {
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .ba-col.before .ba-item { background: #fde8e4; color: var(--red-deep); border: 1px solid #f5c4bc; }
+    .ba-col.after  .ba-item { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .ba-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--text-sub);
+      padding-top: 56px;
+    }
+
+    /* ─── Info Box ─── */
+    .info-box {
+      background: linear-gradient(135deg, #e4eeff, #dbeafe);
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid var(--navy);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-top: 16px;
+      font-size: 13.5px;
+      color: var(--navy-deep);
+    }
+    .info-box strong { display: block; margin-bottom: 4px; font-size: 14px; }
+
+    /* ─── Footer ─── */
+    .site-footer {
+      background: var(--navy-deep);
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 13px;
+    }
+    .site-footer strong { color: var(--gold); }
+
+    /* ─── Divider ─── */
+    .section-divider {
+      border: none;
+      border-top: 1px dashed var(--border);
+      margin: 40px 0;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 480px) {
+      .main { padding: 0 12px 60px; }
+      .card { padding: 16px; }
+      .period-table th, .period-table td { padding: 10px 10px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="site-header">
+  <div class="header-badge">깍두기 학교 · 내부 문서</div>
+  <h1>디지털학과 구조 개편 계획</h1>
+  <p class="subtitle">현재 4모듈 구조를 마케팅학과와 동일한 6교시 허브 아키텍처로 재설계하는 종합 분석 및 실행 계획</p>
+  <div class="header-meta">
+    <span class="meta-chip">작성일: 2026-03-13</span>
+    <span class="meta-chip">버전: v1.0</span>
+    <span class="meta-chip">상태: 초안</span>
+    <span class="meta-chip">대상: digital-basics 트랙</span>
+  </div>
+</header>
+
+<!-- ═══ TABLE OF CONTENTS ═══ -->
+<div class="main">
+  <nav class="toc-wrap" aria-label="목차">
+    <div class="toc-title">목차 (Table of Contents)</div>
+    <div class="toc-grid">
+      <a href="#section-1" class="toc-item"><span class="toc-num">1</span>현재 구조 분석</a>
+      <a href="#section-2" class="toc-item"><span class="toc-num">2</span>마케팅 vs 디지털 비교</a>
+      <a href="#section-3" class="toc-item"><span class="toc-num">3</span>새 6교시 구조</a>
+      <a href="#section-4" class="toc-item"><span class="toc-num">4</span>네비게이션 흐름도</a>
+      <a href="#section-5" class="toc-item"><span class="toc-num">5</span>UI 목업</a>
+      <a href="#section-6" class="toc-item"><span class="toc-num">6</span>파일 구조</a>
+    </div>
+  </nav>
+
+  <!-- ═══ SECTION 1 ═══ -->
+  <section id="section-1" class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div>
+        <div class="section-title">현재 구조 분석</div>
+        <div class="section-sub">Current Structure Analysis — digital-basics 트랙의 4모듈 현황</div>
+      </div>
+    </div>
+
+    <div class="module-grid">
+      <div class="module-card">
+        <div class="module-id">db-01</div>
+        <div class="module-name">필수 앱 세팅 및 초기설정</div>
+        <ul class="step-list">
+          <li>Naver 계정 생성</li>
+          <li>이메일 설정</li>
+          <li>특수문자 입력법</li>
+          <li>앱 기본 설정</li>
+          <li>스마트폰 기초 점검</li>
+        </ul>
+        <div class="problem-badge">⚠ 5단계 — 너무 많음</div>
+      </div>
+
+      <div class="module-card">
+        <div class="module-id">db-02</div>
+        <div class="module-name">카카오 인증서 &amp; 키오스크</div>
+        <ul class="step-list">
+          <li>카카오톡 설치</li>
+          <li>카카오 인증서 발급</li>
+          <li>카카오페이 연동</li>
+          <li>키오스크 개념 학습</li>
+          <li>키오스크 실습 (묻혀있음)</li>
+          <li>보안 설정</li>
+        </ul>
+        <div class="problem-badge">⚠ 6단계 · 키오스크가 묻힘</div>
+      </div>
+
+      <div class="module-card">
+        <div class="module-id">db-03</div>
+        <div class="module-name">정부24 서류 발급</div>
+        <ul class="step-list">
+          <li>정부24 회원가입</li>
+          <li>본인인증 연동</li>
+          <li>서류 검색</li>
+          <li>PDF 발급 방법</li>
+          <li>프린터 연결</li>
+          <li>민원 신청</li>
+          <li>수령 확인</li>
+        </ul>
+        <div class="problem-badge">⚠ 7단계 — 최대 과부하</div>
+      </div>
+
+      <div class="module-card">
+        <div class="module-id">db-04</div>
+        <div class="module-name">번역 앱 &amp; 디지털 안전</div>
+        <ul class="step-list">
+          <li>Papago 번역</li>
+          <li>Google 번역</li>
+          <li>ChatGPT 활용</li>
+          <li>카카오GPT</li>
+          <li>앱 권한 관리</li>
+          <li>스팸/피싱 방지</li>
+          <li>앱 정리 방법</li>
+        </ul>
+        <div class="problem-badge">⚠ 7단계 — 주제 혼재</div>
+      </div>
+    </div>
+
+    <div class="problem-list">
+      <div class="problem-item">
+        <div class="problem-icon">📦</div>
+        <div class="problem-text">
+          <strong>과부하 모듈 (Step Overload)</strong>
+          <span>각 모듈당 4–7개 단계가 묶여있어 학습자가 한 번에 처리할 양이 너무 많습니다. 집중 학습이 어렵고 진행 상황 파악이 불가능합니다.</span>
+        </div>
+      </div>
+      <div class="problem-item">
+        <div class="problem-icon">🎮</div>
+        <div class="problem-text">
+          <strong>키오스크 시뮬레이터 매몰 (Buried Kiosk)</strong>
+          <span>가장 체험 효과가 큰 키오스크 시뮬레이터(8종)가 db-02의 하위 실습 섹션에 숨겨져 있습니다. 독립 실습실로 분리해야 합니다.</span>
+        </div>
+      </div>
+      <div class="problem-item">
+        <div class="problem-icon">🏆</div>
+        <div class="problem-text">
+          <strong>게이미피케이션 부재 (No Gamification)</strong>
+          <span>스탬프, 출석부, 졸업식 등의 진행 보상 요소가 없습니다. 마케팅학과와 달리 성취감을 주는 구조가 전혀 없습니다.</span>
+        </div>
+      </div>
+      <div class="problem-item">
+        <div class="problem-icon">🏠</div>
+        <div class="problem-text">
+          <strong>허브 페이지 없음 (No Hub)</strong>
+          <span>Gateway에서 바로 플랫 트랙 페이지로 이동하는 단순 구조입니다. 학교 입학의 '관문' 역할을 하는 허브 페이지가 없습니다.</span>
+        </div>
+      </div>
+      <div class="problem-item">
+        <div class="problem-icon">📑</div>
+        <div class="problem-text">
+          <strong>탭 레이아웃 없음 (No Tabs)</strong>
+          <span>출석부·시간표·실습실로 나뉜 3탭 레이아웃이 없어 정보가 한 페이지에 평면적으로 나열됩니다. 마케팅학과 대비 UX 격차가 큽니다.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <!-- ═══ SECTION 2 ═══ -->
+  <section id="section-2" class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div>
+        <div class="section-title">마케팅학과 vs 디지털학과 비교</div>
+        <div class="section-sub">Marketing vs Digital Architecture Comparison</div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card good">
+        <span class="compare-label">마케팅학과 — 잘 설계됨</span>
+        <h3>마케팅학과 아키텍처</h3>
+        <ul class="feature-list">
+          <li>허브 페이지 (MarketingHubPage) 존재</li>
+          <li>School 페이지에 3탭 레이아웃 (출석부 / 시간표 / 실습실)</li>
+          <li>6교시 커리큘럼 + 스탬프 기반 진행</li>
+          <li>졸업 조건 + 졸업식 + 수료증 발급</li>
+          <li>학생증 카드 UI</li>
+          <li>키오스크 시뮬레이터 독립 실습실</li>
+          <li>입학식 / 졸업과제 섹션 포함 (9개 섹션)</li>
+        </ul>
+        <div class="arch-path">
+Gateway<br/>
+→ /marketing/hub (MarketingHubPage)<br/>
+→ /marketing/school (3탭)<br/>
+  ├─ 출석부: 학생증 + 6스탬프 + 졸업<br/>
+  ├─ 시간표: 입학식 + 6교시 + 졸업식<br/>
+  └─ 실습실: 키오스크8 + 한국앱<br/>
+→ /marketing/period/:id<br/>
+→ 졸업 🎓
+        </div>
+      </div>
+
+      <div class="compare-card bad">
+        <span class="compare-label">디지털학과 — 개편 필요</span>
+        <h3>현재 디지털학과 구조</h3>
+        <ul class="feature-list">
+          <li>허브 페이지 없음 (직접 트랙 이동)</li>
+          <li>3탭 레이아웃 없음 (평면 구조)</li>
+          <li>스탬프 / 진행 보상 없음</li>
+          <li>졸업식 없음</li>
+          <li>학생증 없음</li>
+          <li>키오스크가 db-02 내부에 묻혀있음</li>
+          <li>4모듈만 존재 (입학식/졸업 섹션 없음)</li>
+        </ul>
+        <div class="arch-path">
+Gateway<br/>
+→ /digital (TrackPage - 플랫)<br/>
+  └─ db-01: 앱 세팅 (5단계)<br/>
+  └─ db-02: 카카오+키오스크 (6단계) ← 문제<br/>
+  └─ db-03: 정부24 (7단계)<br/>
+  └─ db-04: 번역+안전 (7단계)<br/>
+→ 끝 (게이미피케이션 없음)
+        </div>
+      </div>
+    </div>
+
+    <!-- Before / After -->
+    <div style="margin-top: 32px;">
+      <h3 style="font-size:16px; font-weight:700; margin-bottom:16px; color:var(--text-main);">개편 전 → 후 핵심 변화 요약</h3>
+      <div class="before-after">
+        <div class="ba-col before">
+          <div class="ba-header">BEFORE — 현재 문제점</div>
+          <div class="ba-body">
+            <div class="ba-item">✗ Gateway → 플랫 TrackPage</div>
+            <div class="ba-item">✗ 4모듈 (db-01 ~ db-04)</div>
+            <div class="ba-item">✗ 모듈당 4–7단계 과부하</div>
+            <div class="ba-item">✗ 키오스크가 db-02에 묻힘</div>
+            <div class="ba-item">✗ 스탬프/진행 보상 없음</div>
+            <div class="ba-item">✗ 졸업식/수료증 없음</div>
+            <div class="ba-item">✗ 탭 UI 없음</div>
+          </div>
+        </div>
+        <div class="ba-arrow">→</div>
+        <div class="ba-col after">
+          <div class="ba-header">AFTER — 개편 목표</div>
+          <div class="ba-body">
+            <div class="ba-item">✓ Gateway → DigitalHubPage</div>
+            <div class="ba-item">✓ 6교시 구조 (마케팅과 동일)</div>
+            <div class="ba-item">✓ 교시당 이론2 + 실습1 (균형)</div>
+            <div class="ba-item">✓ 키오스크 3교시 독립 시뮬레이터</div>
+            <div class="ba-item">✓ 6스탬프 게이미피케이션</div>
+            <div class="ba-item">✓ 졸업식 + 수료증 발급</div>
+            <div class="ba-item">✓ 3탭 레이아웃 (출석부/시간표/실습실)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <!-- ═══ SECTION 3 ═══ -->
+  <section id="section-3" class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div>
+        <div class="section-title">새 6교시 구조</div>
+        <div class="section-sub">New 6-Period Curriculum — 이론2 + 실습1 균형 설계</div>
+      </div>
+    </div>
+
+    <div class="period-table-wrap">
+      <table class="period-table">
+        <thead>
+          <tr>
+            <th>교시</th>
+            <th>교시명</th>
+            <th>날짜</th>
+            <th>이론 1</th>
+            <th>이론 2</th>
+            <th>실습 도구</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="period-num">1</span></td>
+            <td><strong>스마트폰 기초 세팅</strong></td>
+            <td><span class="day-badge day1">1일차</span></td>
+            <td>Naver 계정 생성 &amp; 로그인</td>
+            <td>이메일 설정 &amp; 특수문자</td>
+            <td><span class="tag tag-blue">설정 완료 체크리스트</span></td>
+          </tr>
+          <tr>
+            <td><span class="period-num">2</span></td>
+            <td><strong>카카오 &amp; 본인인증</strong></td>
+            <td><span class="day-badge day1">1일차</span></td>
+            <td>카카오톡 &amp; 인증서 발급</td>
+            <td>카카오페이 &amp; 보안 설정</td>
+            <td><span class="tag tag-blue">인증서 발급 체크리스트</span></td>
+          </tr>
+          <tr>
+            <td><span class="period-num">3</span></td>
+            <td><strong>키오스크 도전</strong></td>
+            <td><span class="day-badge day1">1일차</span></td>
+            <td>키오스크란? 개념 이해</td>
+            <td>키오스크 UI 패턴 학습</td>
+            <td><span class="tool-highlight">🎮 키오스크 시뮬레이터 (8종)</span></td>
+          </tr>
+          <tr>
+            <td><span class="period-num">4</span></td>
+            <td><strong>정부24 &amp; 서류발급</strong></td>
+            <td><span class="day-badge day2">2일차</span></td>
+            <td>정부24 회원가입 &amp; 인증</td>
+            <td>서류 검색 &amp; PDF 발급</td>
+            <td><span class="tag tag-blue">서류 발급 체크리스트</span></td>
+          </tr>
+          <tr>
+            <td><span class="period-num">5</span></td>
+            <td><strong>번역 &amp; AI 도구</strong></td>
+            <td><span class="day-badge day2">2일차</span></td>
+            <td>Papago &amp; Google 번역</td>
+            <td>ChatGPT &amp; 카카오GPT</td>
+            <td><span class="tag tag-blue">번역 비교 체크리스트</span></td>
+          </tr>
+          <tr>
+            <td><span class="period-num">6</span></td>
+            <td><strong>디지털 안전 &amp; 앱 정리</strong></td>
+            <td><span class="day-badge day2">2일차</span></td>
+            <td>앱 권한 관리</td>
+            <td>스팸/피싱 방지</td>
+            <td><span class="tag tag-blue">안전 점검 체크리스트</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box">
+      <strong>9개 섹션 구성 (마케팅학과 동일 패턴)</strong>
+      입학식 (1) + 6교시 (6) + 졸업과제 (1) + 졸업식 (1) = <strong>총 9섹션</strong>.
+      각 교시는 이론2 + 실습도구1로 구성되며, 3교시는 키오스크 시뮬레이터 8종을 독립 실습실로 제공합니다.
+    </div>
+
+    <div style="margin-top: 20px;">
+      <div class="card">
+        <div class="card-title">원래 구조 vs 새 구조 단계 비교</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div>
+            <div style="font-size:12px; font-weight:700; color:var(--red-deep); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Before (4모듈)</div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="background:#fde8e4; border:1px solid #f5c4bc; border-radius:8px; padding:8px 12px; font-size:12.5px; color:var(--red-deep);">db-01: 5단계 묶음</div>
+              <div style="background:#fde8e4; border:1px solid #f5c4bc; border-radius:8px; padding:8px 12px; font-size:12.5px; color:var(--red-deep);">db-02: 6단계 묶음 (키오스크 포함)</div>
+              <div style="background:#fde8e4; border:1px solid #f5c4bc; border-radius:8px; padding:8px 12px; font-size:12.5px; color:var(--red-deep);">db-03: 7단계 묶음</div>
+              <div style="background:#fde8e4; border:1px solid #f5c4bc; border-radius:8px; padding:8px 12px; font-size:12.5px; color:var(--red-deep);">db-04: 7단계 묶음 (주제 혼재)</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12px; font-weight:700; color:#16743a; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">After (6교시)</div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="background:#dcfce7; border:1px solid #bbf7d0; border-radius:8px; padding:8px 12px; font-size:12.5px; color:#16743a;">1교시: 스마트폰 기초 (이론2 + 체크)</div>
+              <div style="background:#dcfce7; border:1px solid #bbf7d0; border-radius:8px; padding:8px 12px; font-size:12.5px; color:#16743a;">2교시: 카카오 인증 (이론2 + 체크)</div>
+              <div style="background:#fef5e0; border:1px solid var(--gold); border-radius:8px; padding:8px 12px; font-size:12.5px; color:#8a5200; font-weight:700;">3교시: 키오스크 독립 (시뮬레이터 8종)</div>
+              <div style="background:#dcfce7; border:1px solid #bbf7d0; border-radius:8px; padding:8px 12px; font-size:12.5px; color:#16743a;">4교시: 정부24 (이론2 + 체크)</div>
+              <div style="background:#dcfce7; border:1px solid #bbf7d0; border-radius:8px; padding:8px 12px; font-size:12.5px; color:#16743a;">5교시: AI 번역 (이론2 + 체크)</div>
+              <div style="background:#dcfce7; border:1px solid #bbf7d0; border-radius:8px; padding:8px 12px; font-size:12.5px; color:#16743a;">6교시: 디지털 안전 (이론2 + 체크)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <!-- ═══ SECTION 4 ═══ -->
+  <section id="section-4" class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div>
+        <div class="section-title">네비게이션 흐름도</div>
+        <div class="section-sub">Navigation Flow Diagram — 새 라우팅 구조</div>
+      </div>
+    </div>
+
+    <div class="flow-diagram">
+
+      <!-- Level 0: Gateway -->
+      <div class="flow-label">진입점</div>
+      <div class="flow-row">
+        <div class="flow-node special">🚀 Gateway (메인 페이지)</div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-arrow">↓</div>
+      </div>
+
+      <!-- Level 1: Hub -->
+      <div class="flow-label">허브 (새로 생성)</div>
+      <div class="flow-row">
+        <div class="flow-node hub">/digital/hub — DigitalHubPage</div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-arrow">↓</div>
+      </div>
+      <div class="flow-row" style="gap:24px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div class="flow-node leaf">🎮 키오스크 연습실<br/><span style="font-size:10px; opacity:0.7;">/digital/kiosk</span></div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div class="flow-arrow" style="transform:none;">→</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div class="flow-node school">/digital/school — DigitalSchoolPage</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-arrow">↓</div>
+      </div>
+
+      <!-- Level 2: 3-Tab Layout -->
+      <div class="flow-label">3탭 레이아웃 (마케팅학과 동일)</div>
+      <div class="flow-branch-wrap">
+
+        <div class="flow-branch">
+          <div class="flow-node tab">📋 출석부 탭</div>
+          <div class="flow-arrow" style="font-size:14px;">↓</div>
+          <div class="flow-node leaf">학생증 카드</div>
+          <div class="flow-node leaf">스탬프 보드 (6개)</div>
+          <div class="flow-node leaf">졸업 조건 표시</div>
+          <div class="flow-node leaf">수료증 다운로드</div>
+        </div>
+
+        <div class="flow-branch">
+          <div class="flow-node tab">📅 시간표 탭</div>
+          <div class="flow-arrow" style="font-size:14px;">↓</div>
+          <div class="flow-node leaf">입학식 섹션</div>
+          <div class="flow-node leaf">1~6교시 목록</div>
+          <div class="flow-node leaf">졸업과제 섹션</div>
+          <div class="flow-node leaf">졸업식 섹션</div>
+          <div class="flow-row" style="margin-top:4px;">
+            <div class="flow-arrow" style="font-size:13px; transform:none;">→</div>
+          </div>
+          <div class="flow-node" style="background:linear-gradient(135deg,#4a5568,#2d3748); font-size:11px; padding:7px 12px;">/digital/period/:id<br/>교시 상세 페이지</div>
+        </div>
+
+        <div class="flow-branch">
+          <div class="flow-node tab">🔬 실습실 탭</div>
+          <div class="flow-arrow" style="font-size:14px;">↓</div>
+          <div class="flow-node leaf">키오스크 8종 그리드</div>
+          <div class="flow-node leaf">한국앱 링크 모음</div>
+          <div class="flow-node leaf highlight" style="background:linear-gradient(135deg,#fef5e0,#fde8d0); border:1px solid var(--gold); color:#8a5200;">맥도날드 / 버거킹<br/>스타벅스 / 롯데리아<br/>GS25 / CU / 병원 / ATM</div>
+        </div>
+
+      </div>
+
+      <hr class="flow-divider" />
+
+      <!-- Route Summary -->
+      <div class="flow-label">라우트 요약</div>
+      <div style="background:#f8faff; border:1px solid #c7d8ff; border-radius:10px; padding:16px 20px; font-family:'Courier New',monospace; font-size:12.5px; line-height:2; color:var(--navy-deep);">
+        <span style="color:#6b7280;"># 새로 추가될 라우트</span><br/>
+        /digital/hub           <span style="color:#16743a; font-weight:700;">← NEW DigitalHubPage</span><br/>
+        /digital/school        <span style="color:#16743a; font-weight:700;">← NEW DigitalSchoolPage (3탭)</span><br/>
+        /digital/period/:id    <span style="color:#16743a; font-weight:700;">← NEW DigitalPeriodPage</span><br/>
+        <br/>
+        <span style="color:#6b7280;"># 기존 라우트 (유지)</span><br/>
+        /digital/kiosk         <span style="color:#2563eb; font-weight:700;">← KEEP KioskPage</span><br/>
+        /kiosk/:type           <span style="color:#2563eb; font-weight:700;">← KEEP KioskSimulator</span><br/>
+        <br/>
+        <span style="color:#6b7280;"># 기존 라우트 (리디렉션)</span><br/>
+        /digital               <span style="color:#f59e0b; font-weight:700;">← REDIRECT → /digital/hub</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <!-- ═══ SECTION 5 ═══ -->
+  <section id="section-5" class="section">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div>
+        <div class="section-title">UI 목업</div>
+        <div class="section-sub">Wireframe Mockups — 4개 주요 화면</div>
+      </div>
+    </div>
+
+    <div class="mockup-grid">
+
+      <!-- Mockup 1: Hub Page -->
+      <div class="mockup">
+        <div class="mockup-bar">
+          <div class="mockup-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <div class="mockup-url">깍두기학교.kr/digital/hub</div>
+        </div>
+        <div class="mockup-body">
+          <div class="wf-heading">🏫 디지털 학교 허브</div>
+          <div style="font-size:11px; color:var(--text-sub); text-align:center; margin-bottom:10px;">학교에 오신 것을 환영합니다!</div>
+          <div class="wf-row">
+            <div class="wf-block accent" style="text-align:center; padding:16px 8px;">
+              <div style="font-size:20px; margin-bottom:4px;">💻</div>
+              <div style="font-size:11px; font-weight:700; color:var(--navy);">디지털 교실</div>
+              <div style="font-size:10px; color:#4b6cb7;">6교시 커리큘럼</div>
+            </div>
+            <div class="wf-block highlight" style="text-align:center; padding:16px 8px;">
+              <div style="font-size:20px; margin-bottom:4px;">🎮</div>
+              <div style="font-size:11px; font-weight:700; color:#8a5200;">키오스크 연습실</div>
+              <div style="font-size:10px; color:#a06000;">8종 시뮬레이터</div>
+            </div>
+          </div>
+          <div class="wf-block" style="font-size:11px; text-align:center; color:var(--text-sub);">
+            진행상황: 2/6 교시 완료 🌟
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup 2: 출석부 탭 -->
+      <div class="mockup">
+        <div class="mockup-bar">
+          <div class="mockup-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <div class="mockup-url">깍두기학교.kr/digital/school</div>
+        </div>
+        <div class="mockup-body">
+          <div class="wf-tabs">
+            <div class="wf-tab active">📋 출석부</div>
+            <div class="wf-tab">📅 시간표</div>
+            <div class="wf-tab">🔬 실습실</div>
+          </div>
+          <!-- Student Card -->
+          <div style="background:linear-gradient(135deg,var(--navy-deep),var(--navy)); border-radius:10px; padding:12px 14px; margin-bottom:8px; color:#fff;">
+            <div style="font-size:10px; opacity:0.7; margin-bottom:2px;">깍두기 디지털학교 학생증</div>
+            <div style="font-size:14px; font-weight:800;">홍길동 수강생</div>
+            <div style="font-size:10px; opacity:0.6;">등록일: 2026.03.13 · 학번: D2026-0042</div>
+          </div>
+          <!-- Stamps -->
+          <div style="font-size:11px; color:var(--text-sub); margin-bottom:6px; font-weight:600;">출석 스탬프 (3/6 달성)</div>
+          <div class="wf-stamp-row">
+            <div class="wf-stamp filled">✓</div>
+            <div class="wf-stamp filled">✓</div>
+            <div class="wf-stamp filled">✓</div>
+            <div class="wf-stamp">4</div>
+            <div class="wf-stamp">5</div>
+            <div class="wf-stamp">6</div>
+          </div>
+          <!-- Graduation -->
+          <div class="wf-block" style="font-size:11px; text-align:center; border-color:#d1fae5; background:#f0fdf4; color:#16743a;">
+            🎓 6교시 모두 완료 시 졸업식 + 수료증 발급
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup 3: 시간표 탭 -->
+      <div class="mockup">
+        <div class="mockup-bar">
+          <div class="mockup-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <div class="mockup-url">깍두기학교.kr/digital/school?tab=schedule</div>
+        </div>
+        <div class="mockup-body">
+          <div class="wf-tabs">
+            <div class="wf-tab">📋 출석부</div>
+            <div class="wf-tab active">📅 시간표</div>
+            <div class="wf-tab">🔬 실습실</div>
+          </div>
+          <div class="period-mini">
+            <div class="period-row">
+              <div class="period-dot intro">🏫</div>
+              <div class="period-text">입학식</div>
+            </div>
+            <div class="period-row" style="border-color:#bfdbfe; background:#eff6ff;">
+              <div class="period-dot">1</div>
+              <div class="period-text">스마트폰 기초 세팅 ✓</div>
+            </div>
+            <div class="period-row" style="border-color:#bfdbfe; background:#eff6ff;">
+              <div class="period-dot">2</div>
+              <div class="period-text">카카오 &amp; 본인인증 ✓</div>
+            </div>
+            <div class="period-row" style="border-color:var(--gold); background:#fef5e0;">
+              <div class="period-dot" style="background:#d97706;">3</div>
+              <div class="period-text" style="color:#92400e;">키오스크 도전 🎮</div>
+            </div>
+            <div class="period-row">
+              <div class="period-dot">4</div>
+              <div class="period-text">정부24 &amp; 서류발급</div>
+            </div>
+            <div class="period-row">
+              <div class="period-dot">5</div>
+              <div class="period-text">번역 &amp; AI 도구</div>
+            </div>
+            <div class="period-row">
+              <div class="period-dot">6</div>
+              <div class="period-text">디지털 안전 &amp; 정리</div>
+            </div>
+            <div class="period-row">
+              <div class="period-dot grad">📝</div>
+              <div class="period-text">졸업과제</div>
+            </div>
+            <div class="period-row">
+              <div class="period-dot grad">🎓</div>
+              <div class="period-text">졸업식</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup 4: 실습실 탭 -->
+      <div class="mockup">
+        <div class="mockup-bar">
+          <div class="mockup-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <div class="mockup-url">깍두기학교.kr/digital/school?tab=lab</div>
+        </div>
+        <div class="mockup-body">
+          <div class="wf-tabs">
+            <div class="wf-tab">📋 출석부</div>
+            <div class="wf-tab">📅 시간표</div>
+            <div class="wf-tab active">🔬 실습실</div>
+          </div>
+          <div style="font-size:11px; color:var(--text-sub); margin-bottom:8px; font-weight:700;">🎮 키오스크 시뮬레이터 (8종)</div>
+          <div class="kiosk-grid-mini">
+            <div class="kiosk-cell">🍔<br/>맥도날드</div>
+            <div class="kiosk-cell">🍔<br/>버거킹</div>
+            <div class="kiosk-cell">☕<br/>스타벅스</div>
+            <div class="kiosk-cell">🍗<br/>롯데리아</div>
+            <div class="kiosk-cell">🏪<br/>GS25</div>
+            <div class="kiosk-cell">🏪<br/>CU</div>
+            <div class="kiosk-cell">🏥<br/>병원</div>
+            <div class="kiosk-cell">🏧<br/>ATM</div>
+          </div>
+          <div style="font-size:11px; color:var(--text-sub); margin:10px 0 6px; font-weight:700;">📱 한국 앱 모음</div>
+          <div style="display:flex; flex-wrap:wrap; gap:4px;">
+            <span class="tag tag-blue" style="font-size:10px;">네이버</span>
+            <span class="tag tag-blue" style="font-size:10px;">카카오</span>
+            <span class="tag tag-blue" style="font-size:10px;">정부24</span>
+            <span class="tag tag-blue" style="font-size:10px;">T머니</span>
+            <span class="tag tag-blue" style="font-size:10px;">KakaoMap</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <!-- ═══ SECTION 6 ═══ -->
+  <section id="section-6" class="section">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <div>
+        <div class="section-title">파일 구조</div>
+        <div class="section-sub">New File Structure — 생성/수정 대상 파일 목록</div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap:16px; margin-bottom:20px;">
+      <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:16px 18px;">
+        <div style="font-size:12px; font-weight:800; color:#16743a; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">🆕 새로 생성할 파일</div>
+        <div style="display:flex; flex-direction:column; gap:4px; font-size:12.5px; font-family:'Courier New',monospace; color:#15803d;">
+          <span>DigitalHubPage.tsx</span>
+          <span>DigitalSchoolPage.tsx</span>
+          <span>DigitalPeriodPage.tsx</span>
+          <span>DigitalAttendanceTab.tsx</span>
+          <span>DigitalScheduleTab.tsx</span>
+          <span>DigitalLabTab.tsx</span>
+          <span>DigitalStudentCard.tsx</span>
+          <span>DigitalStampBoard.tsx</span>
+          <span>DigitalPeriodCard.tsx</span>
+          <span>digital-curriculum.ts</span>
+        </div>
+      </div>
+      <div style="background:#fef5e0; border:1px solid var(--gold); border-radius:12px; padding:16px 18px;">
+        <div style="font-size:12px; font-weight:800; color:#8a5200; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">✏️ 수정할 파일</div>
+        <div style="display:flex; flex-direction:column; gap:4px; font-size:12.5px; font-family:'Courier New',monospace; color:#92400e;">
+          <span>App.tsx (라우트 추가)</span>
+          <span>GatewayPage.tsx (허브 링크)</span>
+          <span>digital-tracks.ts (데이터)</span>
+          <span>KioskPage.tsx (진입점 수정)</span>
+        </div>
+      </div>
+      <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:16px 18px;">
+        <div style="font-size:12px; font-weight:800; color:#1e40af; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">🔒 유지할 파일</div>
+        <div style="display:flex; flex-direction:column; gap:4px; font-size:12.5px; font-family:'Courier New',monospace; color:#1e40af;">
+          <span>KioskSimulator.tsx</span>
+          <span>KioskSelector.tsx</span>
+          <span>SchoolIllustrations.tsx</span>
+          <span>KkakdugiCharacter.tsx</span>
+          <span>db-01 ~ db-04 content</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-tree">
+      <pre>
+<span class="ft-dir">src/</span>
+├── <span class="ft-dir">pages/digital/</span>
+│   ├── <span class="ft-new">DigitalHubPage.tsx        ← NEW: 허브 (교실 + 키오스크 2카드)</span>
+│   ├── <span class="ft-new">DigitalSchoolPage.tsx     ← NEW: 3탭 레이아웃 컨테이너</span>
+│   └── <span class="ft-new">DigitalPeriodPage.tsx     ← NEW: 교시 상세 페이지</span>
+│
+├── <span class="ft-dir">components/digital/</span>
+│   ├── <span class="ft-new">DigitalAttendanceTab.tsx  ← NEW: 출석부 탭 (학생증 + 스탬프)</span>
+│   ├── <span class="ft-new">DigitalScheduleTab.tsx    ← NEW: 시간표 탭 (9섹션)</span>
+│   ├── <span class="ft-new">DigitalLabTab.tsx         ← NEW: 실습실 탭 (키오스크 + 앱)</span>
+│   ├── <span class="ft-new">DigitalStudentCard.tsx    ← NEW: 학생증 UI 컴포넌트</span>
+│   ├── <span class="ft-new">DigitalStampBoard.tsx     ← NEW: 6스탬프 보드</span>
+│   └── <span class="ft-new">DigitalPeriodCard.tsx     ← NEW: 교시 카드 (시간표용)</span>
+│
+├── <span class="ft-dir">data/</span>
+│   ├── <span class="ft-new">digital-curriculum.ts     ← NEW: 6교시 커리큘럼 데이터</span>
+│   └── <span class="ft-mod">digital-tracks.ts         ← MOD: db-01~04 → period 구조 변환</span>
+│
+├── <span class="ft-mod">App.tsx                       ← MOD: /digital/hub, /digital/school 라우트 추가</span>
+├── <span class="ft-mod">GatewayPage.tsx               ← MOD: 디지털 카드 → /digital/hub 링크</span>
+└── <span class="ft-keep">kiosk/ (전체 유지)           ← KEEP: KioskSimulator, KioskSelector 등</span>
+      </pre>
+    </div>
+
+    <div class="info-box" style="margin-top: 20px;">
+      <strong>구현 순서 권장 (Implementation Order)</strong>
+      1단계: <code style="background:rgba(255,255,255,0.6); padding:1px 6px; border-radius:4px;">digital-curriculum.ts</code> 데이터 설계 →
+      2단계: <code style="background:rgba(255,255,255,0.6); padding:1px 6px; border-radius:4px;">DigitalSchoolPage</code> + 3탭 컴포넌트 →
+      3단계: <code style="background:rgba(255,255,255,0.6); padding:1px 6px; border-radius:4px;">DigitalHubPage</code> →
+      4단계: <code style="background:rgba(255,255,255,0.6); padding:1px 6px; border-radius:4px;">App.tsx</code> 라우트 추가 →
+      5단계: 키오스크 3교시 독립 연결
+    </div>
+  </section>
+
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer">
+  <strong>깍두기 학교</strong> · 디지털학과 구조 개편 계획 v1.0 · 2026-03-13<br/>
+  <span style="font-size:11px; margin-top:6px; display:block;">이 문서는 내부 개발 계획용입니다. 마케팅학과 아키텍처를 참조하여 디지털학과를 동일한 수준으로 개편하는 것을 목표로 합니다.</span>
+</footer>
+
+</body>
+</html>

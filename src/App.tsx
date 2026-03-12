@@ -31,6 +31,12 @@ const GraduationProjectPage = lazy(() => import('./pages/marketing/school/Gradua
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const DigitalModulePage = lazy(() => import('./pages/DigitalModulePage'));
 const KioskPracticePage = lazy(() => import('./pages/KioskPracticePage'));
+const DigitalHubPage = lazy(() => import('./pages/digital/DigitalHubPage'));
+const DigitalSchoolLayout = lazy(() => import('./pages/digital/school/DigitalSchoolLayout'));
+const DigitalAttendanceTab = lazy(() => import('./pages/digital/school/DigitalAttendanceTab'));
+const DigitalCurriculumTab = lazy(() => import('./pages/digital/school/DigitalCurriculumTab'));
+const DigitalLabTab = lazy(() => import('./pages/digital/school/DigitalLabTab'));
+const DigitalChecklistTool = lazy(() => import('./pages/digital/school/tools/DigitalChecklistTool'));
 const AIWelcomePage = lazy(() => import('./pages/AIWelcomePage'));
 const RegisterCompletePage = lazy(() => import('./pages/RegisterCompletePage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
@@ -84,9 +90,23 @@ export default function App() {
           {/* 학교 툴 (독립 페이지) */}
           <Route path="/marketing/school/tools/:toolId" element={<SchoolToolRouter />} />
 
+          {/* 디지털 허브 (학교 시스템) */}
+          <Route path="/digital/hub" element={<DigitalHubPage />} />
+
+          {/* 디지털 학교 (Bottom Tab 레이아웃) */}
+          <Route path="/digital/school" element={<DigitalSchoolLayout />}>
+            <Route path="attendance" element={<DigitalAttendanceTab />} />
+            <Route path="curriculum" element={<DigitalCurriculumTab />} />
+            <Route path="lab" element={<DigitalLabTab />} />
+          </Route>
+
+          {/* 디지털 학교 실습 도구 (독립 페이지) */}
+          <Route path="/digital/school/tools/:toolId" element={<DigitalChecklistTool />} />
+
           {/* 트랙 내부 페이지 (사이드바 레이아웃) */}
           <Route element={<MainLayout />}>
             <Route path="/track/:trackId" element={<TrackPage />} />
+            <Route path="/track/digital-basics" element={<Navigate to="/digital/hub" replace />} />
             <Route path="/track/digital-basics/module/:moduleId" element={<DigitalModulePage />} />
             <Route path="/track/digital-basics/kiosk-practice" element={<KioskPracticePage />} />
             <Route path="/track/digital-basics/korea-apps" element={<KoreaAppsPage />} />
