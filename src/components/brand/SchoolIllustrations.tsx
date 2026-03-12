@@ -183,3 +183,118 @@ export function SchoolPatternBg({ className = '' }: { className?: string }) {
     </svg>
   );
 }
+
+// 학교 건물 아이콘
+export function SchoolBuildingIcon({ size = 24, className = '' }: IllustProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <path d="M3 21V10l9-7 9 7v11H3Z" fill="#fef3dc" stroke="#d4a060" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M12 3l9 7" stroke="#e8816b" strokeWidth="2" strokeLinecap="round" />
+      <path d="M3 10l9-7" stroke="#e8816b" strokeWidth="2" strokeLinecap="round" />
+      <rect x="10" y="14" width="4" height="7" rx="0.5" fill="#d4a060" stroke="#b8903e" strokeWidth="1" />
+      <rect x="5" y="12" width="3" height="3" rx="0.5" fill="#bae6fd" stroke="#7cc4fa" strokeWidth="0.8" />
+      <rect x="16" y="12" width="3" height="3" rx="0.5" fill="#bae6fd" stroke="#7cc4fa" strokeWidth="0.8" />
+      <circle cx="12" cy="7" r="1.5" fill="#e8816b" />
+    </svg>
+  );
+}
+
+// 학교 정문 아이콘
+export function SchoolGateIcon({ size = 24, className = '' }: IllustProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <rect x="2" y="4" width="4" height="18" rx="1" fill="#d4a060" stroke="#b8903e" strokeWidth="1" />
+      <rect x="18" y="4" width="4" height="18" rx="1" fill="#d4a060" stroke="#b8903e" strokeWidth="1" />
+      <path d="M6 4h12v3a6 6 0 0 1-12 0V4Z" fill="#fef3dc" stroke="#d4a060" strokeWidth="1.5" />
+      <circle cx="12" cy="6" r="1" fill="#e8816b" />
+      <line x1="6" y1="22" x2="18" y2="22" stroke="#b8903e" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+// 자 아이콘
+export function RulerIcon({ size = 24, className = '' }: IllustProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <rect x="1" y="8" width="22" height="8" rx="1" fill="#d4a060" stroke="#b8903e" strokeWidth="1.5" transform="rotate(-15 12 12)" />
+      {[3, 6, 9, 12, 15, 18, 21].map((x, i) => (
+        <line key={i} x1={x} y1="8" x2={x} y2={i % 2 === 0 ? '12' : '10.5'} stroke="#b8903e" strokeWidth="0.8" transform="rotate(-15 12 12)" />
+      ))}
+    </svg>
+  );
+}
+
+// 지우개 아이콘
+export function EraserIcon({ size = 24, className = '' }: IllustProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <rect x="3" y="10" width="18" height="8" rx="2" fill="#ffb3ba" stroke="#f4a08a" strokeWidth="1.5" />
+      <rect x="3" y="10" width="6" height="8" rx="2" fill="#f4a08a" stroke="#e8816b" strokeWidth="1" />
+      <line x1="9" y1="10" x2="9" y2="18" stroke="#f4a08a" strokeWidth="1" />
+      <path d="M7 13h2M7 15h2" stroke="#e8816b" strokeWidth="0.5" opacity="0.5" />
+    </svg>
+  );
+}
+
+// 분필 아이콘
+export function ChalkIcon({ size = 24, className = '' }: IllustProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <rect x="6" y="4" width="4" height="16" rx="2" fill="#fef3dc" stroke="#d4a060" strokeWidth="1.2" transform="rotate(15 8 12)" />
+      <rect x="6" y="4" width="4" height="4" rx="2" fill="#e8e2d9" stroke="#d4a060" strokeWidth="1" transform="rotate(15 8 12)" />
+      <ellipse cx="8" cy="19" rx="3" ry="0.5" fill="#d4a060" opacity="0.3" />
+    </svg>
+  );
+}
+
+// 압정 아이콘
+export function PushPinIcon({ size = 24, className = '' }: IllustProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <circle cx="12" cy="8" r="5" fill="#e8816b" stroke="#c43025" strokeWidth="1.5" />
+      <circle cx="12" cy="8" r="2" fill="#c43025" opacity="0.4" />
+      <line x1="12" y1="13" x2="12" y2="20" stroke="#999" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="12" cy="7" r="1" fill="white" opacity="0.5" />
+    </svg>
+  );
+}
+
+// 클립 아이콘
+export function PaperClipIcon({ size = 24, className = '' }: IllustProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M16 4a4 4 0 0 0-4 4v10a2.5 2.5 0 0 0 5 0V8a1 1 0 0 0-2 0v10"
+        stroke="#999" strokeWidth="1.8" strokeLinecap="round" fill="none"
+      />
+    </svg>
+  );
+}
+
+// 플로팅 장식 레이어 컴포넌트
+export function FloatingDecorations({ className = '' }: { className?: string }) {
+  return (
+    <div className={`absolute inset-0 pointer-events-none overflow-hidden ${className}`} aria-hidden="true">
+      {/* 떠다니는 연필 */}
+      <div className="absolute top-[10%] left-[5%] opacity-15" style={{ animation: 'float 4s ease-in-out infinite' }}>
+        <PencilIcon size={28} />
+      </div>
+      {/* 떠다니는 별 */}
+      <div className="absolute top-[20%] right-[8%] opacity-10" style={{ animation: 'float 5s ease-in-out infinite 1s' }}>
+        <StarIcon size={24} />
+      </div>
+      {/* 떠다니는 지우개 */}
+      <div className="absolute bottom-[25%] left-[8%] opacity-10" style={{ animation: 'float 4.5s ease-in-out infinite 0.5s' }}>
+        <EraserIcon size={22} />
+      </div>
+      {/* 떠다니는 분필 */}
+      <div className="absolute bottom-[15%] right-[12%] opacity-10" style={{ animation: 'float 5.5s ease-in-out infinite 2s' }}>
+        <ChalkIcon size={20} />
+      </div>
+      {/* 떠다니는 별 (작은) */}
+      <div className="absolute top-[45%] right-[3%] opacity-8" style={{ animation: 'float 6s ease-in-out infinite 1.5s' }}>
+        <StarIcon size={16} />
+      </div>
+    </div>
+  );
+}

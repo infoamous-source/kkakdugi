@@ -27,3 +27,6 @@ npm-debug.log*
 dev-dist/
 .vercel
 .env*.local
+
+# Design preview
+design-preview.html
