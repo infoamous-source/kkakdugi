@@ -102,8 +102,16 @@ const bankConfig: KioskConfig = {
     headerBg: 'bg-gradient-to-r from-blue-700 to-blue-800',
     buttonStyle: 'square',
   },
-  screens: [],
-  comingSoon: true,
+  screens: [
+    { id: 'welcome',            labelKey: 'kiosk.screens.welcome.title',               helperKey: 'kiosk.helper.bank.welcome' },
+    { id: 'serviceSelect',      labelKey: 'kiosk.bank.screens.serviceSelect.title',     helperKey: 'kiosk.helper.bank.serviceSelect' },
+    { id: 'accountVerify',      labelKey: 'kiosk.bank.screens.accountVerify.title',      helperKey: 'kiosk.helper.bank.accountVerify' },
+    { id: 'transaction',        labelKey: 'kiosk.bank.screens.transaction.title',        helperKey: 'kiosk.helper.bank.transaction' },
+    { id: 'confirmTransaction', labelKey: 'kiosk.bank.screens.confirmTransaction.title', helperKey: 'kiosk.helper.bank.confirmTransaction' },
+    { id: 'processing',         labelKey: 'kiosk.bank.screens.processing.title',         helperKey: 'kiosk.helper.bank.processing' },
+    { id: 'receipt',            labelKey: 'kiosk.bank.screens.receipt.title',             helperKey: 'kiosk.helper.bank.receipt' },
+    { id: 'complete',           labelKey: 'kiosk.bank.screens.complete.title',            helperKey: 'kiosk.helper.bank.complete' },
+  ],
 };
 
 const governmentConfig: KioskConfig = {
@@ -121,8 +129,16 @@ const governmentConfig: KioskConfig = {
     headerBg: 'bg-gradient-to-r from-slate-700 to-slate-800',
     buttonStyle: 'square',
   },
-  screens: [],
-  comingSoon: true,
+  screens: [
+    { id: 'welcome',         labelKey: 'kiosk.screens.welcome.title',                    helperKey: 'kiosk.helper.government.welcome' },
+    { id: 'identity',        labelKey: 'kiosk.government.screens.identity.title',         helperKey: 'kiosk.helper.government.identity' },
+    { id: 'documentSelect',  labelKey: 'kiosk.government.screens.documentSelect.title',   helperKey: 'kiosk.helper.government.documentSelect' },
+    { id: 'documentOptions', labelKey: 'kiosk.government.screens.documentOptions.title',  helperKey: 'kiosk.helper.government.documentOptions' },
+    { id: 'confirmDocument', labelKey: 'kiosk.government.screens.confirmDocument.title',  helperKey: 'kiosk.helper.government.confirmDocument' },
+    { id: 'payment',         labelKey: 'kiosk.government.screens.payment.title',          helperKey: 'kiosk.helper.government.payment' },
+    { id: 'processing',      labelKey: 'kiosk.government.screens.processing.title',       helperKey: 'kiosk.helper.government.processing' },
+    { id: 'complete',        labelKey: 'kiosk.government.screens.complete.title',         helperKey: 'kiosk.helper.government.complete' },
+  ],
 };
 
 const cinemaConfig: KioskConfig = {
@@ -198,11 +214,11 @@ export const kioskRegistry: Record<KioskType, KioskRegistryEntry> = {
   },
   bank: {
     config: bankConfig,
-    component: lazy(() => import('./kiosks/cafe/CafeKiosk')), // placeholder
+    component: lazy(() => import('./kiosks/bank/BankKiosk')),
   },
   government: {
     config: governmentConfig,
-    component: lazy(() => import('./kiosks/cafe/CafeKiosk')), // placeholder
+    component: lazy(() => import('./kiosks/government/GovernmentKiosk')),
   },
   cinema: {
     config: cinemaConfig,
