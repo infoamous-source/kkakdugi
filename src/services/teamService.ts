@@ -363,17 +363,13 @@ export async function isStudentAssignedToTrack(
   track: string,
 ): Promise<boolean> {
   const { data, error } = await supabase
-    .from('classroom_members')
-    .select('id, classroom_groups!inner(track)')
-    .eq('user_id', userId)
-    .eq('classroom_groups.track', track)
-    .limit(1);
+    .rpc('check_student_track_assignment', { p_user_id: userId, p_track: track });
 
   if (error) {
     console.error('Check student assignment error:', error.message);
     return false;
   }
-  return (data?.length ?? 0) > 0;
+  return data === true;
 }
 
 /** 학생의 전체 배정 정보 조회 (학과별 교실) */
