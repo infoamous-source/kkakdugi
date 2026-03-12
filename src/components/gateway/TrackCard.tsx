@@ -17,8 +17,8 @@ const deptIconMap: Record<string, React.FC<{ size?: number; className?: string }
 // 학과별 허브 경로
 const trackHubPath: Record<string, string> = {
   marketing: '/marketing/hub',
-  'digital-basics': '/digital/hub',
-  career: '/career/hub',
+  'digital-basics': '/track/digital-basics',
+  career: '/track/career',
 };
 
 interface TrackCardProps {
