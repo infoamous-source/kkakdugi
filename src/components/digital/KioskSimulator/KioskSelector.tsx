@@ -1,8 +1,30 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Star, Check, Lock } from 'lucide-react';
+import { Check, Lock } from 'lucide-react';
 import { kioskConfigs } from './registry';
 import type { KioskType, KioskConfig, KioskCategory } from './core/types';
+
+const koNameFallback: Record<string, string> = {
+  cafe: '카페',
+  fastfood: '패스트푸드',
+  hospital: '병원 접수',
+  bank: '은행',
+  government: '공공기관 서류',
+  cinema: '영화관',
+  convenience: '편의점',
+  airport: '공항 체크인',
+};
+
+const koDescFallback: Record<string, string> = {
+  cafe: '카페에서 음료 주문하기',
+  fastfood: '햄버거 세트 주문하기',
+  hospital: '병원 접수 및 수납하기',
+  bank: '은행 ATM 및 번호표 발급',
+  government: '주민등록등본 등 서류 발급',
+  cinema: '영화 예매 및 좌석 선택',
+  convenience: '편의점 무인 계산대 이용',
+  airport: '비행기 셀프 체크인하기',
+};
 
 interface KioskSelectorProps {
   onSelectKiosk: (type: KioskType) => void;
@@ -18,20 +40,6 @@ const categoryFilters: { id: FilterCategory; labelKey: string; fallback: string 
   { id: 'entertainment', labelKey: 'kiosk.selector.filter.entertainment', fallback: '엔터테인먼트' },
   { id: 'transport', labelKey: 'kiosk.selector.filter.transport', fallback: '교통' },
 ];
-
-function DifficultyStars({ difficulty }: { difficulty: number }) {
-  return (
-    <div className="flex items-center gap-0.5">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          size={12}
-          className={i < difficulty ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'}
-        />
-      ))}
-    </div>
-  );
-}
 
 function KioskCard({
   config,
@@ -99,16 +107,15 @@ function KioskCard({
       {/* 이름 & 설명 */}
       <div className="flex-1 min-w-0">
         <p className="font-bold text-gray-900 text-sm leading-snug mb-1">
-          {t(config.nameKey, config.id)}
+          {t(config.nameKey, koNameFallback[config.id] || config.id)}
         </p>
         <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
-          {t(config.descriptionKey, '')}
+          {t(config.descriptionKey, koDescFallback[config.id] || '')}
         </p>
       </div>
 
-      {/* 하단: 난이도 + 카테고리 */}
-      <div className="flex items-center justify-between w-full">
-        <DifficultyStars difficulty={config.difficulty} />
+      {/* 하단: 카테고리 */}
+      <div className="flex items-center w-full">
         <span
           className={`text-xs font-medium px-2 py-0.5 rounded-full ${categoryColorClass[config.category] ?? 'bg-gray-100 text-gray-600'}`}
         >
