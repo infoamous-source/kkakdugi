@@ -33,6 +33,38 @@ export default function DigitalLabTab() {
         </p>
       </div>
 
+      {/* 한국 생활 필수 앱 섹션 (최상위) */}
+      <button
+        onClick={() => navigate('/track/digital-basics/korea-apps')}
+        className="w-full bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border-2 border-emerald-200 p-5 hover:shadow-lg hover:border-emerald-300 transition-all text-left group"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-white border border-emerald-200 flex items-center justify-center shadow-sm shrink-0">
+            <span className="text-3xl">📱</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">필수</span>
+            </div>
+            <h3 className="font-bold text-gray-800 flex items-center gap-2">
+              {t('digitalSchool.lab.appsSection', '한국 생활 필수 앱')}
+            </h3>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {t('digitalSchool.lab.appsDesc', '한국 생활에 필요한 앱을 설치하고 사용법을 배워요')}
+            </p>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-lg">📗</span>
+              <span className="text-lg">🗺️</span>
+              <span className="text-lg">💬</span>
+              <span className="text-lg">🏛️</span>
+              <span className="text-lg">🌐</span>
+              <span className="text-xs text-emerald-600 font-medium ml-1">+3</span>
+            </div>
+          </div>
+          <ChevronRight className="w-6 h-6 text-emerald-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all shrink-0" />
+        </div>
+      </button>
+
       {/* 키오스크 시뮬레이터 섹션 */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5">
         <h3 className="font-semibold text-gray-800 mb-1 flex items-center gap-2">
@@ -71,25 +103,6 @@ export default function DigitalLabTab() {
           })}
         </div>
       </div>
-
-      {/* 한국 생활 앱 섹션 */}
-      <button
-        onClick={() => navigate('/track/digital-basics/korea-apps')}
-        className="w-full bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md hover:border-emerald-300 transition-all text-left group"
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold text-gray-800 mb-1 flex items-center gap-2">
-              <Globe className="w-5 h-5 text-emerald-500" />
-              {t('digitalSchool.lab.appsSection', '한국 생활 필수 앱')}
-            </h3>
-            <p className="text-xs text-gray-500">
-              {t('digitalSchool.lab.appsDesc', '한국 생활에 필요한 앱을 설치하고 사용법을 배워요')}
-            </p>
-          </div>
-          <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-emerald-500 transition-colors" />
-        </div>
-      </button>
     </div>
   );
 }
