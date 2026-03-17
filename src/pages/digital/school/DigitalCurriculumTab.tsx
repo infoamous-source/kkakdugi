@@ -1,65 +1,44 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useDigitalSchoolProgress } from '../../../hooks/useDigitalSchoolProgress';
-import { getMyTeam } from '../../../services/teamService';
-import type { TeamGroup } from '../../../types/team';
-import { DIGITAL_CURRICULUM_SECTIONS } from '../../../types/digitalSchool';
-import type { DigitalPeriodId, DigitalCurriculumSection, DigitalSectionType } from '../../../types/digitalSchool';
+import { DIGITAL_CURRICULUM_SECTIONS, DIGITAL_TOTAL_PERIODS } from '../../../types/digitalSchool';
+import type { DigitalPeriodId, DigitalCurriculumSection } from '../../../types/digitalSchool';
 import {
-  Sparkles, Trophy, Loader2,
+  Sparkles, Trophy, Loader2, ChevronDown,
   Smartphone, ShieldCheck, Monitor, FileText, Languages, ShieldAlert,
-  PartyPopper, Award, BookOpen, GraduationCap,
+  PartyPopper, Award, BookOpen, GraduationCap, ClipboardList,
 } from 'lucide-react';
 import GraduationModal from '../../../components/school/GraduationModal';
+import { getMyTeam } from '../../../services/teamService';
+import type { TeamGroup } from '../../../types/team';
 
 // ─── 아이콘 맵 ───
 
 const iconMap: Record<string, typeof Smartphone> = {
   Smartphone, ShieldCheck, Monitor, FileText, Languages, ShieldAlert,
-  PartyPopper, Award, BookOpen, GraduationCap,
+  PartyPopper, Award, BookOpen, GraduationCap, ClipboardList,
 };
 
-// ─── 섹션 유형별 스타일 ───
+// ─── 교시별 색상 ───
 
-const sectionStyles: Record<DigitalSectionType, {
-  headerBg: string; badge: string; badgeText: string; border: string;
-}> = {
-  'pre-school': {
-    headerBg: 'bg-gradient-to-r from-pink-50 to-rose-50',
-    badge: 'bg-pink-100', badgeText: 'text-pink-700', border: 'border-pink-200',
-  },
-  period: {
-    headerBg: 'bg-white',
-    badge: 'bg-gray-100', badgeText: 'text-gray-600', border: 'border-gray-200',
-  },
-  'final-project': {
-    headerBg: 'bg-gradient-to-r from-violet-50 to-purple-50',
-    badge: 'bg-violet-100', badgeText: 'text-violet-700', border: 'border-violet-200',
-  },
-  'after-school': {
-    headerBg: 'bg-gradient-to-r from-amber-50 to-yellow-50',
-    badge: 'bg-amber-100', badgeText: 'text-amber-700', border: 'border-amber-200',
-  },
+const colorMap: Record<string, { bg: string; text: string; iconBg: string; border: string; borderActive: string; ring: string; badgeBg: string }> = {
+  blue:    { bg: 'bg-blue-50',    text: 'text-blue-600',    iconBg: 'bg-blue-50',    border: 'border-blue-200',    borderActive: 'border-blue-300',    ring: 'ring-blue-100',    badgeBg: 'bg-blue-500' },
+  amber:   { bg: 'bg-amber-50',   text: 'text-amber-600',   iconBg: 'bg-amber-50',   border: 'border-amber-200',   borderActive: 'border-amber-300',   ring: 'ring-amber-100',   badgeBg: 'bg-amber-500' },
+  purple:  { bg: 'bg-purple-50',  text: 'text-purple-600',  iconBg: 'bg-purple-50',  border: 'border-purple-200',  borderActive: 'border-purple-300',  ring: 'ring-purple-100',  badgeBg: 'bg-purple-500' },
+  emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', iconBg: 'bg-emerald-50', border: 'border-emerald-200', borderActive: 'border-emerald-300', ring: 'ring-emerald-100', badgeBg: 'bg-emerald-500' },
+  rose:    { bg: 'bg-rose-50',    text: 'text-rose-600',    iconBg: 'bg-rose-50',    border: 'border-rose-200',    borderActive: 'border-rose-300',    ring: 'ring-rose-100',    badgeBg: 'bg-rose-500' },
+  orange:  { bg: 'bg-orange-50',  text: 'text-orange-600',  iconBg: 'bg-orange-50',  border: 'border-orange-200',  borderActive: 'border-orange-300',  ring: 'ring-orange-100',  badgeBg: 'bg-orange-500' },
+  pink:    { bg: 'bg-pink-50',    text: 'text-pink-600',    iconBg: 'bg-pink-50',    border: 'border-pink-200',    borderActive: 'border-pink-300',    ring: 'ring-pink-100',    badgeBg: 'bg-pink-500' },
+  indigo:  { bg: 'bg-indigo-50',  text: 'text-indigo-600',  iconBg: 'bg-indigo-50',  border: 'border-indigo-200',  borderActive: 'border-indigo-300',  ring: 'ring-indigo-100',  badgeBg: 'bg-indigo-500' },
+  yellow:  { bg: 'bg-amber-50',   text: 'text-amber-600',   iconBg: 'bg-amber-50',   border: 'border-amber-200',   borderActive: 'border-amber-300',   ring: 'ring-amber-100',   badgeBg: 'bg-amber-500' },
+  violet:  { bg: 'bg-violet-50',  text: 'text-violet-600',  iconBg: 'bg-violet-50',  border: 'border-violet-200',  borderActive: 'border-violet-300',  ring: 'ring-violet-100',  badgeBg: 'bg-violet-500' },
 };
 
-// ─── 교시별 색상 맵 ───
+// ─── 배지 라벨 ───
 
-const periodColorMap: Record<string, { bg: string; text: string; iconBg: string }> = {
-  blue:    { bg: 'bg-blue-50',    text: 'text-blue-600',    iconBg: 'bg-blue-100' },
-  amber:   { bg: 'bg-amber-50',   text: 'text-amber-600',   iconBg: 'bg-amber-100' },
-  purple:  { bg: 'bg-purple-50',  text: 'text-purple-600',  iconBg: 'bg-purple-100' },
-  emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', iconBg: 'bg-emerald-100' },
-  rose:    { bg: 'bg-rose-50',    text: 'text-rose-600',    iconBg: 'bg-rose-100' },
-  orange:  { bg: 'bg-orange-50',  text: 'text-orange-600',  iconBg: 'bg-orange-100' },
-  pink:    { bg: 'bg-pink-50',    text: 'text-pink-600',    iconBg: 'bg-pink-100' },
-  violet:  { bg: 'bg-violet-50',  text: 'text-violet-600',  iconBg: 'bg-violet-100' },
-};
-
-// ─── 섹션 배지 라벨 ───
-
-function getSectionBadge(section: DigitalCurriculumSection, periodLabel: string): string {
+function getBadge(section: DigitalCurriculumSection, periodLabel: string): string {
   if (section.type === 'period') return `${section.period}${periodLabel}`;
   if (section.id === 'entrance') return 'Pre-School';
   if (section.id === 'final-project') return 'Final Step';
@@ -67,16 +46,9 @@ function getSectionBadge(section: DigitalCurriculumSection, periodLabel: string)
   return '';
 }
 
-// ─── 섹션 클릭 핸들러 유틸 ───
-
-function getSectionRoute(section: DigitalCurriculumSection): string | null {
-  if (section.id === 'entrance') return '/profile';
-  if (section.type === 'period') {
-    const practiceStep = section.steps.find(s => s.isPractice && s.toolRoute);
-    return practiceStep?.toolRoute ?? null;
-  }
-  return null;
-}
+// ─── 1일차/2일차 분류 ───
+// entrance + period 1~3 = 1일차, period 4~6 + finalProject + graduation = 2일차
+const DAY1_IDS = new Set(['entrance', 'period-1', 'period-2', 'period-3']);
 
 // ─── 메인 컴포넌트 ───
 
@@ -87,6 +59,8 @@ export default function DigitalCurriculumTab() {
   const [showGraduationModal, setShowGraduationModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [myTeam, setMyTeam] = useState<TeamGroup | null>(null);
+  const [activeDay, setActiveDay] = useState<1 | 2>(1);
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!user) return;
@@ -95,7 +69,31 @@ export default function DigitalCurriculumTab() {
     });
   }, [user]);
 
-  const { hasAllStamps: allDone, isGraduated: graduated, canGraduate: canGrad, hasStamp, isLoading: schoolLoading } = useDigitalSchoolProgress();
+  const {
+    hasAllStamps: allDone, isGraduated: graduated, canGraduate: canGrad,
+    hasStamp, completedStampCount, isLoading: schoolLoading,
+  } = useDigitalSchoolProgress();
+
+  // 현재 진행 중인 교시 찾기 → 자동 펼침
+  const currentPeriodId = useMemo(() => {
+    for (const section of DIGITAL_CURRICULUM_SECTIONS) {
+      if (section.type !== 'period') continue;
+      const practiceStep = section.steps.find(s => s.isPractice);
+      if (practiceStep?.periodId && !hasStamp(practiceStep.periodId as DigitalPeriodId)) {
+        return section.id;
+      }
+    }
+    return null;
+  }, [hasStamp]);
+
+  // 현재 진행 중인 교시가 속한 일차로 자동 전환
+  useMemo(() => {
+    if (currentPeriodId) {
+      const isDay1 = DAY1_IDS.has(currentPeriodId);
+      setActiveDay(isDay1 ? 1 : 2);
+      setOpenSections(new Set([currentPeriodId]));
+    }
+  }, [currentPeriodId]);
 
   if (!user || schoolLoading) return (
     <div className="flex justify-center py-12">
@@ -103,141 +101,238 @@ export default function DigitalCurriculumTab() {
     </div>
   );
 
+  const toggleSection = (id: string) => {
+    setOpenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const daySections = DIGITAL_CURRICULUM_SECTIONS.filter(s =>
+    activeDay === 1 ? DAY1_IDS.has(s.id) : !DAY1_IDS.has(s.id)
+  );
+
   const handleSectionClick = (section: DigitalCurriculumSection) => {
     if (section.id === 'graduation-ceremony') {
-      if (canGrad && !graduated) {
-        setShowGraduationModal(true);
-      }
+      if (canGrad && !graduated) setShowGraduationModal(true);
       return;
     }
-    if ((section.type === 'final-project' || section.type === 'after-school') && !allDone) {
-      return;
+    if ((section.type === 'final-project' || section.type === 'after-school') && !allDone) return;
+    if (section.id === 'entrance') { navigate('/profile'); return; }
+    if (section.type === 'period') {
+      const practiceStep = section.steps.find(s => s.isPractice && s.toolRoute);
+      if (practiceStep?.toolRoute) navigate(practiceStep.toolRoute);
     }
-    const route = getSectionRoute(section);
-    if (route) navigate(route);
   };
 
   return (
-    <div className="space-y-3" key={refreshKey}>
-      {/* 헤더 */}
+    <div className="space-y-4" key={refreshKey}>
+      {/* ── 진행률 요약 ── */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5">
-        <h2 className="text-lg font-bold text-gray-800 mb-1 flex items-center gap-2">
-          📋 {t('digitalSchool.curriculum.title', '시간표')}
-        </h2>
-        <p className="text-sm text-gray-500">{t('digitalSchool.curriculum.subtitle', '디지털 기초 교실 2일 과정')}</p>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+            📋 {t('digitalSchool.curriculum.title', '시간표')}
+          </h2>
+          <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+            {completedStampCount}/{DIGITAL_TOTAL_PERIODS} {t('digitalSchool.curriculum.completed', '완료')}
+          </span>
+        </div>
+        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-3">
+          <div
+            className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-600"
+            style={{ width: `${(completedStampCount / DIGITAL_TOTAL_PERIODS) * 100}%` }}
+          />
+        </div>
+        <p className="text-xs text-gray-400">{t('digitalSchool.curriculum.subtitle', '디지털 기초 교실 2일 과정')}</p>
       </div>
 
-      {/* 9개 섹션 */}
-      {DIGITAL_CURRICULUM_SECTIONS.map((section) => {
-        const styles = section.type === 'period'
-          ? { ...sectionStyles.period, ...(periodColorMap[section.color] || {}) }
-          : sectionStyles[section.type];
-        const colors = periodColorMap[section.color] || periodColorMap.blue;
-        const Icon = iconMap[section.icon] || BookOpen;
+      {/* ── 1일차/2일차 탭 ── */}
+      <div className="flex bg-white rounded-2xl border border-gray-200 p-1 relative">
+        <div
+          className="absolute top-1 bottom-1 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 shadow-sm transition-all duration-300"
+          style={{ left: activeDay === 1 ? '4px' : 'calc(50%)', width: 'calc(50% - 4px)' }}
+        />
+        <button
+          onClick={() => setActiveDay(1)}
+          className={`relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors ${activeDay === 1 ? 'text-orange-700' : 'text-gray-400'}`}
+        >
+          📅 1일차
+          <span className={`ml-1 text-[10px] font-normal ${activeDay === 1 ? 'text-orange-500' : 'text-gray-400'}`}>
+            입학식 + 3교시
+          </span>
+        </button>
+        <button
+          onClick={() => setActiveDay(2)}
+          className={`relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors ${activeDay === 2 ? 'text-orange-700' : 'text-gray-400'}`}
+        >
+          📅 2일차
+          <span className={`ml-1 text-[10px] font-normal ${activeDay === 2 ? 'text-orange-500' : 'text-gray-400'}`}>
+            3교시 + 졸업
+          </span>
+        </button>
+      </div>
 
-        const practiceStep = section.steps.find(s => s.isPractice);
-        const stamped = practiceStep?.periodId
-          ? hasStamp(practiceStep.periodId as DigitalPeriodId)
-          : false;
+      {/* ── 섹션 목록 ── */}
+      <div className="space-y-3">
+        {daySections.map((section) => {
+          const colors = colorMap[section.color] || colorMap.blue;
+          const Icon = iconMap[section.icon] || BookOpen;
+          const practiceStep = section.steps.find(s => s.isPractice);
+          const stamped = practiceStep?.periodId ? hasStamp(practiceStep.periodId as DigitalPeriodId) : false;
+          const isLocked = (section.type === 'final-project' || section.type === 'after-school') && !allDone;
+          const isCurrent = section.id === currentPeriodId;
+          const isOpen = openSections.has(section.id);
+          const isSpecial = section.type === 'pre-school' || section.type === 'final-project' || section.type === 'after-school';
 
-        const isLocked = (section.type === 'final-project' || section.type === 'after-school') && !allDone;
-        const isClickable = !isLocked && (getSectionRoute(section) !== null || section.id === 'graduation-ceremony');
-
-        return (
-          <div
-            key={section.id}
-            onClick={() => handleSectionClick(section)}
-            className={`rounded-2xl border overflow-hidden transition-all duration-200 ${
-              stamped ? 'border-green-200' : styles.border
-            } ${isLocked ? 'opacity-60' : ''} ${isClickable ? 'cursor-pointer hover:shadow-md active:scale-[0.99]' : ''}`}
-          >
-            {/* 섹션 헤더 */}
-            <div
-              className={`w-full p-4 flex items-center gap-3 transition-colors ${
-                section.type !== 'period' ? sectionStyles[section.type].headerBg : ''
-              }`}
-            >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${colors.iconBg || 'bg-gray-100'}`}>
-                <Icon className={`w-5 h-5 ${colors.text || 'text-gray-500'}`} />
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                    stamped ? 'bg-green-100 text-green-700' : `${styles.badge} ${styles.badgeText}`
-                  }`}>
-                    {getSectionBadge(section, t('digitalSchool.curriculum.period', '교시'))}
-                  </span>
-                  {stamped && <span className="text-green-500 text-sm">✓</span>}
-                  {isLocked && <span className="text-xs text-gray-400">🔒</span>}
+          // 잠금 상태 → 아코디언 없이 표시
+          if (isLocked) {
+            return (
+              <div key={section.id} className={`rounded-2xl border overflow-hidden opacity-60 ${
+                isSpecial ? `bg-gradient-to-br ${section.type === 'final-project' ? 'from-violet-50 to-purple-50 border-violet-200' : 'from-amber-50 to-yellow-50 border-amber-200'}` : ''
+              }`}>
+                <div className={`p-4 flex items-center gap-3 ${isSpecial ? '' : 'bg-white'}`}>
+                  <div className="w-11 h-11 rounded-xl bg-white/80 border border-gray-200 flex items-center justify-center shadow-sm">
+                    <Icon className={`w-5 h-5 ${colors.text}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        section.type === 'final-project' ? 'text-violet-600 bg-violet-100' : 'text-amber-600 bg-amber-100'
+                      }`}>
+                        {getBadge(section, t('digitalSchool.curriculum.period', '교시'))}
+                      </span>
+                      <span className="text-xs text-gray-400">🔒</span>
+                    </div>
+                    <h3 className="text-sm font-bold text-gray-800 mt-0.5">{t(section.titleKey)}</h3>
+                    <p className="text-[11px] text-gray-500">모든 교시를 완료하면 열려요</p>
+                  </div>
                 </div>
-                <h3 className="text-sm font-bold text-gray-800 mt-1 truncate">
-                  {t(section.titleKey)}
-                </h3>
               </div>
+            );
+          }
 
-              {isClickable && (
-                <span className="text-gray-300 text-lg shrink-0">›</span>
-              )}
-            </div>
+          return (
+            <div
+              key={section.id}
+              className={`rounded-2xl border overflow-hidden transition-all duration-200 ${
+                isCurrent ? `border-2 ${colors.borderActive} shadow-md ring-2 ${colors.ring}` :
+                stamped ? 'border-green-200' : colors.border
+              } ${isSpecial ? `bg-gradient-to-br ${
+                section.type === 'pre-school' ? 'from-pink-50 to-rose-50' :
+                section.type === 'final-project' ? 'from-violet-50 to-purple-50' :
+                'from-amber-50 to-yellow-50'
+              }` : 'bg-white'}`}
+            >
+              {/* 헤더 (클릭 → 아코디언 토글) */}
+              <button
+                onClick={() => toggleSection(section.id)}
+                className="w-full p-4 flex items-center gap-3 text-left"
+              >
+                <div className="relative w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{
+                  background: isSpecial ? 'rgba(255,255,255,0.8)' : undefined,
+                  ...(isSpecial ? { border: '1px solid rgba(0,0,0,0.06)' } : {}),
+                }}>
+                  <div className={`w-full h-full rounded-xl flex items-center justify-center ${isSpecial ? '' : colors.iconBg}`}>
+                    <Icon className={`w-5 h-5 ${colors.text}`} />
+                  </div>
+                  {stamped && <span className="absolute -top-1 -right-1 text-sm">✅</span>}
+                  {isCurrent && (
+                    <span className={`absolute -top-1 -right-1 w-4 h-4 ${colors.badgeBg} rounded-full flex items-center justify-center`}>
+                      <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                    </span>
+                  )}
+                </div>
 
-            {/* 섹션 내용 */}
-            <div className="border-t border-gray-100 px-4 pb-4">
-              <div className="mt-3 space-y-2">
-                {section.steps.map((step) => {
-                  const stepKey = `${section.id}-${step.stepNumber}`;
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      stamped ? 'bg-green-100 text-green-700' :
+                      section.type === 'period' ? `text-white ${colors.badgeBg}` :
+                      section.type === 'pre-school' ? 'text-pink-600 bg-pink-100' :
+                      section.type === 'final-project' ? 'text-violet-600 bg-violet-100' :
+                      'text-amber-600 bg-amber-100'
+                    }`}>
+                      {getBadge(section, t('digitalSchool.curriculum.period', '교시'))}
+                    </span>
+                    {stamped && <span className="text-green-500 text-xs font-bold">{t('digitalSchool.curriculum.completed', '완료')}</span>}
+                    {isCurrent && <span className={`${colors.text} text-xs font-bold animate-pulse`}>진행 중</span>}
+                  </div>
+                  <h3 className="text-sm font-bold text-gray-800 mt-0.5 truncate">{t(section.titleKey)}</h3>
+                  {isSpecial && !isOpen && (
+                    <p className="text-[11px] text-gray-500 truncate">{t(section.subtitleKey)}</p>
+                  )}
+                </div>
 
-                  return (
-                    <div key={stepKey} className="bg-gray-50 rounded-xl overflow-hidden">
-                      <div className="w-full flex items-center gap-3 px-3 py-2.5">
-                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                          step.isPractice ? 'bg-blue-100 text-blue-600' : 'bg-gray-200 text-gray-500'
-                        }`}>
-                          {step.stepNumber}
-                        </span>
-                        <span className="text-sm text-gray-700 flex-1 text-left truncate">
-                          {t(step.titleKey)}
-                        </span>
-                        {step.isPractice ? (
-                          <span className="text-[10px] text-blue-600 px-1.5 py-0.5 bg-blue-50 rounded-full font-bold shrink-0">
-                            실습
+                <ChevronDown className={`w-5 h-5 shrink-0 transition-transform duration-300 ${
+                  isOpen ? 'rotate-180' : ''
+                } ${isCurrent ? colors.text.replace('text-', 'text-') : 'text-gray-300'}`} />
+              </button>
+
+              {/* 아코디언 본문 */}
+              <div
+                className="overflow-hidden transition-all duration-300"
+                style={{ maxHeight: isOpen ? '600px' : '0', opacity: isOpen ? 1 : 0 }}
+              >
+                <div className={`px-4 pb-4 space-y-2 ${!isSpecial ? 'border-t ' + colors.border + ' pt-3' : ''}`}>
+                  {section.steps.map((step) => {
+                    const isPractice = step.isPractice;
+                    return (
+                      <div key={`${section.id}-${step.stepNumber}`} className={`rounded-xl px-3 py-2.5 ${
+                        isPractice ? colors.bg : isSpecial ? 'bg-white/70' : 'bg-gray-50'
+                      }`}>
+                        <div className="flex items-center gap-3">
+                          <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                            isPractice ? `${colors.iconBg} ${colors.text}`.replace('bg-', 'bg-').replace('/50', '/100') : isSpecial ? 'bg-pink-100 text-pink-600' : 'bg-gray-200 text-gray-500'
+                          }`}>
+                            {step.stepNumber}
                           </span>
-                        ) : (
-                          <span className="text-[10px] text-gray-400 px-1.5 py-0.5 bg-gray-100 rounded-full shrink-0">
-                            이론
-                          </span>
-                        )}
-                      </div>
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium ${isPractice ? colors.text.replace('600', '700') : 'text-gray-700'}`}>
+                              {t(step.titleKey)}
+                            </p>
+                            <p className={`text-[11px] ${isPractice ? colors.text + '/70' : 'text-gray-400'}`}>
+                              {t(step.descriptionKey)}
+                            </p>
+                          </div>
+                          {!isPractice && !isSpecial && (
+                            <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full shrink-0">이론</span>
+                          )}
+                          {isPractice && step.toolRoute && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); navigate(step.toolRoute!); }}
+                              className={`text-[10px] font-bold text-white ${colors.badgeBg} px-2.5 py-1 rounded-lg whitespace-nowrap`}
+                            >
+                              실습 →
+                            </button>
+                          )}
+                        </div>
 
-                      <div className="px-3 pb-3">
-                        <p className="text-xs text-gray-500 mb-2 pl-9">
-                          {t(step.descriptionKey)}
-                        </p>
-
-                        {/* 실습 step → 도구 버튼 */}
-                        {step.isPractice && step.toolRoute && (
+                        {/* 실습 step: 큰 버튼 (현재 진행 중인 교시만) */}
+                        {isPractice && step.toolRoute && isCurrent && (
                           <button
                             onClick={(e) => { e.stopPropagation(); navigate(step.toolRoute!); }}
-                            className="ml-9 flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"
+                            className={`mt-2 ml-9 flex items-center gap-2 px-3 py-2 ${colors.badgeBg} text-white rounded-lg text-xs font-bold hover:opacity-90 transition-opacity`}
                           >
                             <Sparkles className="w-3.5 h-3.5" />
                             실습 도구 열기 →
                           </button>
                         )}
 
-                        {/* 입학식 step3 → 학생증 보기 */}
+                        {/* 입학식 step3 → 학생증 */}
                         {section.id === 'entrance' && step.stepNumber === 3 && (
                           <button
                             onClick={(e) => { e.stopPropagation(); navigate('/profile'); }}
-                            className="ml-9 flex items-center gap-2 px-3 py-2 bg-kk-cream text-kk-brown rounded-lg text-xs font-bold hover:bg-kk-warm transition-colors"
+                            className="mt-2 ml-9 text-[10px] font-bold text-pink-600 bg-pink-100 px-2.5 py-1 rounded-lg"
                           >
                             {user?.role === 'instructor' ? '교원증 보기' : '학생증 보기'} →
                           </button>
                         )}
 
-                        {/* 졸업식 step1 → 수료장 수여 */}
+                        {/* 졸업식 step1 */}
                         {section.id === 'graduation-ceremony' && step.stepNumber === 1 && (
-                          <div className="ml-9 mt-1">
+                          <div className="ml-9 mt-2">
                             {graduated ? (
                               <p className="text-green-600 text-xs font-bold flex items-center gap-1">
                                 <Trophy className="w-3.5 h-3.5" /> 수료 완료!
@@ -245,7 +340,7 @@ export default function DigitalCurriculumTab() {
                             ) : canGrad ? (
                               <button
                                 onClick={(e) => { e.stopPropagation(); setShowGraduationModal(true); }}
-                                className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg text-xs font-bold hover:opacity-90 transition-opacity"
+                                className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg text-xs font-bold"
                               >
                                 🎓 수료하기
                               </button>
@@ -255,16 +350,16 @@ export default function DigitalCurriculumTab() {
                           </div>
                         )}
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
-      {/* 수료 모달 */}
+      {/* 졸업 모달 */}
       {showGraduationModal && (
         <GraduationModal
           userId={user.id}
