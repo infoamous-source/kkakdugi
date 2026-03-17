@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, MessageCircle, HelpCircle } from 'lucide-react';
 
-import type { KioskComponentProps } from '../../core/types';
+import type { KkakdugiComponentProps } from '../../core/types';
 import { playTouchSound } from '../../core/haptics';
 import {
   type ConvenienceScreen,
@@ -25,7 +25,7 @@ import PaymentScreen from './screens/PaymentScreen';
 import ReceiptScreen from './screens/ReceiptScreen';
 import CompleteScreen from './screens/CompleteScreen';
 
-export default function ConvenienceKiosk({ onClose, onComplete }: KioskComponentProps) {
+export default function ConvenienceKkakdugi({ onClose, onComplete }: KkakdugiComponentProps) {
   const { t } = useTranslation();
 
   // ── Navigation ──────────────────────────────────────────────────────────────
@@ -62,14 +62,14 @@ export default function ConvenienceKiosk({ onClose, onComplete }: KioskComponent
 
   // ── Helper messages ─────────────────────────────────────────────────────────
   const helperMessages: Record<ConvenienceScreen, string> = useMemo(() => ({
-    welcome:     t('kiosk.helper.convenience.welcome',     '화면을 터치하여 계산을 시작하세요'),
-    scan:        t('kiosk.helper.convenience.scan',        '상품을 터치하여 스캔하세요. 완료 후 스캔 완료를 누르세요'),
-    ageVerify:   t('kiosk.helper.convenience.ageVerify',   '주류/담배 구매 시 성인인증이 필요합니다'),
-    bags:        t('kiosk.helper.convenience.bags',        '봉투가 필요하면 선택하세요'),
-    orderReview: t('kiosk.helper.convenience.orderReview', '스캔한 상품을 확인하고 결제하기를 누르세요'),
-    payment:     t('kiosk.helper.convenience.payment',     '결제 방법을 선택하고 승인을 요청하세요'),
-    receipt:     t('kiosk.helper.convenience.receipt',     '영수증 출력 여부를 선택하세요'),
-    complete:    t('kiosk.helper.convenience.complete',    '계산이 완료되었습니다. 상품을 가져가세요'),
+    welcome:     t('kkakdugi.helper.convenience.welcome',     '화면을 터치하여 계산을 시작하세요'),
+    scan:        t('kkakdugi.helper.convenience.scan',        '상품을 터치하여 스캔하세요. 완료 후 스캔 완료를 누르세요'),
+    ageVerify:   t('kkakdugi.helper.convenience.ageVerify',   '주류/담배 구매 시 성인인증이 필요합니다'),
+    bags:        t('kkakdugi.helper.convenience.bags',        '봉투가 필요하면 선택하세요'),
+    orderReview: t('kkakdugi.helper.convenience.orderReview', '스캔한 상품을 확인하고 결제하기를 누르세요'),
+    payment:     t('kkakdugi.helper.convenience.payment',     '결제 방법을 선택하고 승인을 요청하세요'),
+    receipt:     t('kkakdugi.helper.convenience.receipt',     '영수증 출력 여부를 선택하세요'),
+    complete:    t('kkakdugi.helper.convenience.complete',    '계산이 완료되었습니다. 상품을 가져가세요'),
   }), [t]);
 
   // ── Handlers ────────────────────────────────────────────────────────────────
@@ -162,7 +162,7 @@ export default function ConvenienceKiosk({ onClose, onComplete }: KioskComponent
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      {/* Kiosk frame */}
+      {/* Kkakdugi frame */}
       <div
         className="w-full flex flex-col overflow-hidden shadow-2xl"
         style={{
@@ -181,7 +181,7 @@ export default function ConvenienceKiosk({ onClose, onComplete }: KioskComponent
           style={{ backgroundColor: CONVENIENCE_THEME.headerBg, borderBottom: '1px solid #0A4538' }}
         >
           <span className="text-xs font-medium" style={{ color: 'rgba(167,243,208,0.75)', minWidth: 60 }}>
-            {t('kiosk.step', '단계')} {currentStepIndex + 1} / {totalSteps}
+            {t('kkakdugi.step', '단계')} {currentStepIndex + 1} / {totalSteps}
           </span>
           <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
             <div

@@ -30,7 +30,7 @@ export default function PointsScreen({ onNext }: Props) {
           style={{ backgroundColor: '#C89B3C', color: 'white' }}
         >
           <p className="font-bold text-sm tracking-wide">
-            [ {t('kiosk.screens.receipt.approved', '결제 승인 완료')} ]
+            [ {t('kkakdugi.screens.receipt.approved', '결제 승인 완료')} ]
           </p>
         </div>
 
@@ -46,7 +46,7 @@ export default function PointsScreen({ onNext }: Props) {
         </div>
 
         <p className="font-bold text-center mb-8" style={{ color: '#2C1A0E', fontSize: 16 }}>
-          {t('kiosk.screens.points.ask', '포인트를 적립하시겠습니까?')}
+          {t('kkakdugi.screens.points.ask', '포인트를 적립하시겠습니까?')}
         </p>
 
         <div className="flex gap-4 w-full">
@@ -55,14 +55,14 @@ export default function PointsScreen({ onNext }: Props) {
             className="flex-1 py-5 rounded font-bold text-lg transition-all active:scale-[0.97]"
             style={{ backgroundColor: '#9C6B3C', color: 'white' }}
           >
-            {t('kiosk.screens.points.yes', '예')}
+            {t('kkakdugi.screens.points.yes', '예')}
           </button>
           <button
             onClick={() => { feedbackTap(); onNext(); }}
             className="flex-1 py-5 rounded font-bold text-lg transition-all active:scale-[0.97]"
             style={{ backgroundColor: '#2C1A0E', color: 'white' }}
           >
-            {t('kiosk.screens.points.no', '아니오')}
+            {t('kkakdugi.screens.points.no', '아니오')}
           </button>
         </div>
       </div>

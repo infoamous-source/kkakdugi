@@ -44,7 +44,7 @@ export default function ReceiptScreen({ onNext }: Props) {
         </div>
 
         <p className="font-bold text-center mb-8" style={{ color: '#2C1A0E', fontSize: 16 }}>
-          {t('kiosk.screens.receipt.ask', '영수증을 출력하시겠습니까?')}
+          {t('kkakdugi.screens.receipt.ask', '영수증을 출력하시겠습니까?')}
         </p>
 
         <div className="flex gap-4 w-full">
@@ -53,14 +53,14 @@ export default function ReceiptScreen({ onNext }: Props) {
             className="flex-1 py-5 rounded font-bold text-lg transition-all active:scale-[0.97]"
             style={{ backgroundColor: '#9C6B3C', color: 'white' }}
           >
-            {t('kiosk.screens.receipt.print', '출력')}
+            {t('kkakdugi.screens.receipt.print', '출력')}
           </button>
           <button
             onClick={() => { feedbackTap(); onNext(); }}
             className="flex-1 py-5 rounded font-bold text-lg transition-all active:scale-[0.97]"
             style={{ backgroundColor: '#2C1A0E', color: 'white' }}
           >
-            {t('kiosk.screens.receipt.noPrint', '미출력')}
+            {t('kkakdugi.screens.receipt.noPrint', '미출력')}
           </button>
         </div>
       </div>

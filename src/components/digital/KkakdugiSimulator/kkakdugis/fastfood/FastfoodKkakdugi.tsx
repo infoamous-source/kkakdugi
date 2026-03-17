@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, MessageCircle, HelpCircle } from 'lucide-react';
 
-import type { KioskComponentProps } from '../../core/types';
+import type { KkakdugiComponentProps } from '../../core/types';
 import type { OrderMenuItem, OrderOptionItem } from '../../core/types';
 import { playTouchSound } from '../../core/haptics';
 import {
@@ -25,7 +25,7 @@ import PointsScreen from './screens/PointsScreen';
 import ReceiptScreen from './screens/ReceiptScreen';
 import CompleteScreen from './screens/CompleteScreen';
 
-export default function FastfoodKiosk({ onClose, onComplete }: KioskComponentProps) {
+export default function FastfoodKkakdugi({ onClose, onComplete }: KkakdugiComponentProps) {
   const { t } = useTranslation();
 
   // ── Navigation ──────────────────────────────────────────────────────────────
@@ -87,16 +87,16 @@ export default function FastfoodKiosk({ onClose, onComplete }: KioskComponentPro
 
   // ── Helper messages ──────────────────────────────────────────────────────────
   const helperMessages: Record<FastfoodScreen, string> = useMemo(() => ({
-    welcome:      t('kiosk.helper.welcome',      '화면을 터치해서 주문을 시작하세요.'),
-    dineOption:   t('kiosk.helper.dineOption',   '매장에서 드실지 포장하실지 선택하세요.'),
-    menu:         t('kiosk.helper.menu',         '원하는 메뉴를 선택하고 장바구니에 담으세요.'),
-    options:      t('kiosk.helper.options',      '사이즈업, 소스, 토핑 옵션을 선택하고 담기를 눌러주세요.'),
-    orderConfirm: t('kiosk.helper.orderConfirm', '주문 내역을 확인하고 결제하기를 누르세요.'),
-    payment:      t('kiosk.helper.payment',      '결제 방법을 선택하세요. 신용카드로 연습해 보세요.'),
-    cardPayment:  t('kiosk.helper.card',         '카드를 삽입하거나 승인 요청을 눌러보세요.'),
-    points:       t('kiosk.helper.points',       '포인트 적립 여부를 선택하세요.'),
-    receipt:      t('kiosk.helper.receipt',      '영수증 출력 여부를 선택하세요.'),
-    complete:     t('kiosk.helper.complete',     '주문이 완료되었습니다! 주문 번호를 기억하세요.'),
+    welcome:      t('kkakdugi.helper.welcome',      '화면을 터치해서 주문을 시작하세요.'),
+    dineOption:   t('kkakdugi.helper.dineOption',   '매장에서 드실지 포장하실지 선택하세요.'),
+    menu:         t('kkakdugi.helper.menu',         '원하는 메뉴를 선택하고 장바구니에 담으세요.'),
+    options:      t('kkakdugi.helper.options',      '사이즈업, 소스, 토핑 옵션을 선택하고 담기를 눌러주세요.'),
+    orderConfirm: t('kkakdugi.helper.orderConfirm', '주문 내역을 확인하고 결제하기를 누르세요.'),
+    payment:      t('kkakdugi.helper.payment',      '결제 방법을 선택하세요. 신용카드로 연습해 보세요.'),
+    cardPayment:  t('kkakdugi.helper.card',         '카드를 삽입하거나 승인 요청을 눌러보세요.'),
+    points:       t('kkakdugi.helper.points',       '포인트 적립 여부를 선택하세요.'),
+    receipt:      t('kkakdugi.helper.receipt',      '영수증 출력 여부를 선택하세요.'),
+    complete:     t('kkakdugi.helper.complete',     '주문이 완료되었습니다! 주문 번호를 기억하세요.'),
   }), [t]);
 
   // ── Cart operations ──────────────────────────────────────────────────────────
@@ -203,7 +203,7 @@ export default function FastfoodKiosk({ onClose, onComplete }: KioskComponentPro
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      {/* Kiosk frame */}
+      {/* Kkakdugi frame */}
       <div
         className="w-full flex flex-col overflow-hidden shadow-2xl"
         style={{
@@ -222,7 +222,7 @@ export default function FastfoodKiosk({ onClose, onComplete }: KioskComponentPro
           style={{ backgroundColor: '#2C0000', borderBottom: '1px solid #4A0000' }}
         >
           <span className="text-xs font-medium" style={{ color: '#FFCDD2', minWidth: 60 }}>
-            {t('kiosk.step', '단계')} {currentStepIndex + 1} / {totalSteps}
+            {t('kkakdugi.step', '단계')} {currentStepIndex + 1} / {totalSteps}
           </span>
           <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ backgroundColor: '#4A0000' }}>
             <div

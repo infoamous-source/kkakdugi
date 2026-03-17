@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, MessageCircle, HelpCircle } from 'lucide-react';
 
-import type { KioskComponentProps } from '../../core/types';
+import type { KkakdugiComponentProps } from '../../core/types';
 import { playTouchSound } from '../../core/haptics';
 import {
   type BankScreen,
@@ -21,7 +21,7 @@ import ProcessingScreen from './screens/ProcessingScreen';
 import ReceiptScreen from './screens/ReceiptScreen';
 import CompleteScreen from './screens/CompleteScreen';
 
-export default function BankKiosk({ onClose, onComplete }: KioskComponentProps) {
+export default function BankKkakdugi({ onClose, onComplete }: KkakdugiComponentProps) {
   const { t } = useTranslation();
 
   // ── Navigation ──────────────────────────────────────────────────────────────
@@ -58,14 +58,14 @@ export default function BankKiosk({ onClose, onComplete }: KioskComponentProps) 
 
   // ── Helper messages ─────────────────────────────────────────────────────────
   const helperMessages: Record<BankScreen, string> = useMemo(() => ({
-    welcome:            t('kiosk.helper.bank.welcome',            '화면을 터치하여 시작하세요'),
-    serviceSelect:      t('kiosk.helper.bank.serviceSelect',      '원하시는 업무를 선택하세요'),
-    accountVerify:      t('kiosk.helper.bank.accountVerify',      '비밀번호 4자리를 입력하세요'),
-    transaction:        t('kiosk.helper.bank.transaction',        '금액을 입력하세요'),
-    confirmTransaction: t('kiosk.helper.bank.confirmTransaction', '거래 내용을 확인하세요'),
-    processing:         t('kiosk.helper.bank.processing',         '거래를 처리하고 있습니다'),
-    receipt:            t('kiosk.helper.bank.receipt',             '영수증 출력 여부를 선택하세요'),
-    complete:           t('kiosk.helper.bank.complete',            '거래가 완료되었습니다'),
+    welcome:            t('kkakdugi.helper.bank.welcome',            '화면을 터치하여 시작하세요'),
+    serviceSelect:      t('kkakdugi.helper.bank.serviceSelect',      '원하시는 업무를 선택하세요'),
+    accountVerify:      t('kkakdugi.helper.bank.accountVerify',      '비밀번호 4자리를 입력하세요'),
+    transaction:        t('kkakdugi.helper.bank.transaction',        '금액을 입력하세요'),
+    confirmTransaction: t('kkakdugi.helper.bank.confirmTransaction', '거래 내용을 확인하세요'),
+    processing:         t('kkakdugi.helper.bank.processing',         '거래를 처리하고 있습니다'),
+    receipt:            t('kkakdugi.helper.bank.receipt',             '영수증 출력 여부를 선택하세요'),
+    complete:           t('kkakdugi.helper.bank.complete',            '거래가 완료되었습니다'),
   }), [t]);
 
   // ── Handlers ────────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ export default function BankKiosk({ onClose, onComplete }: KioskComponentProps) 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      {/* Kiosk frame */}
+      {/* Kkakdugi frame */}
       <div
         className="w-full flex flex-col overflow-hidden shadow-2xl"
         style={{
@@ -172,7 +172,7 @@ export default function BankKiosk({ onClose, onComplete }: KioskComponentProps) 
           style={{ backgroundColor: BANK_THEME.headerBg, borderBottom: '1px solid #2B4A7A' }}
         >
           <span className="text-xs font-medium" style={{ color: 'rgba(190,227,248,0.75)', minWidth: 60 }}>
-            {t('kiosk.step', '단계')} {currentStepIndex + 1} / {totalSteps}
+            {t('kkakdugi.step', '단계')} {currentStepIndex + 1} / {totalSteps}
           </span>
           <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
             <div

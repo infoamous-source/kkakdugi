@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Check, Lock } from 'lucide-react';
-import { kioskConfigs } from './registry';
-import type { KioskType, KioskConfig, KioskCategory } from './core/types';
+import { kkakdugiConfigs } from './registry';
+import type { KkakdugiType, KkakdugiConfig, KkakdugiCategory } from './core/types';
 
 const koNameFallback: Record<string, string> = {
   cafe: '카페',
@@ -26,37 +26,37 @@ const koDescFallback: Record<string, string> = {
   airport: '비행기 셀프 체크인하기',
 };
 
-interface KioskSelectorProps {
-  onSelectKiosk: (type: KioskType) => void;
-  completedKiosks?: KioskType[];
+interface KkakdugiSelectorProps {
+  onSelectKkakdugi: (type: KkakdugiType) => void;
+  completedKkakdugis?: KkakdugiType[];
 }
 
-type FilterCategory = 'all' | KioskCategory;
+type FilterCategory = 'all' | KkakdugiCategory;
 
 const categoryFilters: { id: FilterCategory; labelKey: string; fallback: string }[] = [
-  { id: 'all', labelKey: 'kiosk.selector.filter.all', fallback: '전체' },
-  { id: 'food', labelKey: 'kiosk.selector.filter.food', fallback: '음식점' },
-  { id: 'public', labelKey: 'kiosk.selector.filter.public', fallback: '공공서비스' },
-  { id: 'entertainment', labelKey: 'kiosk.selector.filter.entertainment', fallback: '엔터테인먼트' },
-  { id: 'transport', labelKey: 'kiosk.selector.filter.transport', fallback: '교통' },
+  { id: 'all', labelKey: 'kkakdugi.selector.filter.all', fallback: '전체' },
+  { id: 'food', labelKey: 'kkakdugi.selector.filter.food', fallback: '음식점' },
+  { id: 'public', labelKey: 'kkakdugi.selector.filter.public', fallback: '공공서비스' },
+  { id: 'entertainment', labelKey: 'kkakdugi.selector.filter.entertainment', fallback: '엔터테인먼트' },
+  { id: 'transport', labelKey: 'kkakdugi.selector.filter.transport', fallback: '교통' },
 ];
 
-function KioskCard({
+function KkakdugiCard({
   config,
   isCompleted,
   onClick,
 }: {
-  config: KioskConfig;
+  config: KkakdugiConfig;
   isCompleted: boolean;
   onClick: () => void;
 }) {
   const { t } = useTranslation();
 
   const categoryLabel: Record<string, string> = {
-    food: t('kiosk.selector.filter.food', '음식점'),
-    public: t('kiosk.selector.filter.public', '공공서비스'),
-    entertainment: t('kiosk.selector.filter.entertainment', '엔터테인먼트'),
-    transport: t('kiosk.selector.filter.transport', '교통'),
+    food: t('kkakdugi.selector.filter.food', '음식점'),
+    public: t('kkakdugi.selector.filter.public', '공공서비스'),
+    entertainment: t('kkakdugi.selector.filter.entertainment', '엔터테인먼트'),
+    transport: t('kkakdugi.selector.filter.transport', '교통'),
   };
 
   const categoryColorClass: Record<string, string> = {
@@ -97,7 +97,7 @@ function KioskCard({
       {isDisabled && (
         <span className="absolute top-2 right-2 flex items-center gap-1 bg-gray-100 text-gray-500 text-xs font-medium px-2 py-0.5 rounded-full">
           <Lock size={10} />
-          {t('kiosk.selector.comingSoon', '준비 중')}
+          {t('kkakdugi.selector.comingSoon', '준비 중')}
         </span>
       )}
 
@@ -126,24 +126,24 @@ function KioskCard({
   );
 }
 
-export default function KioskSelector({ onSelectKiosk, completedKiosks = [] }: KioskSelectorProps) {
+export default function KkakdugiSelector({ onSelectKkakdugi, completedKkakdugis = [] }: KkakdugiSelectorProps) {
   const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
 
   const filteredConfigs =
     activeFilter === 'all'
-      ? kioskConfigs
-      : kioskConfigs.filter(c => c.category === activeFilter);
+      ? kkakdugiConfigs
+      : kkakdugiConfigs.filter(c => c.category === activeFilter);
 
   return (
     <div className="w-full">
       {/* 섹션 헤더 */}
       <div className="mb-5">
         <h2 className="text-xl font-bold text-gray-900 mb-1">
-          {t('kiosk.selector.title', '연습할 키오스크를 선택하세요')}
+          {t('kkakdugi.selector.title', '연습할 키오스크를 선택하세요')}
         </h2>
         <p className="text-sm text-gray-500">
-          {t('kiosk.selector.subtitle', '다양한 장소의 키오스크 사용법을 익혀보세요')}
+          {t('kkakdugi.selector.subtitle', '다양한 장소의 키오스크 사용법을 익혀보세요')}
         </p>
       </div>
 
@@ -168,18 +168,18 @@ export default function KioskSelector({ onSelectKiosk, completedKiosks = [] }: K
       {/* 키오스크 카드 그리드 */}
       <div className="grid grid-cols-2 gap-3">
         {filteredConfigs.map(config => (
-          <KioskCard
+          <KkakdugiCard
             key={config.id}
             config={config}
-            isCompleted={completedKiosks.includes(config.id)}
-            onClick={() => onSelectKiosk(config.id)}
+            isCompleted={completedKkakdugis.includes(config.id)}
+            onClick={() => onSelectKkakdugi(config.id)}
           />
         ))}
       </div>
 
       {filteredConfigs.length === 0 && (
         <div className="text-center py-12 text-gray-400 text-sm">
-          {t('kiosk.selector.noResults', '해당 카테고리에 키오스크가 없습니다')}
+          {t('kkakdugi.selector.noResults', '해당 카테고리에 키오스크가 없습니다')}
         </div>
       )}
     </div>

@@ -37,12 +37,12 @@ export const CAFE_SCREEN_ORDER: CafeScreen[] = [
 ];
 
 export const categories: { id: MenuCategory; nameKey: string; label: string }[] = [
-  { id: 'all', nameKey: 'kiosk.screens.menu.all', label: '전체' },
-  { id: 'coffee', nameKey: 'kiosk.screens.menu.coffee', label: '커피' },
-  { id: 'decaf', nameKey: 'kiosk.screens.menu.decaf', label: '디카페인' },
-  { id: 'smoothie', nameKey: 'kiosk.screens.menu.smoothie', label: '스무디' },
-  { id: 'tea', nameKey: 'kiosk.screens.menu.tea', label: '티' },
-  { id: 'dessert', nameKey: 'kiosk.screens.menu.dessert', label: '디저트' },
+  { id: 'all', nameKey: 'kkakdugi.screens.menu.all', label: '전체' },
+  { id: 'coffee', nameKey: 'kkakdugi.screens.menu.coffee', label: '커피' },
+  { id: 'decaf', nameKey: 'kkakdugi.screens.menu.decaf', label: '디카페인' },
+  { id: 'smoothie', nameKey: 'kkakdugi.screens.menu.smoothie', label: '스무디' },
+  { id: 'tea', nameKey: 'kkakdugi.screens.menu.tea', label: '티' },
+  { id: 'dessert', nameKey: 'kkakdugi.screens.menu.dessert', label: '디저트' },
 ];
 
 // Color palette for placeholder menu item boxes
@@ -83,41 +83,41 @@ export const menuItems: (OrderMenuItem & { category: MenuCategory; color: string
 export const optionGroups: OrderOptionGroup[] = [
   {
     id: 'tumbler',
-    titleKey: 'kiosk.screens.options.tumbler',
+    titleKey: 'kkakdugi.screens.options.tumbler',
     required: false,
     multiSelect: false,
     options: [
-      { id: 'personal-cup', nameKey: 'kiosk.screens.options.personalCup', priceAdd: 0 },
+      { id: 'personal-cup', nameKey: 'kkakdugi.screens.options.personalCup', priceAdd: 0 },
     ],
   },
   {
     id: 'shot',
-    titleKey: 'kiosk.screens.options.shot',
+    titleKey: 'kkakdugi.screens.options.shot',
     required: false,
     multiSelect: false,
     options: [
-      { id: 'extra-shot',  nameKey: 'kiosk.screens.options.addShot',       priceAdd: 500 },
-      { id: 'double-shot', nameKey: 'kiosk.screens.options.addDoubleShot', priceAdd: 1000 },
+      { id: 'extra-shot',  nameKey: 'kkakdugi.screens.options.addShot',       priceAdd: 500 },
+      { id: 'double-shot', nameKey: 'kkakdugi.screens.options.addDoubleShot', priceAdd: 1000 },
     ],
   },
   {
     id: 'sweetness',
-    titleKey: 'kiosk.screens.options.sweetness',
+    titleKey: 'kkakdugi.screens.options.sweetness',
     required: false,
     multiSelect: false,
     options: [
-      { id: 'vanilla-syrup',  nameKey: 'kiosk.screens.options.vanillaSyrup',  priceAdd: 700 },
-      { id: 'caramel-syrup',  nameKey: 'kiosk.screens.options.caramelSyrup',  priceAdd: 700 },
-      { id: 'hazelnut-syrup', nameKey: 'kiosk.screens.options.hazelnutSyrup', priceAdd: 700 },
+      { id: 'vanilla-syrup',  nameKey: 'kkakdugi.screens.options.vanillaSyrup',  priceAdd: 700 },
+      { id: 'caramel-syrup',  nameKey: 'kkakdugi.screens.options.caramelSyrup',  priceAdd: 700 },
+      { id: 'hazelnut-syrup', nameKey: 'kkakdugi.screens.options.hazelnutSyrup', priceAdd: 700 },
     ],
   },
 ];
 
 export const paymentMethods: PaymentMethod[] = [
-  { id: 'card',       nameKey: 'kiosk.screens.payment.card',      subKey: 'kiosk.screens.payment.cardSub',    icon: 'card' },
-  { id: 'app-card',   nameKey: 'kiosk.screens.payment.appCard',   subKey: 'kiosk.screens.payment.appCardSub', icon: 'smartphone' },
-  { id: 'kakao-pay',  nameKey: 'kiosk.screens.payment.kakaoPay',  icon: 'kakao' },
-  { id: 'naver-pay',  nameKey: 'kiosk.screens.payment.naverPay',  icon: 'naver' },
+  { id: 'card',       nameKey: 'kkakdugi.screens.payment.card',      subKey: 'kkakdugi.screens.payment.cardSub',    icon: 'card' },
+  { id: 'app-card',   nameKey: 'kkakdugi.screens.payment.appCard',   subKey: 'kkakdugi.screens.payment.appCardSub', icon: 'smartphone' },
+  { id: 'kakao-pay',  nameKey: 'kkakdugi.screens.payment.kakaoPay',  icon: 'kakao' },
+  { id: 'naver-pay',  nameKey: 'kkakdugi.screens.payment.naverPay',  icon: 'naver' },
 ];
 
 export const recommendItems = [

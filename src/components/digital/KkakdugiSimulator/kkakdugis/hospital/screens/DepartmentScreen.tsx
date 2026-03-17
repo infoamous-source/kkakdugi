@@ -144,7 +144,7 @@ export default function DepartmentScreen({ onSelect, onBack }: Props) {
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          {t('kiosk.nav.back', '이전')}
+          {t('kkakdugi.nav.back', '이전')}
         </button>
         <span className="font-bold text-sm" style={{ color: 'white' }}>
           {t('hospital.dept.title', '진료과 선택')}

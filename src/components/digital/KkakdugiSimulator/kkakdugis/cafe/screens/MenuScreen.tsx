@@ -53,7 +53,7 @@ export default function MenuScreen({
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M6 1L1 5.5V11H4.5V8H7.5V11H11V5.5L6 1Z" fill="currentColor" />
           </svg>
-          {t('kiosk.screens.menu.home', '처음으로')}
+          {t('kkakdugi.screens.menu.home', '처음으로')}
         </button>
         <span
           className="font-bold tracking-widest text-sm"
@@ -221,15 +221,15 @@ export default function MenuScreen({
         <div className="flex items-center px-3 py-2 gap-2">
           {cart.length === 0 ? (
             <p className="flex-1 text-center text-xs" style={{ color: '#9E7E6A' }}>
-              {t('kiosk.screens.menu.emptyCart', '메뉴를 선택해 주세요')}
+              {t('kkakdugi.screens.menu.emptyCart', '메뉴를 선택해 주세요')}
             </p>
           ) : (
             <>
               <div className="flex items-center gap-2 flex-1">
                 <span style={{ color: '#9E7E6A', fontSize: 10 }}>
-                  {t('kiosk.screens.cart.timeLeft', '남은 시간')}{' '}
+                  {t('kkakdugi.screens.cart.timeLeft', '남은 시간')}{' '}
                   <span style={{ color: timer <= 30 ? '#DC2626' : '#6B4E35', fontWeight: 700 }}>
-                    {timer}{t('kiosk.screens.cart.seconds', '초')}
+                    {timer}{t('kkakdugi.screens.cart.seconds', '초')}
                   </span>
                 </span>
                 <button
@@ -237,7 +237,7 @@ export default function MenuScreen({
                   className="text-xs px-2 py-1 rounded transition-opacity hover:opacity-75"
                   style={{ backgroundColor: '#FEE2E2', color: '#DC2626', fontSize: 10 }}
                 >
-                  {t('kiosk.screens.cart.clearAll', '전체삭제')}
+                  {t('kkakdugi.screens.cart.clearAll', '전체삭제')}
                 </button>
               </div>
               <button
@@ -246,7 +246,7 @@ export default function MenuScreen({
                 style={{ backgroundColor: '#3D2B1F', color: 'white', fontSize: 12 }}
               >
                 <ShoppingBag size={14} />
-                <span>{cartCount}{t('kiosk.screens.cart.itemUnit', '개')}</span>
+                <span>{cartCount}{t('kkakdugi.screens.cart.itemUnit', '개')}</span>
                 <span style={{ color: '#C89B3C' }}>|</span>
                 <span>{formatPrice(cartTotal)}원</span>
               </button>

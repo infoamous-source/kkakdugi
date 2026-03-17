@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { glossaryTerms, glossaryCategories } from '../../../data/marketing/glossary';
 import { usePortfolio } from '../../../hooks/usePortfolio';
 
-const FAVORITES_KEY = 'kiosk-glossary-favorites';
-const VIEWED_KEY = 'kiosk-glossary-viewed';
+const FAVORITES_KEY = 'kkakdugi-glossary-favorites';
+const VIEWED_KEY = 'kkakdugi-glossary-viewed';
 
 export default function GlossaryTool() {
   const { t } = useTranslation('common');

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, MessageCircle, HelpCircle } from 'lucide-react';
 
-import type { KioskComponentProps } from '../../core/types';
+import type { KkakdugiComponentProps } from '../../core/types';
 import { playTouchSound } from '../../core/haptics';
 import {
   type AirportScreen,
@@ -25,7 +25,7 @@ import PaymentScreen from './screens/PaymentScreen';
 import ProcessingScreen from './screens/ProcessingScreen';
 import CompleteScreen from './screens/CompleteScreen';
 
-export default function AirportKiosk({ onClose, onComplete }: KioskComponentProps) {
+export default function AirportKkakdugi({ onClose, onComplete }: KkakdugiComponentProps) {
   const { t } = useTranslation();
 
   // ── Navigation ──────────────────────────────────────────────────────────────
@@ -73,16 +73,16 @@ export default function AirportKiosk({ onClose, onComplete }: KioskComponentProp
 
   // ── Helper messages ─────────────────────────────────────────────────────────
   const helperMessages: Record<AirportScreen, string> = useMemo(() => ({
-    welcome:       t('kiosk.helper.airport.welcome',       '화면을 터치하여 체크인을 시작하세요'),
-    bookingSearch: t('kiosk.helper.airport.bookingSearch', '예약번호, 여권, 또는 항공권으로 조회하세요'),
-    flightInfo:    t('kiosk.helper.airport.flightInfo',    '항공편 정보를 확인하세요'),
-    seatSelect:    t('kiosk.helper.airport.seatSelect',    '원하시는 좌석을 선택하세요'),
-    baggage:       t('kiosk.helper.airport.baggage',       '위탁 수하물 개수를 선택하세요'),
-    extras:        t('kiosk.helper.airport.extras',        '부가 서비스를 선택하거나 건너뛰세요'),
-    confirmAll:    t('kiosk.helper.airport.confirmAll',    '체크인 정보를 확인하세요'),
-    payment:       t('kiosk.helper.airport.payment',       '추가 요금을 결제하세요'),
-    processing:    t('kiosk.helper.airport.processing',    '체크인을 처리하고 있습니다'),
-    complete:      t('kiosk.helper.airport.complete',      '탑승권을 확인하세요'),
+    welcome:       t('kkakdugi.helper.airport.welcome',       '화면을 터치하여 체크인을 시작하세요'),
+    bookingSearch: t('kkakdugi.helper.airport.bookingSearch', '예약번호, 여권, 또는 항공권으로 조회하세요'),
+    flightInfo:    t('kkakdugi.helper.airport.flightInfo',    '항공편 정보를 확인하세요'),
+    seatSelect:    t('kkakdugi.helper.airport.seatSelect',    '원하시는 좌석을 선택하세요'),
+    baggage:       t('kkakdugi.helper.airport.baggage',       '위탁 수하물 개수를 선택하세요'),
+    extras:        t('kkakdugi.helper.airport.extras',        '부가 서비스를 선택하거나 건너뛰세요'),
+    confirmAll:    t('kkakdugi.helper.airport.confirmAll',    '체크인 정보를 확인하세요'),
+    payment:       t('kkakdugi.helper.airport.payment',       '추가 요금을 결제하세요'),
+    processing:    t('kkakdugi.helper.airport.processing',    '체크인을 처리하고 있습니다'),
+    complete:      t('kkakdugi.helper.airport.complete',      '탑승권을 확인하세요'),
   }), [t]);
 
   // ── Handlers ────────────────────────────────────────────────────────────────
@@ -160,7 +160,7 @@ export default function AirportKiosk({ onClose, onComplete }: KioskComponentProp
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      {/* Kiosk frame */}
+      {/* Kkakdugi frame */}
       <div
         className="w-full flex flex-col overflow-hidden shadow-2xl"
         style={{
@@ -179,7 +179,7 @@ export default function AirportKiosk({ onClose, onComplete }: KioskComponentProp
           style={{ backgroundColor: AIRPORT_THEME.headerBg, borderBottom: '1px solid #164E63' }}
         >
           <span className="text-xs font-medium" style={{ color: 'rgba(186,230,253,0.75)', minWidth: 60 }}>
-            {t('kiosk.step', '단계')} {currentStepIndex + 1} / {totalSteps}
+            {t('kkakdugi.step', '단계')} {currentStepIndex + 1} / {totalSteps}
           </span>
           <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
             <div

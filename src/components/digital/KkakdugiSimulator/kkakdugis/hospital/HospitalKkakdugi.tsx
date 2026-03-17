@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, MessageCircle, HelpCircle } from 'lucide-react';
 
-import type { KioskComponentProps } from '../../core/types';
+import type { KkakdugiComponentProps } from '../../core/types';
 import { playTouchSound } from '../../core/haptics';
 import {
   type HospitalScreen,
@@ -22,7 +22,7 @@ import ConfirmInfoScreen from './screens/ConfirmInfoScreen';
 import PaymentScreen from './screens/PaymentScreen';
 import CompleteScreen from './screens/CompleteScreen';
 
-export default function HospitalKiosk({ onClose, onComplete }: KioskComponentProps) {
+export default function HospitalKkakdugi({ onClose, onComplete }: KkakdugiComponentProps) {
   const { t } = useTranslation();
 
   // ── Navigation ──────────────────────────────────────────────────────────────
@@ -64,14 +64,14 @@ export default function HospitalKiosk({ onClose, onComplete }: KioskComponentPro
 
   // ── Helper messages ───────────────────────────────────────────────────────────
   const helperMessages: Record<HospitalScreen, string> = useMemo(() => ({
-    welcome:     t('kiosk.helper.hospital.welcome',     '화면을 터치하여 접수를 시작하세요'),
-    visitType:   t('kiosk.helper.hospital.visitType',   '초진(처음) 또는 재진(다시 방문)을 선택하세요'),
-    department:  t('kiosk.helper.hospital.department',  '진료받을 과를 선택하세요'),
-    doctor:      t('kiosk.helper.hospital.doctor',      '진료 의사를 선택하세요'),
-    identity:    t('kiosk.helper.hospital.identity',    '본인 확인 정보를 입력하세요'),
-    confirmInfo: t('kiosk.helper.hospital.confirmInfo', '접수 정보를 확인하세요'),
-    payment:     t('kiosk.helper.hospital.payment',     '진찰료를 수납하세요'),
-    complete:    t('kiosk.helper.hospital.complete',    '접수가 완료되었습니다. 대기번호를 확인하세요'),
+    welcome:     t('kkakdugi.helper.hospital.welcome',     '화면을 터치하여 접수를 시작하세요'),
+    visitType:   t('kkakdugi.helper.hospital.visitType',   '초진(처음) 또는 재진(다시 방문)을 선택하세요'),
+    department:  t('kkakdugi.helper.hospital.department',  '진료받을 과를 선택하세요'),
+    doctor:      t('kkakdugi.helper.hospital.doctor',      '진료 의사를 선택하세요'),
+    identity:    t('kkakdugi.helper.hospital.identity',    '본인 확인 정보를 입력하세요'),
+    confirmInfo: t('kkakdugi.helper.hospital.confirmInfo', '접수 정보를 확인하세요'),
+    payment:     t('kkakdugi.helper.hospital.payment',     '진찰료를 수납하세요'),
+    complete:    t('kkakdugi.helper.hospital.complete',    '접수가 완료되었습니다. 대기번호를 확인하세요'),
   }), [t]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────────
@@ -136,7 +136,7 @@ export default function HospitalKiosk({ onClose, onComplete }: KioskComponentPro
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      {/* Kiosk frame */}
+      {/* Kkakdugi frame */}
       <div
         className="w-full flex flex-col overflow-hidden shadow-2xl"
         style={{
@@ -155,7 +155,7 @@ export default function HospitalKiosk({ onClose, onComplete }: KioskComponentPro
           style={{ backgroundColor: HOSPITAL_THEME.headerBg, borderBottom: `1px solid #0A5558` }}
         >
           <span className="text-xs font-medium" style={{ color: 'rgba(178,236,232,0.75)', minWidth: 60 }}>
-            {t('kiosk.step', '단계')} {currentStepIndex + 1} / {totalSteps}
+            {t('kkakdugi.step', '단계')} {currentStepIndex + 1} / {totalSteps}
           </span>
           <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
             <div

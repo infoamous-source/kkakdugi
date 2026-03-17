@@ -1,10 +1,10 @@
 import type { ComponentType, LazyExoticComponent } from 'react';
 
-// ─── Kiosk type identifiers ───
+// ─── Kkakdugi type identifiers ───
 
-export type KioskCategory = 'food' | 'public' | 'entertainment' | 'transport';
+export type KkakdugiCategory = 'food' | 'public' | 'entertainment' | 'transport';
 
-export type KioskType =
+export type KkakdugiType =
   | 'cafe'
   | 'fastfood'
   | 'hospital'
@@ -14,9 +14,9 @@ export type KioskType =
   | 'convenience'
   | 'airport';
 
-// ─── Theme configuration per kiosk ───
+// ─── Theme configuration per kkakdugi ───
 
-export interface KioskTheme {
+export interface KkakdugiTheme {
   /** Tailwind color name prefix (e.g. 'amber', 'blue', 'emerald') */
   primary: string;
   secondary: string;
@@ -30,7 +30,7 @@ export interface KioskTheme {
 
 // ─── Screen definition ───
 
-export interface KioskScreenDef {
+export interface KkakdugiScreenDef {
   id: string;
   /** i18n key for the screen label shown in the step bar */
   labelKey: string;
@@ -38,25 +38,25 @@ export interface KioskScreenDef {
   helperKey: string;
 }
 
-// ─── Kiosk configuration (each kiosk type provides one) ───
+// ─── Kkakdugi configuration (each kkakdugi type provides one) ───
 
-export interface KioskConfig {
-  id: KioskType;
-  /** i18n key for the kiosk display name */
+export interface KkakdugiConfig {
+  id: KkakdugiType;
+  /** i18n key for the kkakdugi display name */
   nameKey: string;
-  /** i18n key for the kiosk description */
+  /** i18n key for the kkakdugi description */
   descriptionKey: string;
   /** Emoji or icon identifier shown in the selector */
   icon: string;
   /** 1 = easiest, 4 = most complex */
   difficulty: 1 | 2 | 3 | 4;
-  category: KioskCategory;
-  theme: KioskTheme;
-  screens: KioskScreenDef[];
+  category: KkakdugiCategory;
+  theme: KkakdugiTheme;
+  screens: KkakdugiScreenDef[];
   comingSoon?: boolean;
 }
 
-// ─── Order-type kiosks (cafe, fastfood, convenience) ───
+// ─── Order-type kkakdugis (cafe, fastfood, convenience) ───
 
 export interface OrderMenuItem {
   id: string;
@@ -94,7 +94,7 @@ export interface OrderCartItem {
   totalPrice: number;
 }
 
-// ─── Service-type kiosks (hospital, bank, government) ───
+// ─── Service-type kkakdugis (hospital, bank, government) ───
 
 export interface ServiceItem {
   id: string;
@@ -104,7 +104,7 @@ export interface ServiceItem {
   subItems?: ServiceItem[];
 }
 
-// ─── Payment methods (shared across all ordering kiosks) ───
+// ─── Payment methods (shared across all ordering kkakdugis) ───
 
 export interface PaymentMethod {
   id: string;
@@ -121,19 +121,19 @@ export type ScreenFlowMap = Record<string, string | null>;
 
 // ─── Component props ───
 
-export interface KioskComponentProps {
+export interface KkakdugiComponentProps {
   onClose: () => void;
   onComplete: () => void;
 }
 
-// ─── Legacy alias kept for backwards compatibility with KioskSimulator.tsx ───
-export type KioskSimulatorProps = KioskComponentProps & {
-  config?: KioskConfig;
+// ─── Legacy alias kept for backwards compatibility with KkakdugiSimulator.tsx ───
+export type KkakdugiSimulatorProps = KkakdugiComponentProps & {
+  config?: KkakdugiConfig;
 };
 
-// ─── Registry entry for dynamic kiosk loading ───
+// ─── Registry entry for dynamic kkakdugi loading ───
 
-export interface KioskRegistryEntry {
-  config: KioskConfig;
-  component: LazyExoticComponent<ComponentType<KioskComponentProps>>;
+export interface KkakdugiRegistryEntry {
+  config: KkakdugiConfig;
+  component: LazyExoticComponent<ComponentType<KkakdugiComponentProps>>;
 }

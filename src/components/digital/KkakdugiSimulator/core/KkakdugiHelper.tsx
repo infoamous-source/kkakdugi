@@ -1,28 +1,28 @@
 import { MessageCircle, HelpCircle, X } from 'lucide-react';
-import type { KioskTheme } from './types';
+import type { KkakdugiTheme } from './types';
 
-interface KioskHelperProps {
+interface KkakdugiHelperProps {
   message: string;
   visible: boolean;
   onToggle: () => void;
-  theme?: KioskTheme;
+  theme?: KkakdugiTheme;
 }
 
 /**
- * Floating helper bubble / toggle button shown inside the kiosk screen area.
+ * Floating helper bubble / toggle button shown inside the kkakdugi screen area.
  *
  * - When visible: shows an expandable speech-bubble card with the hint message.
  * - When hidden: collapses to a small circular help icon button.
  *
- * The active colour is derived from the kiosk theme when provided;
+ * The active colour is derived from the kkakdugi theme when provided;
  * it falls back to the project's standard blue-600.
  */
-export default function KioskHelper({
+export default function KkakdugiHelper({
   message,
   visible,
   onToggle,
   theme,
-}: KioskHelperProps) {
+}: KkakdugiHelperProps) {
   // Build a background colour class from theme.primary or fall back to blue-600.
   // We rely on Tailwind's safelist / JIT: the calling code must ensure the
   // colour classes (e.g. bg-amber-600, bg-blue-600) are present in the bundle.

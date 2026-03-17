@@ -169,15 +169,15 @@ export const apps: AppItem[] = [
 
   // 8. 키오스크 연습 앱
   {
-    id: 'kiosk-practice',
+    id: 'kkakdugi-practice',
     categoryId: 'essential',
-    icon: '/app-icons/kiosk.png',
-    nameKey: 'apps.kioskPractice.name',
-    descriptionKey: 'apps.kioskPractice.description',
-    taglineKey: 'apps.kioskPractice.tagline',
+    icon: '/app-icons/kkakdugi.png',
+    nameKey: 'apps.kkakdugiPractice.name',
+    descriptionKey: 'apps.kkakdugiPractice.description',
+    taglineKey: 'apps.kkakdugiPractice.tagline',
     storeLinks: {},
     badges: [],
     koreanName: '키오스크 연습',
-    internalLink: '/track/digital-basics/kiosk-practice',
+    internalLink: '/track/digital-basics/kkakdugi-practice',
   },
 ];

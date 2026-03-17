@@ -18,7 +18,7 @@ export default function CompleteScreen({ total, onDone }: Props) {
         style={{ backgroundColor: CONVENIENCE_THEME.headerBg }}
       >
         <span className="font-bold text-sm tracking-widest" style={{ color: 'white' }}>
-          {t('kiosk.convenience.complete.header', '계산 완료')}
+          {t('kkakdugi.convenience.complete.header', '계산 완료')}
         </span>
       </div>
 
@@ -44,14 +44,14 @@ export default function CompleteScreen({ total, onDone }: Props) {
           className="font-bold text-center mb-2"
           style={{ color: CONVENIENCE_THEME.text, fontSize: 20 }}
         >
-          {t('kiosk.convenience.complete.title', '계산이 완료되었습니다')}
+          {t('kkakdugi.convenience.complete.title', '계산이 완료되었습니다')}
         </h2>
 
         <p
           className="text-center mb-6"
           style={{ color: CONVENIENCE_THEME.textLight, fontSize: 14 }}
         >
-          {t('kiosk.convenience.complete.message', '상품을 가져가세요')}
+          {t('kkakdugi.convenience.complete.message', '상품을 가져가세요')}
         </p>
 
         {/* Total amount box */}
@@ -60,19 +60,19 @@ export default function CompleteScreen({ total, onDone }: Props) {
           style={{ backgroundColor: CONVENIENCE_THEME.headerBg }}
         >
           <p className="text-center text-xs mb-1" style={{ color: 'rgba(167,243,208,0.7)' }}>
-            {t('kiosk.convenience.complete.paid', '결제 금액')}
+            {t('kkakdugi.convenience.complete.paid', '결제 금액')}
           </p>
           <p
             className="text-center font-bold"
             style={{ color: 'white', fontSize: 28, fontFamily: 'monospace' }}
           >
-            {formatPrice(total)}{t('kiosk.currency', '원')}
+            {formatPrice(total)}{t('kkakdugi.currency', '원')}
           </p>
         </div>
 
         {/* Thank you */}
         <p className="text-center text-sm" style={{ color: CONVENIENCE_THEME.textLight }}>
-          {t('kiosk.convenience.complete.thanks', '감사합니다. 안녕히 가세요.')}
+          {t('kkakdugi.convenience.complete.thanks', '감사합니다. 안녕히 가세요.')}
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export default function CompleteScreen({ total, onDone }: Props) {
           className="w-full py-4 rounded font-bold text-base transition-all active:scale-[0.97]"
           style={{ backgroundColor: CONVENIENCE_THEME.headerBg, color: 'white' }}
         >
-          {t('kiosk.convenience.complete.done', '연습 끝내기')}
+          {t('kkakdugi.convenience.complete.done', '연습 끝내기')}
         </button>
       </div>
     </div>

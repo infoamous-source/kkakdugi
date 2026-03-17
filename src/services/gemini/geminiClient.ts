@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const API_KEY_STORAGE = 'kiosk-gemini-api-key';
-const CONNECTED_STORAGE = 'kiosk-gemini-connected';
+const API_KEY_STORAGE = 'kkakdugi-gemini-api-key';
+const CONNECTED_STORAGE = 'kkakdugi-gemini-connected';
 
 /**
  * Gemini API 클라이언트

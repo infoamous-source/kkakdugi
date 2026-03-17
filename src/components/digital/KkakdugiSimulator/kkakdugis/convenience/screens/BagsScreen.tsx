@@ -55,10 +55,10 @@ export default function BagsScreen({ selectedBag, onSelectBag, onNext, onBack }:
           className="text-xs font-medium px-3 py-1.5 rounded transition-opacity hover:opacity-75"
           style={{ color: CONVENIENCE_THEME.border, border: '1px solid rgba(167,243,208,0.4)' }}
         >
-          {t('kiosk.nav.back', '이전')}
+          {t('kkakdugi.nav.back', '이전')}
         </button>
         <span className="font-bold text-sm tracking-wider" style={{ color: 'white' }}>
-          {t('kiosk.convenience.bags.header', '봉투 선택')}
+          {t('kkakdugi.convenience.bags.header', '봉투 선택')}
         </span>
         <div style={{ width: 50 }} />
       </div>
@@ -69,7 +69,7 @@ export default function BagsScreen({ selectedBag, onSelectBag, onNext, onBack }:
           className="font-bold text-center mb-8"
           style={{ color: CONVENIENCE_THEME.text, fontSize: 18 }}
         >
-          {t('kiosk.convenience.bags.title', '봉투가 필요하신가요?')}
+          {t('kkakdugi.convenience.bags.title', '봉투가 필요하신가요?')}
         </h2>
 
         <div className="w-full space-y-3">
@@ -112,7 +112,7 @@ export default function BagsScreen({ selectedBag, onSelectBag, onNext, onBack }:
                   className="font-bold text-sm flex-shrink-0"
                   style={{ color: bag.price > 0 ? CONVENIENCE_THEME.primary : CONVENIENCE_THEME.textLight }}
                 >
-                  {bag.price > 0 ? `${formatPrice(bag.price)}${t('kiosk.currency', '원')}` : t('kiosk.convenience.bags.free', '0원')}
+                  {bag.price > 0 ? `${formatPrice(bag.price)}${t('kkakdugi.currency', '원')}` : t('kkakdugi.convenience.bags.free', '0원')}
                 </span>
               </button>
             );
@@ -135,7 +135,7 @@ export default function BagsScreen({ selectedBag, onSelectBag, onNext, onBack }:
             opacity: selectedBag ? 1 : 0.6,
           }}
         >
-          {t('kiosk.nav.next', '다음')}
+          {t('kkakdugi.nav.next', '다음')}
         </button>
       </div>
     </div>

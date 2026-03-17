@@ -100,10 +100,10 @@ export default function ScanScreen({ scannedItems, onScanItem, onDone, onBack }:
           className="text-xs font-medium px-3 py-1.5 rounded transition-opacity hover:opacity-75"
           style={{ color: CONVENIENCE_THEME.border, border: `1px solid rgba(167,243,208,0.4)` }}
         >
-          {t('kiosk.nav.back', '이전')}
+          {t('kkakdugi.nav.back', '이전')}
         </button>
         <span className="font-bold text-sm tracking-wider" style={{ color: 'white' }}>
-          {t('kiosk.convenience.scan.title', '상품 스캔')}
+          {t('kkakdugi.convenience.scan.title', '상품 스캔')}
         </span>
         <div style={{ width: 50 }} />
       </div>
@@ -148,7 +148,7 @@ export default function ScanScreen({ scannedItems, onScanItem, onDone, onBack }:
           className="absolute bottom-1 text-center w-full"
           style={{ color: 'rgba(167,243,208,0.6)', fontSize: 9 }}
         >
-          {t('kiosk.convenience.scan.areaHint', '상품의 바코드를 스캔하세요')}
+          {t('kkakdugi.convenience.scan.areaHint', '상품의 바코드를 스캔하세요')}
         </p>
       </div>
 
@@ -203,7 +203,7 @@ export default function ScanScreen({ scannedItems, onScanItem, onDone, onBack }:
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <span className="text-xs font-bold" style={{ color: CONVENIENCE_THEME.primary }}>
-                        {formatPrice(item.price)}{t('kiosk.currency', '원')}
+                        {formatPrice(item.price)}{t('kkakdugi.currency', '원')}
                       </span>
                       {scanned && (
                         <span
@@ -229,10 +229,10 @@ export default function ScanScreen({ scannedItems, onScanItem, onDone, onBack }:
       >
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs" style={{ color: CONVENIENCE_THEME.textLight }}>
-            {t('kiosk.convenience.scan.itemCount', '스캔 상품')} {totalItems}{t('kiosk.convenience.scan.itemUnit', '개')}
+            {t('kkakdugi.convenience.scan.itemCount', '스캔 상품')} {totalItems}{t('kkakdugi.convenience.scan.itemUnit', '개')}
           </span>
           <span className="font-bold text-base" style={{ color: CONVENIENCE_THEME.text }}>
-            {formatPrice(totalPrice)}{t('kiosk.currency', '원')}
+            {formatPrice(totalPrice)}{t('kkakdugi.currency', '원')}
           </span>
         </div>
         <button
@@ -245,7 +245,7 @@ export default function ScanScreen({ scannedItems, onScanItem, onDone, onBack }:
             opacity: totalItems > 0 ? 1 : 0.6,
           }}
         >
-          {t('kiosk.convenience.scan.done', '스캔 완료')}
+          {t('kkakdugi.convenience.scan.done', '스캔 완료')}
         </button>
       </div>
     </div>

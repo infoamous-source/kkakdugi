@@ -38,7 +38,7 @@ export default function OrderConfirmScreen({
           style={{ color: '#C89B3C', border: '1px solid rgba(200,155,60,0.4)' }}
         >
           <ChevronLeft size={12} />
-          {t('kiosk.nav.back', '이전')}
+          {t('kkakdugi.nav.back', '이전')}
         </button>
         <span className="font-bold text-sm tracking-widest" style={{ color: 'white', fontFamily: 'Georgia, serif' }}>
           주문 확인
@@ -54,13 +54,13 @@ export default function OrderConfirmScreen({
           style={{ borderBottom: '1px solid #E8D5C0', backgroundColor: 'white' }}
         >
           <span className="flex-1 text-xs" style={{ color: '#9E7E6A' }}>
-            {t('kiosk.screens.menu.cartHeader.menu', '메뉴')}
+            {t('kkakdugi.screens.menu.cartHeader.menu', '메뉴')}
           </span>
           <span className="text-xs mr-8" style={{ color: '#9E7E6A' }}>
-            {t('kiosk.screens.menu.cartHeader.quantity', '수량')}
+            {t('kkakdugi.screens.menu.cartHeader.quantity', '수량')}
           </span>
           <span className="text-xs" style={{ color: '#9E7E6A', minWidth: 64, textAlign: 'right' }}>
-            {t('kiosk.screens.menu.cartHeader.price', '금액')}
+            {t('kkakdugi.screens.menu.cartHeader.price', '금액')}
           </span>
         </div>
 
@@ -121,14 +121,14 @@ export default function OrderConfirmScreen({
         {/* Notice */}
         <div className="px-4 py-2">
           <p className="text-xs" style={{ color: '#DC2626' }}>
-            ※ {t('kiosk.screens.orderConfirm.noDisposableCup', '1회용컵은 매장에서 사용할 수 없습니다')}
+            ※ {t('kkakdugi.screens.orderConfirm.noDisposableCup', '1회용컵은 매장에서 사용할 수 없습니다')}
           </p>
         </div>
 
         {/* Recommend section */}
         <div className="px-4 pt-3 pb-2">
           <p className="font-bold mb-2.5" style={{ color: '#2C1A0E', fontSize: 13 }}>
-            {t('kiosk.screens.orderConfirm.recommend', '이런 메뉴는 어떠세요?')}
+            {t('kkakdugi.screens.orderConfirm.recommend', '이런 메뉴는 어떠세요?')}
           </p>
           <div className="flex gap-3">
             {recommendItems.map((rec) => (
@@ -166,15 +166,15 @@ export default function OrderConfirmScreen({
         >
           <div className="flex justify-between mb-2">
             <span style={{ color: '#6B4E35', fontSize: 13 }}>
-              {t('kiosk.screens.orderConfirm.totalQuantity', '총 수량')}
+              {t('kkakdugi.screens.orderConfirm.totalQuantity', '총 수량')}
             </span>
             <span className="font-bold" style={{ color: '#2C1A0E', fontSize: 13 }}>
-              {count}{t('kiosk.screens.cart.itemUnit', '개')}
+              {count}{t('kkakdugi.screens.cart.itemUnit', '개')}
             </span>
           </div>
           <div className="flex justify-between items-center pt-2" style={{ borderTop: '1px solid #F5EDE2' }}>
             <span className="font-bold" style={{ color: '#2C1A0E', fontSize: 14 }}>
-              {t('kiosk.screens.orderConfirm.totalAmount', '합계')}
+              {t('kkakdugi.screens.orderConfirm.totalAmount', '합계')}
             </span>
             <span className="font-bold" style={{ color: '#9C6B3C', fontSize: 22 }}>
               {formatPrice(total)}원
@@ -193,7 +193,7 @@ export default function OrderConfirmScreen({
           className="flex-1 py-4 rounded font-bold text-sm transition-opacity hover:opacity-75"
           style={{ backgroundColor: '#F5EDE2', color: '#6B4E35' }}
         >
-          {t('kiosk.screens.orderConfirm.back', '주문취소')}
+          {t('kkakdugi.screens.orderConfirm.back', '주문취소')}
         </button>
         <button
           onClick={() => { feedbackConfirm(); onNext(); }}
@@ -201,7 +201,7 @@ export default function OrderConfirmScreen({
           style={{ backgroundColor: '#3D2B1F', color: 'white' }}
         >
           <span style={{ color: '#C89B3C' }}>{formatPrice(total)}원 </span>
-          {t('kiosk.screens.cart.pay', '결제하기')}
+          {t('kkakdugi.screens.cart.pay', '결제하기')}
         </button>
       </div>
     </div>

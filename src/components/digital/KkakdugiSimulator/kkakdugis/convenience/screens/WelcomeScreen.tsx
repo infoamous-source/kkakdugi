@@ -67,7 +67,7 @@ export default function WelcomeScreen({ onNext }: Props) {
           className="text-white font-bold tracking-widest mb-1 relative z-10"
           style={{ fontSize: 28, letterSpacing: '0.15em', textShadow: '0 2px 12px rgba(0,0,0,0.4)' }}
         >
-          {t('kiosk.convenience.title', '무인 계산대')}
+          {t('kkakdugi.convenience.title', '무인 계산대')}
         </h1>
         <p
           className="relative z-10 font-light tracking-wider"
@@ -99,7 +99,7 @@ export default function WelcomeScreen({ onNext }: Props) {
             className="text-center font-medium"
             style={{ color: 'rgba(255,255,255,0.85)', fontSize: 14, letterSpacing: '0.05em' }}
           >
-            {t('kiosk.convenience.welcome.touch', '화면을 터치하세요')}
+            {t('kkakdugi.convenience.welcome.touch', '화면을 터치하세요')}
           </p>
         </div>
       </div>
@@ -110,7 +110,7 @@ export default function WelcomeScreen({ onNext }: Props) {
         style={{ backgroundColor: CONVENIENCE_THEME.headerBg }}
       >
         <span style={{ color: 'rgba(167,243,208,0.6)', fontSize: 11 }}>
-          {t('kiosk.convenience.welcome.scanGuide', '상품을 스캔해주세요')}
+          {t('kkakdugi.convenience.welcome.scanGuide', '상품을 스캔해주세요')}
         </span>
         <div className="flex gap-1">
           {[0, 1, 2].map((i) => (

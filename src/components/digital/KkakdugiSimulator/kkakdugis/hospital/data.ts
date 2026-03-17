@@ -38,16 +38,16 @@ export interface Doctor {
 }
 
 export const departments: Department[] = [
-  { id: 'internal',      nameKey: 'kiosk.hospital.dept.internal',      label: '내과',         icon: 'heart',  color: '#E74C3C' },
-  { id: 'orthopedic',    nameKey: 'kiosk.hospital.dept.orthopedic',    label: '정형외과',     icon: 'bone',   color: '#3498DB' },
-  { id: 'dermatology',   nameKey: 'kiosk.hospital.dept.dermatology',   label: '피부과',       icon: 'skin',   color: '#E8A87C' },
-  { id: 'ent',           nameKey: 'kiosk.hospital.dept.ent',           label: '이비인후과',   icon: 'ear',    color: '#9B59B6' },
-  { id: 'ophthalmology', nameKey: 'kiosk.hospital.dept.ophthalmology', label: '안과',         icon: 'eye',    color: '#2ECC71' },
-  { id: 'dental',        nameKey: 'kiosk.hospital.dept.dental',        label: '치과',         icon: 'tooth',  color: '#1ABC9C' },
-  { id: 'obgyn',         nameKey: 'kiosk.hospital.dept.obgyn',         label: '산부인과',     icon: 'baby',   color: '#FF69B4' },
-  { id: 'pediatrics',    nameKey: 'kiosk.hospital.dept.pediatrics',    label: '소아청소년과', icon: 'child',  color: '#F39C12' },
-  { id: 'neurology',     nameKey: 'kiosk.hospital.dept.neurology',     label: '신경과',       icon: 'brain',  color: '#8E44AD' },
-  { id: 'urology',       nameKey: 'kiosk.hospital.dept.urology',       label: '비뇨의학과',   icon: 'kidney', color: '#16A085' },
+  { id: 'internal',      nameKey: 'kkakdugi.hospital.dept.internal',      label: '내과',         icon: 'heart',  color: '#E74C3C' },
+  { id: 'orthopedic',    nameKey: 'kkakdugi.hospital.dept.orthopedic',    label: '정형외과',     icon: 'bone',   color: '#3498DB' },
+  { id: 'dermatology',   nameKey: 'kkakdugi.hospital.dept.dermatology',   label: '피부과',       icon: 'skin',   color: '#E8A87C' },
+  { id: 'ent',           nameKey: 'kkakdugi.hospital.dept.ent',           label: '이비인후과',   icon: 'ear',    color: '#9B59B6' },
+  { id: 'ophthalmology', nameKey: 'kkakdugi.hospital.dept.ophthalmology', label: '안과',         icon: 'eye',    color: '#2ECC71' },
+  { id: 'dental',        nameKey: 'kkakdugi.hospital.dept.dental',        label: '치과',         icon: 'tooth',  color: '#1ABC9C' },
+  { id: 'obgyn',         nameKey: 'kkakdugi.hospital.dept.obgyn',         label: '산부인과',     icon: 'baby',   color: '#FF69B4' },
+  { id: 'pediatrics',    nameKey: 'kkakdugi.hospital.dept.pediatrics',    label: '소아청소년과', icon: 'child',  color: '#F39C12' },
+  { id: 'neurology',     nameKey: 'kkakdugi.hospital.dept.neurology',     label: '신경과',       icon: 'brain',  color: '#8E44AD' },
+  { id: 'urology',       nameKey: 'kkakdugi.hospital.dept.urology',       label: '비뇨의학과',   icon: 'kidney', color: '#16A085' },
 ];
 
 export const doctors: Doctor[] = [
@@ -75,8 +75,8 @@ export const doctors: Doctor[] = [
 ];
 
 export const paymentMethods: PaymentMethod[] = [
-  { id: 'card',             nameKey: 'kiosk.screens.payment.card',       subKey: 'kiosk.screens.payment.cardSub', icon: 'card' },
-  { id: 'health-insurance', nameKey: 'kiosk.hospital.payment.insurance', icon: 'insurance' },
+  { id: 'card',             nameKey: 'kkakdugi.screens.payment.card',       subKey: 'kkakdugi.screens.payment.cardSub', icon: 'card' },
+  { id: 'health-insurance', nameKey: 'kkakdugi.hospital.payment.insurance', icon: 'insurance' },
 ];
 
 // Consultation fee (simulated)

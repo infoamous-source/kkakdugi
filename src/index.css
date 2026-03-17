@@ -123,13 +123,13 @@ body {
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* Kiosk helper bubble animation (camelCase alias) */
+/* Kkakdugi helper bubble animation (camelCase alias) */
 @keyframes slideUp {
   from { transform: translateY(12px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* Card insertion animation for kiosk payment screen */
+/* Card insertion animation for kkakdugi payment screen */
 @keyframes slideIn {
   0%, 100% { transform: translateY(0); opacity: 0.6; }
   50% { transform: translateY(-4px); opacity: 1; }

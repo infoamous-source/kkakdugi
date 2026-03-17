@@ -1,10 +1,10 @@
 // ─── Types ───
 export type {
-  KioskType,
-  KioskCategory,
-  KioskTheme,
-  KioskScreenDef,
-  KioskConfig,
+  KkakdugiType,
+  KkakdugiCategory,
+  KkakdugiTheme,
+  KkakdugiScreenDef,
+  KkakdugiConfig,
   OrderMenuItem,
   OrderOptionGroup,
   OrderOptionItem,
@@ -12,14 +12,14 @@ export type {
   ServiceItem,
   PaymentMethod,
   ScreenFlowMap,
-  KioskComponentProps,
-  KioskSimulatorProps,
-  KioskRegistryEntry,
+  KkakdugiComponentProps,
+  KkakdugiSimulatorProps,
+  KkakdugiRegistryEntry,
 } from './types';
 
 // ─── Components ───
-export { default as KioskFrame } from './KioskFrame';
-export { default as KioskHelper } from './KioskHelper';
+export { default as KkakdugiFrame } from './KkakdugiFrame';
+export { default as KkakdugiHelper } from './KkakdugiHelper';
 
 // ─── Utilities ───
 export {

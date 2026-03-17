@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, MessageCircle, HelpCircle } from 'lucide-react';
 
-import type { KioskComponentProps } from '../../core/types';
+import type { KkakdugiComponentProps } from '../../core/types';
 import { playTouchSound } from '../../core/haptics';
 import {
   type CinemaScreen,
@@ -22,7 +22,7 @@ import PaymentScreen from './screens/PaymentScreen';
 import ProcessingScreen from './screens/ProcessingScreen';
 import CompleteScreen from './screens/CompleteScreen';
 
-export default function CinemaKiosk({ onClose, onComplete }: KioskComponentProps) {
+export default function CinemaKkakdugi({ onClose, onComplete }: KkakdugiComponentProps) {
   const { t } = useTranslation();
 
   // ── Navigation ──────────────────────────────────────────────────────────────
@@ -61,15 +61,15 @@ export default function CinemaKiosk({ onClose, onComplete }: KioskComponentProps
 
   // ── Helper messages ───────────────────────────────────────────────────────────
   const helperMessages: Record<CinemaScreen, string> = useMemo(() => ({
-    welcome:     t('kiosk.helper.cinema.welcome',     '화면을 터치하여 예매를 시작하세요'),
-    movieSelect: t('kiosk.helper.cinema.movieSelect', '관람할 영화를 선택하세요'),
-    timeSelect:  t('kiosk.helper.cinema.timeSelect',  '원하는 상영 시간을 선택하세요'),
-    seatSelect:  t('kiosk.helper.cinema.seatSelect',  '좌석을 선택하세요 (최대 4석)'),
-    personCount: t('kiosk.helper.cinema.personCount', '인원 유형별 수를 선택하세요'),
-    snackSelect: t('kiosk.helper.cinema.snackSelect', '스낵을 선택하거나 건너뛸 수 있습니다'),
-    payment:     t('kiosk.helper.cinema.payment',     '결제 정보를 확인하고 결제하세요'),
-    processing:  t('kiosk.helper.cinema.processing',  '결제를 처리하고 있습니다'),
-    complete:    t('kiosk.helper.cinema.complete',     '발권이 완료되었습니다. 티켓을 가져가세요'),
+    welcome:     t('kkakdugi.helper.cinema.welcome',     '화면을 터치하여 예매를 시작하세요'),
+    movieSelect: t('kkakdugi.helper.cinema.movieSelect', '관람할 영화를 선택하세요'),
+    timeSelect:  t('kkakdugi.helper.cinema.timeSelect',  '원하는 상영 시간을 선택하세요'),
+    seatSelect:  t('kkakdugi.helper.cinema.seatSelect',  '좌석을 선택하세요 (최대 4석)'),
+    personCount: t('kkakdugi.helper.cinema.personCount', '인원 유형별 수를 선택하세요'),
+    snackSelect: t('kkakdugi.helper.cinema.snackSelect', '스낵을 선택하거나 건너뛸 수 있습니다'),
+    payment:     t('kkakdugi.helper.cinema.payment',     '결제 정보를 확인하고 결제하세요'),
+    processing:  t('kkakdugi.helper.cinema.processing',  '결제를 처리하고 있습니다'),
+    complete:    t('kkakdugi.helper.cinema.complete',     '발권이 완료되었습니다. 티켓을 가져가세요'),
   }), [t]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────────
@@ -160,7 +160,7 @@ export default function CinemaKiosk({ onClose, onComplete }: KioskComponentProps
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      {/* Kiosk frame */}
+      {/* Kkakdugi frame */}
       <div
         className="w-full flex flex-col overflow-hidden shadow-2xl"
         style={{
@@ -179,7 +179,7 @@ export default function CinemaKiosk({ onClose, onComplete }: KioskComponentProps
           style={{ backgroundColor: CINEMA_THEME.headerBg, borderBottom: '1px solid #2D1B4E' }}
         >
           <span className="text-xs font-medium" style={{ color: 'rgba(196,181,253,0.75)', minWidth: 60 }}>
-            {t('kiosk.step', '단계')} {currentStepIndex + 1} / {totalSteps}
+            {t('kkakdugi.step', '단계')} {currentStepIndex + 1} / {totalSteps}
           </span>
           <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
             <div

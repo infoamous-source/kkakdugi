@@ -48,7 +48,7 @@ export default function DownloadButton({ storeLinks, deepLinks, isInstalled, int
   if (internalLink) {
     return (
       <a
-        href={`/kiosk${internalLink}`}
+        href={`/kkakdugi${internalLink}`}
         className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-purple-500 text-white rounded-xl text-sm font-bold btn-duo border-b-4 border-purple-700 hover:bg-purple-600 transition-colors"
       >
         <OpenIcon />

@@ -70,7 +70,7 @@ export async function generateMarketAnalysis(
       console.error('[MarketCompass] AI market analysis FAILED, falling back to mock:', err);
     }
   } else {
-    console.warn('[MarketCompass] Gemini not enabled. connected=', localStorage.getItem('kiosk-gemini-connected'), 'apiKey=', !!localStorage.getItem('kiosk-gemini-api-key'));
+    console.warn('[MarketCompass] Gemini not enabled. connected=', localStorage.getItem('kkakdugi-gemini-connected'), 'apiKey=', !!localStorage.getItem('kkakdugi-gemini-api-key'));
   }
 
   return { result: getMockMarketAnalysis(keyword), isMock: true };

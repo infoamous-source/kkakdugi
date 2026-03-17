@@ -1,11 +1,11 @@
 import { lazy } from 'react';
-import type { KioskType, KioskConfig, KioskRegistryEntry } from './core/types';
+import type { KkakdugiType, KkakdugiConfig, KkakdugiRegistryEntry } from './core/types';
 
-// Kiosk configurations
-const cafeConfig: KioskConfig = {
+// Kkakdugi configurations
+const cafeConfig: KkakdugiConfig = {
   id: 'cafe',
-  nameKey: 'kiosk.types.cafe.name',
-  descriptionKey: 'kiosk.types.cafe.description',
+  nameKey: 'kkakdugi.types.cafe.name',
+  descriptionKey: 'kkakdugi.types.cafe.description',
   icon: '☕',
   difficulty: 1,
   category: 'food',
@@ -18,23 +18,23 @@ const cafeConfig: KioskConfig = {
     buttonStyle: 'square',
   },
   screens: [
-    { id: 'welcome', labelKey: 'kiosk.screens.welcome.title', helperKey: 'kiosk.helper.welcome' },
-    { id: 'dineOption', labelKey: 'kiosk.screens.dineOption.title', helperKey: 'kiosk.helper.dineOption' },
-    { id: 'menu', labelKey: 'kiosk.screens.menu.title', helperKey: 'kiosk.helper.menu' },
-    { id: 'options', labelKey: 'kiosk.screens.options.title', helperKey: 'kiosk.helper.options' },
-    { id: 'orderConfirm', labelKey: 'kiosk.screens.orderConfirm.title', helperKey: 'kiosk.helper.orderConfirm' },
-    { id: 'payment', labelKey: 'kiosk.screens.payment.title', helperKey: 'kiosk.helper.payment' },
-    { id: 'cardPayment', labelKey: 'kiosk.screens.cardPayment.title', helperKey: 'kiosk.helper.card' },
-    { id: 'points', labelKey: 'kiosk.screens.points.title', helperKey: 'kiosk.helper.points' },
-    { id: 'receipt', labelKey: 'kiosk.screens.receipt.title', helperKey: 'kiosk.helper.receipt' },
-    { id: 'complete', labelKey: 'kiosk.screens.complete.title', helperKey: 'kiosk.helper.complete' },
+    { id: 'welcome', labelKey: 'kkakdugi.screens.welcome.title', helperKey: 'kkakdugi.helper.welcome' },
+    { id: 'dineOption', labelKey: 'kkakdugi.screens.dineOption.title', helperKey: 'kkakdugi.helper.dineOption' },
+    { id: 'menu', labelKey: 'kkakdugi.screens.menu.title', helperKey: 'kkakdugi.helper.menu' },
+    { id: 'options', labelKey: 'kkakdugi.screens.options.title', helperKey: 'kkakdugi.helper.options' },
+    { id: 'orderConfirm', labelKey: 'kkakdugi.screens.orderConfirm.title', helperKey: 'kkakdugi.helper.orderConfirm' },
+    { id: 'payment', labelKey: 'kkakdugi.screens.payment.title', helperKey: 'kkakdugi.helper.payment' },
+    { id: 'cardPayment', labelKey: 'kkakdugi.screens.cardPayment.title', helperKey: 'kkakdugi.helper.card' },
+    { id: 'points', labelKey: 'kkakdugi.screens.points.title', helperKey: 'kkakdugi.helper.points' },
+    { id: 'receipt', labelKey: 'kkakdugi.screens.receipt.title', helperKey: 'kkakdugi.helper.receipt' },
+    { id: 'complete', labelKey: 'kkakdugi.screens.complete.title', helperKey: 'kkakdugi.helper.complete' },
   ],
 };
 
-const fastfoodConfig: KioskConfig = {
+const fastfoodConfig: KkakdugiConfig = {
   id: 'fastfood',
-  nameKey: 'kiosk.types.fastfood.name',
-  descriptionKey: 'kiosk.types.fastfood.description',
+  nameKey: 'kkakdugi.types.fastfood.name',
+  descriptionKey: 'kkakdugi.types.fastfood.description',
   icon: '🍔',
   difficulty: 2,
   category: 'food',
@@ -47,23 +47,23 @@ const fastfoodConfig: KioskConfig = {
     buttonStyle: 'square',
   },
   screens: [
-    { id: 'welcome', labelKey: 'kiosk.screens.welcome.title', helperKey: 'kiosk.helper.welcome' },
-    { id: 'dineOption', labelKey: 'kiosk.screens.dineOption.title', helperKey: 'kiosk.helper.dineOption' },
-    { id: 'menu', labelKey: 'kiosk.screens.menu.title', helperKey: 'kiosk.helper.menu' },
-    { id: 'options', labelKey: 'kiosk.screens.options.title', helperKey: 'kiosk.helper.options' },
-    { id: 'orderConfirm', labelKey: 'kiosk.screens.orderConfirm.title', helperKey: 'kiosk.helper.orderConfirm' },
-    { id: 'payment', labelKey: 'kiosk.screens.payment.title', helperKey: 'kiosk.helper.payment' },
-    { id: 'cardPayment', labelKey: 'kiosk.screens.cardPayment.title', helperKey: 'kiosk.helper.card' },
-    { id: 'points', labelKey: 'kiosk.screens.points.title', helperKey: 'kiosk.helper.points' },
-    { id: 'receipt', labelKey: 'kiosk.screens.receipt.title', helperKey: 'kiosk.helper.receipt' },
-    { id: 'complete', labelKey: 'kiosk.screens.complete.title', helperKey: 'kiosk.helper.complete' },
+    { id: 'welcome', labelKey: 'kkakdugi.screens.welcome.title', helperKey: 'kkakdugi.helper.welcome' },
+    { id: 'dineOption', labelKey: 'kkakdugi.screens.dineOption.title', helperKey: 'kkakdugi.helper.dineOption' },
+    { id: 'menu', labelKey: 'kkakdugi.screens.menu.title', helperKey: 'kkakdugi.helper.menu' },
+    { id: 'options', labelKey: 'kkakdugi.screens.options.title', helperKey: 'kkakdugi.helper.options' },
+    { id: 'orderConfirm', labelKey: 'kkakdugi.screens.orderConfirm.title', helperKey: 'kkakdugi.helper.orderConfirm' },
+    { id: 'payment', labelKey: 'kkakdugi.screens.payment.title', helperKey: 'kkakdugi.helper.payment' },
+    { id: 'cardPayment', labelKey: 'kkakdugi.screens.cardPayment.title', helperKey: 'kkakdugi.helper.card' },
+    { id: 'points', labelKey: 'kkakdugi.screens.points.title', helperKey: 'kkakdugi.helper.points' },
+    { id: 'receipt', labelKey: 'kkakdugi.screens.receipt.title', helperKey: 'kkakdugi.helper.receipt' },
+    { id: 'complete', labelKey: 'kkakdugi.screens.complete.title', helperKey: 'kkakdugi.helper.complete' },
   ],
 };
 
-const hospitalConfig: KioskConfig = {
+const hospitalConfig: KkakdugiConfig = {
   id: 'hospital',
-  nameKey: 'kiosk.types.hospital.name',
-  descriptionKey: 'kiosk.types.hospital.description',
+  nameKey: 'kkakdugi.types.hospital.name',
+  descriptionKey: 'kkakdugi.types.hospital.description',
   icon: '🏥',
   difficulty: 3,
   category: 'public',
@@ -76,21 +76,21 @@ const hospitalConfig: KioskConfig = {
     buttonStyle: 'square',
   },
   screens: [
-    { id: 'welcome',     labelKey: 'kiosk.screens.welcome.title',           helperKey: 'kiosk.helper.hospital.welcome' },
-    { id: 'visitType',   labelKey: 'kiosk.hospital.screens.visitType.title', helperKey: 'kiosk.helper.hospital.visitType' },
-    { id: 'department',  labelKey: 'kiosk.hospital.screens.department.title',helperKey: 'kiosk.helper.hospital.department' },
-    { id: 'doctor',      labelKey: 'kiosk.hospital.screens.doctor.title',    helperKey: 'kiosk.helper.hospital.doctor' },
-    { id: 'identity',    labelKey: 'kiosk.hospital.screens.identity.title',  helperKey: 'kiosk.helper.hospital.identity' },
-    { id: 'confirmInfo', labelKey: 'kiosk.hospital.screens.confirm.title',   helperKey: 'kiosk.helper.hospital.confirmInfo' },
-    { id: 'payment',     labelKey: 'kiosk.hospital.screens.payment.title',   helperKey: 'kiosk.helper.hospital.payment' },
-    { id: 'complete',    labelKey: 'kiosk.hospital.screens.complete.title',  helperKey: 'kiosk.helper.hospital.complete' },
+    { id: 'welcome',     labelKey: 'kkakdugi.screens.welcome.title',           helperKey: 'kkakdugi.helper.hospital.welcome' },
+    { id: 'visitType',   labelKey: 'kkakdugi.hospital.screens.visitType.title', helperKey: 'kkakdugi.helper.hospital.visitType' },
+    { id: 'department',  labelKey: 'kkakdugi.hospital.screens.department.title',helperKey: 'kkakdugi.helper.hospital.department' },
+    { id: 'doctor',      labelKey: 'kkakdugi.hospital.screens.doctor.title',    helperKey: 'kkakdugi.helper.hospital.doctor' },
+    { id: 'identity',    labelKey: 'kkakdugi.hospital.screens.identity.title',  helperKey: 'kkakdugi.helper.hospital.identity' },
+    { id: 'confirmInfo', labelKey: 'kkakdugi.hospital.screens.confirm.title',   helperKey: 'kkakdugi.helper.hospital.confirmInfo' },
+    { id: 'payment',     labelKey: 'kkakdugi.hospital.screens.payment.title',   helperKey: 'kkakdugi.helper.hospital.payment' },
+    { id: 'complete',    labelKey: 'kkakdugi.hospital.screens.complete.title',  helperKey: 'kkakdugi.helper.hospital.complete' },
   ],
 };
 
-const bankConfig: KioskConfig = {
+const bankConfig: KkakdugiConfig = {
   id: 'bank',
-  nameKey: 'kiosk.types.bank.name',
-  descriptionKey: 'kiosk.types.bank.description',
+  nameKey: 'kkakdugi.types.bank.name',
+  descriptionKey: 'kkakdugi.types.bank.description',
   icon: '🏦',
   difficulty: 3,
   category: 'public',
@@ -103,21 +103,21 @@ const bankConfig: KioskConfig = {
     buttonStyle: 'square',
   },
   screens: [
-    { id: 'welcome',            labelKey: 'kiosk.screens.welcome.title',               helperKey: 'kiosk.helper.bank.welcome' },
-    { id: 'serviceSelect',      labelKey: 'kiosk.bank.screens.serviceSelect.title',     helperKey: 'kiosk.helper.bank.serviceSelect' },
-    { id: 'accountVerify',      labelKey: 'kiosk.bank.screens.accountVerify.title',      helperKey: 'kiosk.helper.bank.accountVerify' },
-    { id: 'transaction',        labelKey: 'kiosk.bank.screens.transaction.title',        helperKey: 'kiosk.helper.bank.transaction' },
-    { id: 'confirmTransaction', labelKey: 'kiosk.bank.screens.confirmTransaction.title', helperKey: 'kiosk.helper.bank.confirmTransaction' },
-    { id: 'processing',         labelKey: 'kiosk.bank.screens.processing.title',         helperKey: 'kiosk.helper.bank.processing' },
-    { id: 'receipt',            labelKey: 'kiosk.bank.screens.receipt.title',             helperKey: 'kiosk.helper.bank.receipt' },
-    { id: 'complete',           labelKey: 'kiosk.bank.screens.complete.title',            helperKey: 'kiosk.helper.bank.complete' },
+    { id: 'welcome',            labelKey: 'kkakdugi.screens.welcome.title',               helperKey: 'kkakdugi.helper.bank.welcome' },
+    { id: 'serviceSelect',      labelKey: 'kkakdugi.bank.screens.serviceSelect.title',     helperKey: 'kkakdugi.helper.bank.serviceSelect' },
+    { id: 'accountVerify',      labelKey: 'kkakdugi.bank.screens.accountVerify.title',      helperKey: 'kkakdugi.helper.bank.accountVerify' },
+    { id: 'transaction',        labelKey: 'kkakdugi.bank.screens.transaction.title',        helperKey: 'kkakdugi.helper.bank.transaction' },
+    { id: 'confirmTransaction', labelKey: 'kkakdugi.bank.screens.confirmTransaction.title', helperKey: 'kkakdugi.helper.bank.confirmTransaction' },
+    { id: 'processing',         labelKey: 'kkakdugi.bank.screens.processing.title',         helperKey: 'kkakdugi.helper.bank.processing' },
+    { id: 'receipt',            labelKey: 'kkakdugi.bank.screens.receipt.title',             helperKey: 'kkakdugi.helper.bank.receipt' },
+    { id: 'complete',           labelKey: 'kkakdugi.bank.screens.complete.title',            helperKey: 'kkakdugi.helper.bank.complete' },
   ],
 };
 
-const governmentConfig: KioskConfig = {
+const governmentConfig: KkakdugiConfig = {
   id: 'government',
-  nameKey: 'kiosk.types.government.name',
-  descriptionKey: 'kiosk.types.government.description',
+  nameKey: 'kkakdugi.types.government.name',
+  descriptionKey: 'kkakdugi.types.government.description',
   icon: '🏛️',
   difficulty: 3,
   category: 'public',
@@ -130,21 +130,21 @@ const governmentConfig: KioskConfig = {
     buttonStyle: 'square',
   },
   screens: [
-    { id: 'welcome',         labelKey: 'kiosk.screens.welcome.title',                    helperKey: 'kiosk.helper.government.welcome' },
-    { id: 'identity',        labelKey: 'kiosk.government.screens.identity.title',         helperKey: 'kiosk.helper.government.identity' },
-    { id: 'documentSelect',  labelKey: 'kiosk.government.screens.documentSelect.title',   helperKey: 'kiosk.helper.government.documentSelect' },
-    { id: 'documentOptions', labelKey: 'kiosk.government.screens.documentOptions.title',  helperKey: 'kiosk.helper.government.documentOptions' },
-    { id: 'confirmDocument', labelKey: 'kiosk.government.screens.confirmDocument.title',  helperKey: 'kiosk.helper.government.confirmDocument' },
-    { id: 'payment',         labelKey: 'kiosk.government.screens.payment.title',          helperKey: 'kiosk.helper.government.payment' },
-    { id: 'processing',      labelKey: 'kiosk.government.screens.processing.title',       helperKey: 'kiosk.helper.government.processing' },
-    { id: 'complete',        labelKey: 'kiosk.government.screens.complete.title',         helperKey: 'kiosk.helper.government.complete' },
+    { id: 'welcome',         labelKey: 'kkakdugi.screens.welcome.title',                    helperKey: 'kkakdugi.helper.government.welcome' },
+    { id: 'identity',        labelKey: 'kkakdugi.government.screens.identity.title',         helperKey: 'kkakdugi.helper.government.identity' },
+    { id: 'documentSelect',  labelKey: 'kkakdugi.government.screens.documentSelect.title',   helperKey: 'kkakdugi.helper.government.documentSelect' },
+    { id: 'documentOptions', labelKey: 'kkakdugi.government.screens.documentOptions.title',  helperKey: 'kkakdugi.helper.government.documentOptions' },
+    { id: 'confirmDocument', labelKey: 'kkakdugi.government.screens.confirmDocument.title',  helperKey: 'kkakdugi.helper.government.confirmDocument' },
+    { id: 'payment',         labelKey: 'kkakdugi.government.screens.payment.title',          helperKey: 'kkakdugi.helper.government.payment' },
+    { id: 'processing',      labelKey: 'kkakdugi.government.screens.processing.title',       helperKey: 'kkakdugi.helper.government.processing' },
+    { id: 'complete',        labelKey: 'kkakdugi.government.screens.complete.title',         helperKey: 'kkakdugi.helper.government.complete' },
   ],
 };
 
-const cinemaConfig: KioskConfig = {
+const cinemaConfig: KkakdugiConfig = {
   id: 'cinema',
-  nameKey: 'kiosk.types.cinema.name',
-  descriptionKey: 'kiosk.types.cinema.description',
+  nameKey: 'kkakdugi.types.cinema.name',
+  descriptionKey: 'kkakdugi.types.cinema.description',
   icon: '🎬',
   difficulty: 2,
   category: 'entertainment',
@@ -157,22 +157,22 @@ const cinemaConfig: KioskConfig = {
     buttonStyle: 'square',
   },
   screens: [
-    { id: 'welcome',     labelKey: 'cinema.screens.welcome.title',     helperKey: 'kiosk.helper.cinema.welcome' },
-    { id: 'movieSelect', labelKey: 'cinema.screens.movieSelect.title', helperKey: 'kiosk.helper.cinema.movieSelect' },
-    { id: 'timeSelect',  labelKey: 'cinema.screens.timeSelect.title',  helperKey: 'kiosk.helper.cinema.timeSelect' },
-    { id: 'seatSelect',  labelKey: 'cinema.screens.seatSelect.title',  helperKey: 'kiosk.helper.cinema.seatSelect' },
-    { id: 'personCount', labelKey: 'cinema.screens.personCount.title', helperKey: 'kiosk.helper.cinema.personCount' },
-    { id: 'snackSelect', labelKey: 'cinema.screens.snackSelect.title', helperKey: 'kiosk.helper.cinema.snackSelect' },
-    { id: 'payment',     labelKey: 'cinema.screens.payment.title',     helperKey: 'kiosk.helper.cinema.payment' },
-    { id: 'processing',  labelKey: 'cinema.screens.processing.title',  helperKey: 'kiosk.helper.cinema.processing' },
-    { id: 'complete',    labelKey: 'cinema.screens.complete.title',    helperKey: 'kiosk.helper.cinema.complete' },
+    { id: 'welcome',     labelKey: 'cinema.screens.welcome.title',     helperKey: 'kkakdugi.helper.cinema.welcome' },
+    { id: 'movieSelect', labelKey: 'cinema.screens.movieSelect.title', helperKey: 'kkakdugi.helper.cinema.movieSelect' },
+    { id: 'timeSelect',  labelKey: 'cinema.screens.timeSelect.title',  helperKey: 'kkakdugi.helper.cinema.timeSelect' },
+    { id: 'seatSelect',  labelKey: 'cinema.screens.seatSelect.title',  helperKey: 'kkakdugi.helper.cinema.seatSelect' },
+    { id: 'personCount', labelKey: 'cinema.screens.personCount.title', helperKey: 'kkakdugi.helper.cinema.personCount' },
+    { id: 'snackSelect', labelKey: 'cinema.screens.snackSelect.title', helperKey: 'kkakdugi.helper.cinema.snackSelect' },
+    { id: 'payment',     labelKey: 'cinema.screens.payment.title',     helperKey: 'kkakdugi.helper.cinema.payment' },
+    { id: 'processing',  labelKey: 'cinema.screens.processing.title',  helperKey: 'kkakdugi.helper.cinema.processing' },
+    { id: 'complete',    labelKey: 'cinema.screens.complete.title',    helperKey: 'kkakdugi.helper.cinema.complete' },
   ],
 };
 
-const convenienceConfig: KioskConfig = {
+const convenienceConfig: KkakdugiConfig = {
   id: 'convenience',
-  nameKey: 'kiosk.types.convenience.name',
-  descriptionKey: 'kiosk.types.convenience.description',
+  nameKey: 'kkakdugi.types.convenience.name',
+  descriptionKey: 'kkakdugi.types.convenience.description',
   icon: '🏪',
   difficulty: 2,
   category: 'food',
@@ -185,21 +185,21 @@ const convenienceConfig: KioskConfig = {
     buttonStyle: 'square',
   },
   screens: [
-    { id: 'welcome',     labelKey: 'kiosk.convenience.screens.welcome.title',     helperKey: 'kiosk.helper.convenience.welcome' },
-    { id: 'scan',        labelKey: 'kiosk.convenience.screens.scan.title',        helperKey: 'kiosk.helper.convenience.scan' },
-    { id: 'ageVerify',   labelKey: 'kiosk.convenience.screens.ageVerify.title',   helperKey: 'kiosk.helper.convenience.ageVerify' },
-    { id: 'bags',        labelKey: 'kiosk.convenience.screens.bags.title',        helperKey: 'kiosk.helper.convenience.bags' },
-    { id: 'orderReview', labelKey: 'kiosk.convenience.screens.orderReview.title', helperKey: 'kiosk.helper.convenience.orderReview' },
-    { id: 'payment',     labelKey: 'kiosk.convenience.screens.payment.title',     helperKey: 'kiosk.helper.convenience.payment' },
-    { id: 'receipt',     labelKey: 'kiosk.convenience.screens.receipt.title',     helperKey: 'kiosk.helper.convenience.receipt' },
-    { id: 'complete',    labelKey: 'kiosk.convenience.screens.complete.title',    helperKey: 'kiosk.helper.convenience.complete' },
+    { id: 'welcome',     labelKey: 'kkakdugi.convenience.screens.welcome.title',     helperKey: 'kkakdugi.helper.convenience.welcome' },
+    { id: 'scan',        labelKey: 'kkakdugi.convenience.screens.scan.title',        helperKey: 'kkakdugi.helper.convenience.scan' },
+    { id: 'ageVerify',   labelKey: 'kkakdugi.convenience.screens.ageVerify.title',   helperKey: 'kkakdugi.helper.convenience.ageVerify' },
+    { id: 'bags',        labelKey: 'kkakdugi.convenience.screens.bags.title',        helperKey: 'kkakdugi.helper.convenience.bags' },
+    { id: 'orderReview', labelKey: 'kkakdugi.convenience.screens.orderReview.title', helperKey: 'kkakdugi.helper.convenience.orderReview' },
+    { id: 'payment',     labelKey: 'kkakdugi.convenience.screens.payment.title',     helperKey: 'kkakdugi.helper.convenience.payment' },
+    { id: 'receipt',     labelKey: 'kkakdugi.convenience.screens.receipt.title',     helperKey: 'kkakdugi.helper.convenience.receipt' },
+    { id: 'complete',    labelKey: 'kkakdugi.convenience.screens.complete.title',    helperKey: 'kkakdugi.helper.convenience.complete' },
   ],
 };
 
-const airportConfig: KioskConfig = {
+const airportConfig: KkakdugiConfig = {
   id: 'airport',
-  nameKey: 'kiosk.types.airport.name',
-  descriptionKey: 'kiosk.types.airport.description',
+  nameKey: 'kkakdugi.types.airport.name',
+  descriptionKey: 'kkakdugi.types.airport.description',
   icon: '✈️',
   difficulty: 4,
   category: 'transport',
@@ -212,57 +212,57 @@ const airportConfig: KioskConfig = {
     buttonStyle: 'square',
   },
   screens: [
-    { id: 'welcome',       labelKey: 'airport.screens.welcome.title',       helperKey: 'kiosk.helper.airport.welcome' },
-    { id: 'bookingSearch', labelKey: 'airport.screens.bookingSearch.title', helperKey: 'kiosk.helper.airport.bookingSearch' },
-    { id: 'flightInfo',    labelKey: 'airport.screens.flightInfo.title',    helperKey: 'kiosk.helper.airport.flightInfo' },
-    { id: 'seatSelect',    labelKey: 'airport.screens.seatSelect.title',    helperKey: 'kiosk.helper.airport.seatSelect' },
-    { id: 'baggage',       labelKey: 'airport.screens.baggage.title',       helperKey: 'kiosk.helper.airport.baggage' },
-    { id: 'extras',        labelKey: 'airport.screens.extras.title',        helperKey: 'kiosk.helper.airport.extras' },
-    { id: 'confirmAll',    labelKey: 'airport.screens.confirmAll.title',    helperKey: 'kiosk.helper.airport.confirmAll' },
-    { id: 'payment',       labelKey: 'airport.screens.payment.title',       helperKey: 'kiosk.helper.airport.payment' },
-    { id: 'processing',    labelKey: 'airport.screens.processing.title',    helperKey: 'kiosk.helper.airport.processing' },
-    { id: 'complete',      labelKey: 'airport.screens.complete.title',      helperKey: 'kiosk.helper.airport.complete' },
+    { id: 'welcome',       labelKey: 'airport.screens.welcome.title',       helperKey: 'kkakdugi.helper.airport.welcome' },
+    { id: 'bookingSearch', labelKey: 'airport.screens.bookingSearch.title', helperKey: 'kkakdugi.helper.airport.bookingSearch' },
+    { id: 'flightInfo',    labelKey: 'airport.screens.flightInfo.title',    helperKey: 'kkakdugi.helper.airport.flightInfo' },
+    { id: 'seatSelect',    labelKey: 'airport.screens.seatSelect.title',    helperKey: 'kkakdugi.helper.airport.seatSelect' },
+    { id: 'baggage',       labelKey: 'airport.screens.baggage.title',       helperKey: 'kkakdugi.helper.airport.baggage' },
+    { id: 'extras',        labelKey: 'airport.screens.extras.title',        helperKey: 'kkakdugi.helper.airport.extras' },
+    { id: 'confirmAll',    labelKey: 'airport.screens.confirmAll.title',    helperKey: 'kkakdugi.helper.airport.confirmAll' },
+    { id: 'payment',       labelKey: 'airport.screens.payment.title',       helperKey: 'kkakdugi.helper.airport.payment' },
+    { id: 'processing',    labelKey: 'airport.screens.processing.title',    helperKey: 'kkakdugi.helper.airport.processing' },
+    { id: 'complete',      labelKey: 'airport.screens.complete.title',      helperKey: 'kkakdugi.helper.airport.complete' },
   ],
 };
 
 // Registry
-export const kioskRegistry: Record<KioskType, KioskRegistryEntry> = {
+export const kkakdugiRegistry: Record<KkakdugiType, KkakdugiRegistryEntry> = {
   cafe: {
     config: cafeConfig,
-    component: lazy(() => import('./kiosks/cafe/CafeKiosk')),
+    component: lazy(() => import('./kkakdugis/cafe/CafeKkakdugi')),
   },
   fastfood: {
     config: fastfoodConfig,
-    component: lazy(() => import('./kiosks/fastfood/FastfoodKiosk')),
+    component: lazy(() => import('./kkakdugis/fastfood/FastfoodKkakdugi')),
   },
   hospital: {
     config: hospitalConfig,
-    component: lazy(() => import('./kiosks/hospital/HospitalKiosk')),
+    component: lazy(() => import('./kkakdugis/hospital/HospitalKkakdugi')),
   },
   bank: {
     config: bankConfig,
-    component: lazy(() => import('./kiosks/bank/BankKiosk')),
+    component: lazy(() => import('./kkakdugis/bank/BankKkakdugi')),
   },
   government: {
     config: governmentConfig,
-    component: lazy(() => import('./kiosks/government/GovernmentKiosk')),
+    component: lazy(() => import('./kkakdugis/government/GovernmentKkakdugi')),
   },
   cinema: {
     config: cinemaConfig,
-    component: lazy(() => import('./kiosks/cinema/CinemaKiosk')),
+    component: lazy(() => import('./kkakdugis/cinema/CinemaKkakdugi')),
   },
   convenience: {
     config: convenienceConfig,
-    component: lazy(() => import('./kiosks/convenience/ConvenienceKiosk')),
+    component: lazy(() => import('./kkakdugis/convenience/ConvenienceKkakdugi')),
   },
   airport: {
     config: airportConfig,
-    component: lazy(() => import('./kiosks/airport/AirportKiosk')),
+    component: lazy(() => import('./kkakdugis/airport/AirportKkakdugi')),
   },
 };
 
-export const kioskConfigs = Object.values(kioskRegistry).map(entry => entry.config);
+export const kkakdugiConfigs = Object.values(kkakdugiRegistry).map(entry => entry.config);
 
-export function getKioskEntry(type: KioskType): KioskRegistryEntry {
-  return kioskRegistry[type];
+export function getKkakdugiEntry(type: KkakdugiType): KkakdugiRegistryEntry {
+  return kkakdugiRegistry[type];
 }

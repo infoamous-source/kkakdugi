@@ -150,16 +150,16 @@ export const digitalModuleContents: DigitalModuleContent[] = [
       },
       {
         id: 'db-02-step-4',
-        titleKey: 'digital.modules.kakao.steps.kioskIntro.title',
-        descriptionKey: 'digital.modules.kakao.steps.kioskIntro.description',
+        titleKey: 'digital.modules.kakao.steps.kkakdugiIntro.title',
+        descriptionKey: 'digital.modules.kakao.steps.kkakdugiIntro.description',
         type: 'guide',
         icon: 'Monitor',
         substeps: [
-          'digital.modules.kakao.steps.kioskIntro.substeps.0',
-          'digital.modules.kakao.steps.kioskIntro.substeps.1',
-          'digital.modules.kakao.steps.kioskIntro.substeps.2',
-          'digital.modules.kakao.steps.kioskIntro.substeps.3',
-          'digital.modules.kakao.steps.kioskIntro.substeps.4',
+          'digital.modules.kakao.steps.kkakdugiIntro.substeps.0',
+          'digital.modules.kakao.steps.kkakdugiIntro.substeps.1',
+          'digital.modules.kakao.steps.kkakdugiIntro.substeps.2',
+          'digital.modules.kakao.steps.kkakdugiIntro.substeps.3',
+          'digital.modules.kakao.steps.kkakdugiIntro.substeps.4',
         ],
       },
     ],
@@ -171,17 +171,17 @@ export const digitalModuleContents: DigitalModuleContent[] = [
     practices: [
       {
         id: 'db-02-practice-1',
-        titleKey: 'digital.modules.kakao.practices.kiosk.title',
-        descriptionKey: 'digital.modules.kakao.practices.kiosk.description',
+        titleKey: 'digital.modules.kakao.practices.kkakdugi.title',
+        descriptionKey: 'digital.modules.kakao.practices.kkakdugi.description',
         checklist: [
-          'digital.modules.kakao.practices.kiosk.checklist.0',
-          'digital.modules.kakao.practices.kiosk.checklist.1',
-          'digital.modules.kakao.practices.kiosk.checklist.2',
-          'digital.modules.kakao.practices.kiosk.checklist.3',
+          'digital.modules.kakao.practices.kkakdugi.checklist.0',
+          'digital.modules.kakao.practices.kkakdugi.checklist.1',
+          'digital.modules.kakao.practices.kkakdugi.checklist.2',
+          'digital.modules.kakao.practices.kkakdugi.checklist.3',
         ],
       },
     ],
-    relatedAppIds: ['kakaotalk', 'kiosk-practice'],
+    relatedAppIds: ['kakaotalk', 'kkakdugi-practice'],
   },
 
   // db-03: 정부24 서류 발급

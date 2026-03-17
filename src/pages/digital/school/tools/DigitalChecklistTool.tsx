@@ -17,10 +17,10 @@ export default function DigitalChecklistTool() {
   const periodId = toolId as DigitalPeriodId;
   const period = DIGITAL_SCHOOL_CURRICULUM.find(p => p.id === periodId);
 
-  // Redirect kiosk-challenge to the kiosk practice page
+  // Redirect kkakdugi-challenge to the kkakdugi practice page
   useEffect(() => {
-    if (toolId === 'kiosk-challenge') {
-      navigate('/track/digital-basics/kiosk-practice', { replace: true });
+    if (toolId === 'kkakdugi-challenge') {
+      navigate('/track/digital-basics/kkakdugi-practice', { replace: true });
     }
   }, [toolId, navigate]);
 
@@ -28,7 +28,7 @@ export default function DigitalChecklistTool() {
   const toolKeyMap: Record<string, string> = {
     'smartphone-setup': 'smartphoneSetup',
     'kakao-auth': 'kakaoAuth',
-    'kiosk-challenge': 'kioskChallenge',
+    'kkakdugi-challenge': 'kkakdugiChallenge',
     'gov24-docs': 'gov24Docs',
     'translation-ai': 'translationAi',
     'digital-safety': 'digitalSafety',
@@ -45,7 +45,7 @@ export default function DigitalChecklistTool() {
   );
   const [stamped, setStamped] = useState(hasStamp(periodId));
 
-  if (toolId === 'kiosk-challenge') return null;
+  if (toolId === 'kkakdugi-challenge') return null;
 
   if (!period || !toolKey || !Array.isArray(items) || items.length === 0) {
     return (

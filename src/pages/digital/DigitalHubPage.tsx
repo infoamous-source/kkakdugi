@@ -23,8 +23,8 @@ export default function DigitalHubPage() {
     navigate('/digital/school/attendance');
   };
 
-  const handleKioskClick = () => {
-    navigate('/track/digital-basics/kiosk-practice');
+  const handleKkakdugiClick = () => {
+    navigate('/track/digital-basics/kkakdugi-practice');
   };
 
   return (
@@ -110,7 +110,7 @@ export default function DigitalHubPage() {
           {/* 카드 B: 키오스크 연습실 */}
           <div className="animate-on-scroll" style={{ transitionDelay: '80ms' }}>
           <button
-            onClick={handleKioskClick}
+            onClick={handleKkakdugiClick}
             className="group relative w-full rounded-2xl border-2 border-purple-200 hover:border-purple-400 bg-white overflow-hidden
               transition-all duration-300 ease-out cursor-pointer text-left
               hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-200/30"
@@ -125,17 +125,17 @@ export default function DigitalHubPage() {
               </div>
 
               <h2 className="text-2xl font-bold text-kk-brown mb-2 flex items-center gap-2">
-                {t('digitalSchool.hub.kioskTitle', '키오스크 연습실')}
+                {t('digitalSchool.hub.kkakdugiTitle', '키오스크 연습실')}
                 <ChevronRight className="w-5 h-5 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 text-kk-brown/40" />
               </h2>
 
               <p className="text-kk-brown/60 text-sm leading-relaxed mb-5">
-                {t('digitalSchool.hub.kioskDescription', '카페, 패스트푸드, 병원 등 8종 키오스크를 자유롭게 연습하세요.')}
+                {t('digitalSchool.hub.kkakdugiDescription', '카페, 패스트푸드, 병원 등 8종 키오스크를 자유롭게 연습하세요.')}
               </p>
 
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 text-purple-600 text-sm font-semibold border border-purple-100">
                 <span>🖥️</span>
-                <span>{t('digitalSchool.hub.kioskBadge', '8종 시뮬레이터')}</span>
+                <span>{t('digitalSchool.hub.kkakdugiBadge', '8종 시뮬레이터')}</span>
               </div>
             </div>
 

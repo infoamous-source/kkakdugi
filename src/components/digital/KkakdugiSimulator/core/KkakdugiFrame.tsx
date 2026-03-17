@@ -1,9 +1,9 @@
 import { X } from 'lucide-react';
-import type { KioskTheme } from './types';
+import type { KkakdugiTheme } from './types';
 
-interface KioskFrameProps {
+interface KkakdugiFrameProps {
   children: React.ReactNode;
-  theme: KioskTheme;
+  theme: KkakdugiTheme;
   currentStep: number;
   totalSteps: number;
   stepLabel?: string;
@@ -14,7 +14,7 @@ interface KioskFrameProps {
 }
 
 /**
- * KioskFrame – a realistic kiosk terminal outer shell.
+ * KkakdugiFrame – a realistic kkakdugi terminal outer shell.
  *
  * Visual layers (outside → inside):
  *  1. Full-screen dim overlay
@@ -25,18 +25,18 @@ interface KioskFrameProps {
  * The bezel intentionally has visible screws, a power LED, speaker grille
  * dots, and a branded bottom bar to feel like an actual self-service terminal.
  */
-export default function KioskFrame({
+export default function KkakdugiFrame({
   children,
   theme,
   currentStep,
   totalSteps,
   stepLabel,
   onClose,
-}: KioskFrameProps) {
+}: KkakdugiFrameProps) {
   const progressPct = Math.round((currentStep / totalSteps) * 100);
 
   // Theme-aware progress bar / header gradient.
-  // Fallback: blue-to-purple (matches the original cafe kiosk).
+  // Fallback: blue-to-purple (matches the original cafe kkakdugi).
   const headerGradient = theme?.primary
     ? `bg-${theme.primary}-600`
     : 'bg-blue-600';
@@ -75,7 +75,7 @@ export default function KioskFrame({
           <button
             onClick={onClose}
             className="w-6 h-6 rounded-full bg-gray-700 hover:bg-red-600 text-gray-300 hover:text-white flex items-center justify-center transition-colors"
-            aria-label="Close kiosk"
+            aria-label="Close kkakdugi"
           >
             <X size={12} />
           </button>

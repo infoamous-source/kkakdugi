@@ -58,14 +58,14 @@ export default function PracticeSection({
                 ))}
               </div>
 
-              {/* Kiosk simulator link for db-02 */}
+              {/* Kkakdugi simulator link for db-02 */}
               {moduleId === 'db-02' && practice.id === 'db-02-practice-1' && (
                 <button
-                  onClick={() => navigate('/track/digital-basics/kiosk-practice')}
+                  onClick={() => navigate('/track/digital-basics/kkakdugi-practice')}
                   className="w-full mb-3 py-3 px-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl font-medium text-sm hover:shadow-lg transition-all flex items-center justify-center gap-2 border-b-4 border-purple-700 active:scale-[0.98]"
                 >
                   <Monitor size={18} />
-                  {t('kiosk.startPractice', '키오스크 연습 시작하기')}
+                  {t('kkakdugi.startPractice', '키오스크 연습 시작하기')}
                 </button>
               )}
 

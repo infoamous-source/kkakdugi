@@ -23,7 +23,7 @@ export default function CardPaymentScreen({ total, onBack, onApprove }: Props) {
           className="text-xs font-medium px-3 py-1.5 rounded transition-opacity hover:opacity-75"
           style={{ color: '#FFC107', border: '1px solid rgba(255,193,7,0.4)' }}
         >
-          {t('kiosk.screens.cardPayment.cancel', '취소')}
+          {t('kkakdugi.screens.cardPayment.cancel', '취소')}
         </button>
         <span className="font-bold text-sm tracking-widest" style={{ color: 'white' }}>
           카드 결제
@@ -38,7 +38,7 @@ export default function CardPaymentScreen({ total, onBack, onApprove }: Props) {
           style={{ backgroundColor: '#6B0000' }}
         >
           <span className="text-sm" style={{ color: 'rgba(255,249,240,0.6)' }}>
-            {t('kiosk.screens.cardPayment.total', '결제 금액')}
+            {t('kkakdugi.screens.cardPayment.total', '결제 금액')}
           </span>
           <span className="font-bold" style={{ color: '#FFC107', fontSize: 22 }}>
             {formatPrice(total)}원
@@ -52,15 +52,15 @@ export default function CardPaymentScreen({ total, onBack, onApprove }: Props) {
         >
           <div className="flex justify-between items-center mb-3 pb-3" style={{ borderBottom: '1px solid #FFF0E8' }}>
             <span className="text-sm" style={{ color: '#555555' }}>
-              {t('kiosk.screens.cardPayment.installment', '할부')}
+              {t('kkakdugi.screens.cardPayment.installment', '할부')}
             </span>
             <span className="font-medium text-sm" style={{ color: '#1A1A1A' }}>
-              {t('kiosk.screens.cardPayment.lumpSum', '일시불')}
+              {t('kkakdugi.screens.cardPayment.lumpSum', '일시불')}
             </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm" style={{ color: '#555555' }}>
-              {t('kiosk.screens.cardPayment.cardNumber', '카드번호')}
+              {t('kkakdugi.screens.cardPayment.cardNumber', '카드번호')}
             </span>
             <span className="font-mono text-sm" style={{ color: '#CC0000' }}>
               1234-5678-****-****
@@ -115,7 +115,7 @@ export default function CardPaymentScreen({ total, onBack, onApprove }: Props) {
           </div>
 
           <p className="font-bold text-sm text-center mb-1" style={{ color: '#1A1A1A' }}>
-            {t('kiosk.screens.cardPayment.insertGuide', '카드를 삽입하거나 접촉해 주세요')}
+            {t('kkakdugi.screens.cardPayment.insertGuide', '카드를 삽입하거나 접촉해 주세요')}
           </p>
           <p className="text-xs text-center" style={{ color: '#999999' }}>
             IC 카드 · 비접촉 결제 모두 가능
@@ -129,14 +129,14 @@ export default function CardPaymentScreen({ total, onBack, onApprove }: Props) {
             className="flex-1 py-4 rounded font-bold text-sm transition-opacity hover:opacity-75"
             style={{ backgroundColor: '#6B0000', color: 'white' }}
           >
-            {t('kiosk.screens.cardPayment.cancel', '취소')}
+            {t('kkakdugi.screens.cardPayment.cancel', '취소')}
           </button>
           <button
             onClick={() => { feedbackSuccess(); onApprove(); }}
             className="flex-1 py-4 rounded font-bold text-sm transition-all active:scale-[0.97]"
             style={{ backgroundColor: '#CC0000', color: 'white' }}
           >
-            {t('kiosk.screens.cardPayment.approve', '승인 요청')}
+            {t('kkakdugi.screens.cardPayment.approve', '승인 요청')}
           </button>
         </div>
       </div>

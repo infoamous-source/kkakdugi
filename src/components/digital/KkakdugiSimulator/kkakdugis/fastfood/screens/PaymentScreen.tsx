@@ -61,7 +61,7 @@ export default function PaymentScreen({ total, onBack, onSelectPayment }: Props)
           style={{ color: '#FFC107', border: '1px solid rgba(255,193,7,0.4)' }}
         >
           <ChevronLeft size={12} />
-          {t('kiosk.nav.back', '이전')}
+          {t('kkakdugi.nav.back', '이전')}
         </button>
         <span className="font-bold text-sm tracking-widest" style={{ color: 'white' }}>
           결제 수단
@@ -76,7 +76,7 @@ export default function PaymentScreen({ total, onBack, onSelectPayment }: Props)
           style={{ backgroundColor: '#6B0000' }}
         >
           <span className="font-medium text-sm" style={{ color: 'rgba(255,249,240,0.7)' }}>
-            {t('kiosk.screens.payment.payAmount', '결제 금액')}
+            {t('kkakdugi.screens.payment.payAmount', '결제 금액')}
           </span>
           <span className="font-bold" style={{ color: '#FFC107', fontSize: 24 }}>
             {formatPrice(total)}원
@@ -93,7 +93,7 @@ export default function PaymentScreen({ total, onBack, onSelectPayment }: Props)
               STEP 1
             </span>
             <span className="font-medium text-sm" style={{ color: '#1A1A1A' }}>
-              {t('kiosk.screens.payment.step1', '멤버십 할인 (선택)')}
+              {t('kkakdugi.screens.payment.step1', '멤버십 할인 (선택)')}
             </span>
           </div>
           <div className="grid grid-cols-3 gap-2">
@@ -123,7 +123,7 @@ export default function PaymentScreen({ total, onBack, onSelectPayment }: Props)
               STEP 2
             </span>
             <span className="font-medium text-sm" style={{ color: '#1A1A1A' }}>
-              {t('kiosk.screens.payment.step2', '결제 방법 선택')}
+              {t('kkakdugi.screens.payment.step2', '결제 방법 선택')}
             </span>
           </div>
           <div className="grid grid-cols-2 gap-3">

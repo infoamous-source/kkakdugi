@@ -32,10 +32,10 @@ export default function PaymentScreen({ total, onBack, onApprove }: Props) {
           className="text-xs font-medium px-3 py-1.5 rounded transition-opacity hover:opacity-75"
           style={{ color: CONVENIENCE_THEME.border, border: '1px solid rgba(167,243,208,0.4)' }}
         >
-          {t('kiosk.nav.back', '이전')}
+          {t('kkakdugi.nav.back', '이전')}
         </button>
         <span className="font-bold text-sm tracking-wider" style={{ color: 'white' }}>
-          {t('kiosk.convenience.payment.header', '결제')}
+          {t('kkakdugi.convenience.payment.header', '결제')}
         </span>
         <div style={{ width: 50 }} />
       </div>
@@ -47,10 +47,10 @@ export default function PaymentScreen({ total, onBack, onApprove }: Props) {
           style={{ backgroundColor: CONVENIENCE_THEME.headerBg }}
         >
           <span className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
-            {t('kiosk.convenience.payment.amount', '결제 금액')}
+            {t('kkakdugi.convenience.payment.amount', '결제 금액')}
           </span>
           <span className="font-bold" style={{ color: 'white', fontSize: 24 }}>
-            {formatPrice(total)}{t('kiosk.currency', '원')}
+            {formatPrice(total)}{t('kkakdugi.currency', '원')}
           </span>
         </div>
 
@@ -58,7 +58,7 @@ export default function PaymentScreen({ total, onBack, onApprove }: Props) {
           /* Payment method selection */
           <div className="flex-1">
             <p className="font-medium text-sm mb-3" style={{ color: CONVENIENCE_THEME.text }}>
-              {t('kiosk.convenience.payment.selectMethod', '결제 방법을 선택하세요')}
+              {t('kkakdugi.convenience.payment.selectMethod', '결제 방법을 선택하세요')}
             </p>
             <div className="grid grid-cols-2 gap-3">
               {/* Card */}
@@ -78,10 +78,10 @@ export default function PaymentScreen({ total, onBack, onApprove }: Props) {
                 </svg>
                 <div className="text-center">
                   <p className="font-bold text-sm" style={{ color: CONVENIENCE_THEME.text }}>
-                    {t('kiosk.convenience.payment.card', '카드')}
+                    {t('kkakdugi.convenience.payment.card', '카드')}
                   </p>
                   <p style={{ color: CONVENIENCE_THEME.textLight, fontSize: 10 }}>
-                    {t('kiosk.convenience.payment.cardSub', '신용/체크카드')}
+                    {t('kkakdugi.convenience.payment.cardSub', '신용/체크카드')}
                   </p>
                 </div>
               </button>
@@ -103,10 +103,10 @@ export default function PaymentScreen({ total, onBack, onApprove }: Props) {
                 </svg>
                 <div className="text-center">
                   <p className="font-bold text-sm" style={{ color: CONVENIENCE_THEME.text }}>
-                    {t('kiosk.convenience.payment.mobile', '간편결제')}
+                    {t('kkakdugi.convenience.payment.mobile', '간편결제')}
                   </p>
                   <p style={{ color: CONVENIENCE_THEME.textLight, fontSize: 10 }}>
-                    {t('kiosk.convenience.payment.mobileSub', '삼성페이/카카오페이')}
+                    {t('kkakdugi.convenience.payment.mobileSub', '삼성페이/카카오페이')}
                   </p>
                 </div>
               </button>
@@ -122,20 +122,20 @@ export default function PaymentScreen({ total, onBack, onApprove }: Props) {
             >
               <div className="flex justify-between items-center mb-3 pb-3" style={{ borderBottom: `1px solid ${CONVENIENCE_THEME.surface}` }}>
                 <span className="text-sm" style={{ color: CONVENIENCE_THEME.textLight }}>
-                  {t('kiosk.convenience.payment.installment', '할부')}
+                  {t('kkakdugi.convenience.payment.installment', '할부')}
                 </span>
                 <span className="font-medium text-sm" style={{ color: CONVENIENCE_THEME.text }}>
-                  {t('kiosk.convenience.payment.lumpSum', '일시불')}
+                  {t('kkakdugi.convenience.payment.lumpSum', '일시불')}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm" style={{ color: CONVENIENCE_THEME.textLight }}>
-                  {t('kiosk.convenience.payment.method', '결제수단')}
+                  {t('kkakdugi.convenience.payment.method', '결제수단')}
                 </span>
                 <span className="font-medium text-sm" style={{ color: CONVENIENCE_THEME.text }}>
                   {paymentMethod === 'card'
-                    ? t('kiosk.convenience.payment.cardLabel', '신용카드')
-                    : t('kiosk.convenience.payment.mobileLabel', '간편결제')}
+                    ? t('kkakdugi.convenience.payment.cardLabel', '신용카드')
+                    : t('kkakdugi.convenience.payment.mobileLabel', '간편결제')}
                 </span>
               </div>
             </div>
@@ -175,10 +175,10 @@ export default function PaymentScreen({ total, onBack, onApprove }: Props) {
               </div>
 
               <p className="font-bold text-sm text-center mb-1" style={{ color: CONVENIENCE_THEME.text }}>
-                {t('kiosk.convenience.payment.insertCard', '카드를 삽입해 주세요')}
+                {t('kkakdugi.convenience.payment.insertCard', '카드를 삽입해 주세요')}
               </p>
               <p className="text-xs text-center" style={{ color: CONVENIENCE_THEME.textLight }}>
-                {t('kiosk.convenience.payment.insertHint', 'IC 카드 / NFC 결제 가능')}
+                {t('kkakdugi.convenience.payment.insertHint', 'IC 카드 / NFC 결제 가능')}
               </p>
             </div>
 
@@ -189,14 +189,14 @@ export default function PaymentScreen({ total, onBack, onApprove }: Props) {
                 className="flex-1 py-3.5 rounded font-bold text-sm transition-opacity hover:opacity-75"
                 style={{ backgroundColor: CONVENIENCE_THEME.headerBg, color: 'white' }}
               >
-                {t('kiosk.convenience.payment.cancel', '취소')}
+                {t('kkakdugi.convenience.payment.cancel', '취소')}
               </button>
               <button
                 onClick={() => { feedbackSuccess(); onApprove(); }}
                 className="flex-1 py-3.5 rounded font-bold text-sm transition-all active:scale-[0.97]"
                 style={{ backgroundColor: CONVENIENCE_THEME.primary, color: 'white' }}
               >
-                {t('kiosk.convenience.payment.approve', '승인 요청')}
+                {t('kkakdugi.convenience.payment.approve', '승인 요청')}
               </button>
             </div>
           </>

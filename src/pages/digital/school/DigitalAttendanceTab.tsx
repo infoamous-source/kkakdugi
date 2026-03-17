@@ -37,8 +37,7 @@ export default function DigitalAttendanceTab() {
 
   const { progress, isLoading: schoolLoading, isGraduated: graduated, canGraduate: canGrad } = useDigitalSchoolProgress();
 
-  if (!user) return null;
-  if (schoolLoading || !progress) return (
+  if (!user || schoolLoading || !progress) return (
     <div className="flex justify-center py-12">
       <Loader2 className="w-6 h-6 animate-spin text-kk-red/40" />
     </div>

@@ -41,18 +41,18 @@ export default function OptionsScreen({ item, onAdd, onBack }: Props) {
   };
 
   const optionLabelMap: Record<string, string> = {
-    'kiosk.screens.options.sizeUp':        '사이즈업',
-    'kiosk.screens.options.sauce':         '소스 추가',
-    'kiosk.screens.options.topping':       '추가 토핑',
-    'kiosk.screens.options.friesLarge':    '감자 라지로 변경',
-    'kiosk.screens.options.drinkLarge':    '음료 라지로 변경',
-    'kiosk.screens.options.ketchup':       '케첩',
-    'kiosk.screens.options.mustard':       '머스타드',
-    'kiosk.screens.options.sweetChili':    '스위트칠리',
-    'kiosk.screens.options.garlicDipping': '갈릭디핑',
-    'kiosk.screens.options.addCheese':     '치즈 추가',
-    'kiosk.screens.options.addBacon':      '베이컨 추가',
-    'kiosk.screens.options.addPatty':      '패티 추가',
+    'kkakdugi.screens.options.sizeUp':        '사이즈업',
+    'kkakdugi.screens.options.sauce':         '소스 추가',
+    'kkakdugi.screens.options.topping':       '추가 토핑',
+    'kkakdugi.screens.options.friesLarge':    '감자 라지로 변경',
+    'kkakdugi.screens.options.drinkLarge':    '음료 라지로 변경',
+    'kkakdugi.screens.options.ketchup':       '케첩',
+    'kkakdugi.screens.options.mustard':       '머스타드',
+    'kkakdugi.screens.options.sweetChili':    '스위트칠리',
+    'kkakdugi.screens.options.garlicDipping': '갈릭디핑',
+    'kkakdugi.screens.options.addCheese':     '치즈 추가',
+    'kkakdugi.screens.options.addBacon':      '베이컨 추가',
+    'kkakdugi.screens.options.addPatty':      '패티 추가',
   };
 
   const label = (key: string) => t(key, optionLabelMap[key] ?? key);
@@ -69,7 +69,7 @@ export default function OptionsScreen({ item, onAdd, onBack }: Props) {
           className="text-xs font-medium px-3 py-1.5 rounded transition-opacity hover:opacity-75"
           style={{ color: '#FFC107', border: '1px solid rgba(255,193,7,0.4)' }}
         >
-          {t('kiosk.nav.back', '취소')}
+          {t('kkakdugi.nav.back', '취소')}
         </button>
         <span className="font-bold text-sm tracking-widest" style={{ color: 'white' }}>
           옵션 선택
@@ -254,7 +254,7 @@ export default function OptionsScreen({ item, onAdd, onBack }: Props) {
             className="flex-1 py-3.5 rounded font-bold text-sm transition-opacity hover:opacity-75"
             style={{ backgroundColor: '#FFF0E8', color: '#555555' }}
           >
-            {t('kiosk.screens.options.cancel', '취소')}
+            {t('kkakdugi.screens.options.cancel', '취소')}
           </button>
           <button
             onClick={() => { feedbackConfirm(); onAdd(selectedOptions, quantity); }}
@@ -262,7 +262,7 @@ export default function OptionsScreen({ item, onAdd, onBack }: Props) {
             style={{ backgroundColor: '#8B0000', color: 'white' }}
           >
             <span style={{ color: '#FFC107' }}>{formatPrice(totalPrice)}원 </span>
-            {t('kiosk.screens.options.addToCart', '담기')}
+            {t('kkakdugi.screens.options.addToCart', '담기')}
           </button>
         </div>
       </div>

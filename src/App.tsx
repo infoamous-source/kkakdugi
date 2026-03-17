@@ -30,7 +30,7 @@ const AISetupPage = lazy(() => import('./pages/marketing/school/AISetupPage'));
 const GraduationProjectPage = lazy(() => import('./pages/marketing/school/GraduationProjectPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const DigitalModulePage = lazy(() => import('./pages/DigitalModulePage'));
-const KioskPracticePage = lazy(() => import('./pages/KioskPracticePage'));
+const KkakdugiPracticePage = lazy(() => import('./pages/KkakdugiPracticePage'));
 const DigitalHubPage = lazy(() => import('./pages/digital/DigitalHubPage'));
 const DigitalSchoolLayout = lazy(() => import('./pages/digital/school/DigitalSchoolLayout'));
 const DigitalAttendanceTab = lazy(() => import('./pages/digital/school/DigitalAttendanceTab'));
@@ -108,7 +108,7 @@ export default function App() {
             <Route path="/track/:trackId" element={<TrackPage />} />
             <Route path="/track/digital-basics" element={<Navigate to="/digital/hub" replace />} />
             <Route path="/track/digital-basics/module/:moduleId" element={<DigitalModulePage />} />
-            <Route path="/track/digital-basics/kiosk-practice" element={<KioskPracticePage />} />
+            <Route path="/track/digital-basics/kkakdugi-practice" element={<KkakdugiPracticePage />} />
             <Route path="/track/digital-basics/korea-apps" element={<KoreaAppsPage />} />
 
             {/* 기존 마케팅 (레거시) → 허브로 리다이렉트 */}

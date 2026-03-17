@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, MessageCircle, HelpCircle } from 'lucide-react';
 
-import type { KioskComponentProps } from '../../core/types';
+import type { KkakdugiComponentProps } from '../../core/types';
 import { playTouchSound } from '../../core/haptics';
 import {
   type GovernmentScreen,
@@ -22,7 +22,7 @@ import PaymentScreen from './screens/PaymentScreen';
 import ProcessingScreen from './screens/ProcessingScreen';
 import CompleteScreen from './screens/CompleteScreen';
 
-export default function GovernmentKiosk({ onClose, onComplete }: KioskComponentProps) {
+export default function GovernmentKkakdugi({ onClose, onComplete }: KkakdugiComponentProps) {
   const { t } = useTranslation();
 
   // ── Navigation ──────────────────────────────────────────────────────────────
@@ -61,14 +61,14 @@ export default function GovernmentKiosk({ onClose, onComplete }: KioskComponentP
 
   // ── Helper messages ───────────────────────────────────────────────────────────
   const helperMessages: Record<GovernmentScreen, string> = useMemo(() => ({
-    welcome:         t('kiosk.helper.government.welcome',         '화면을 터치하여 시작하세요'),
-    identity:        t('kiosk.helper.government.identity',        '주민등록번호를 입력해 주세요'),
-    documentSelect:  t('kiosk.helper.government.documentSelect',  '발급할 서류를 선택하세요'),
-    documentOptions: t('kiosk.helper.government.documentOptions', '용도와 부수를 선택하세요'),
-    confirmDocument: t('kiosk.helper.government.confirmDocument', '발급 정보를 확인하세요'),
-    payment:         t('kiosk.helper.government.payment',         '수수료를 결제하세요'),
-    processing:      t('kiosk.helper.government.processing',      '서류를 출력 중입니다'),
-    complete:        t('kiosk.helper.government.complete',        '서류 발급이 완료되었습니다'),
+    welcome:         t('kkakdugi.helper.government.welcome',         '화면을 터치하여 시작하세요'),
+    identity:        t('kkakdugi.helper.government.identity',        '주민등록번호를 입력해 주세요'),
+    documentSelect:  t('kkakdugi.helper.government.documentSelect',  '발급할 서류를 선택하세요'),
+    documentOptions: t('kkakdugi.helper.government.documentOptions', '용도와 부수를 선택하세요'),
+    confirmDocument: t('kkakdugi.helper.government.confirmDocument', '발급 정보를 확인하세요'),
+    payment:         t('kkakdugi.helper.government.payment',         '수수료를 결제하세요'),
+    processing:      t('kkakdugi.helper.government.processing',      '서류를 출력 중입니다'),
+    complete:        t('kkakdugi.helper.government.complete',        '서류 발급이 완료되었습니다'),
   }), [t]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────────
@@ -128,7 +128,7 @@ export default function GovernmentKiosk({ onClose, onComplete }: KioskComponentP
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      {/* Kiosk frame */}
+      {/* Kkakdugi frame */}
       <div
         className="w-full flex flex-col overflow-hidden shadow-2xl"
         style={{
@@ -147,7 +147,7 @@ export default function GovernmentKiosk({ onClose, onComplete }: KioskComponentP
           style={{ backgroundColor: GOVERNMENT_THEME.headerBg, borderBottom: '1px solid #334155' }}
         >
           <span className="text-xs font-medium" style={{ color: 'rgba(203,213,225,0.75)', minWidth: 60 }}>
-            {t('kiosk.step', '단계')} {currentStepIndex + 1} / {totalSteps}
+            {t('kkakdugi.step', '단계')} {currentStepIndex + 1} / {totalSteps}
           </span>
           <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
             <div

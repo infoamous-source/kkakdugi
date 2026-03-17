@@ -18,7 +18,7 @@ export default function ReceiptScreen({ onNext }: Props) {
       >
         <div className="flex justify-center">
           <span className="font-bold text-sm tracking-widest" style={{ color: 'white' }}>
-            {t('kiosk.convenience.receipt.header', '영수증')}
+            {t('kkakdugi.convenience.receipt.header', '영수증')}
           </span>
         </div>
       </div>
@@ -45,7 +45,7 @@ export default function ReceiptScreen({ onNext }: Props) {
         </div>
 
         <p className="font-bold text-center mb-8" style={{ color: CONVENIENCE_THEME.text, fontSize: 16 }}>
-          {t('kiosk.convenience.receipt.ask', '영수증을 출력하시겠습니까?')}
+          {t('kkakdugi.convenience.receipt.ask', '영수증을 출력하시겠습니까?')}
         </p>
 
         <div className="flex gap-4 w-full">
@@ -54,14 +54,14 @@ export default function ReceiptScreen({ onNext }: Props) {
             className="flex-1 py-5 rounded font-bold text-lg transition-all active:scale-[0.97]"
             style={{ backgroundColor: CONVENIENCE_THEME.primary, color: 'white' }}
           >
-            {t('kiosk.convenience.receipt.print', '출력')}
+            {t('kkakdugi.convenience.receipt.print', '출력')}
           </button>
           <button
             onClick={() => { feedbackTap(); onNext(); }}
             className="flex-1 py-5 rounded font-bold text-lg transition-all active:scale-[0.97]"
             style={{ backgroundColor: CONVENIENCE_THEME.headerBg, color: 'white' }}
           >
-            {t('kiosk.convenience.receipt.noPrint', '미출력')}
+            {t('kkakdugi.convenience.receipt.noPrint', '미출력')}
           </button>
         </div>
       </div>

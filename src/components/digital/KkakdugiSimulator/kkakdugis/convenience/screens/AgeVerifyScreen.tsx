@@ -23,10 +23,10 @@ export default function AgeVerifyScreen({ restrictedItems, onVerified, onBack }:
           className="text-xs font-medium px-3 py-1.5 rounded transition-opacity hover:opacity-75"
           style={{ color: CONVENIENCE_THEME.border, border: '1px solid rgba(167,243,208,0.4)' }}
         >
-          {t('kiosk.nav.back', '이전')}
+          {t('kkakdugi.nav.back', '이전')}
         </button>
         <span className="font-bold text-sm tracking-wider" style={{ color: 'white' }}>
-          {t('kiosk.convenience.ageVerify.header', '성인인증')}
+          {t('kkakdugi.convenience.ageVerify.header', '성인인증')}
         </span>
         <div style={{ width: 50 }} />
       </div>
@@ -55,14 +55,14 @@ export default function AgeVerifyScreen({ restrictedItems, onVerified, onBack }:
           className="font-bold text-center mb-2"
           style={{ color: '#DC2626', fontSize: 18 }}
         >
-          {t('kiosk.convenience.ageVerify.title', '성인인증이 필요합니다')}
+          {t('kkakdugi.convenience.ageVerify.title', '성인인증이 필요합니다')}
         </h2>
 
         <p
           className="text-center text-sm mb-6"
           style={{ color: CONVENIENCE_THEME.textLight }}
         >
-          {t('kiosk.convenience.ageVerify.desc', '다음 상품은 만 19세 이상 구매 가능합니다')}
+          {t('kkakdugi.convenience.ageVerify.desc', '다음 상품은 만 19세 이상 구매 가능합니다')}
         </p>
 
         {/* Restricted items list */}
@@ -103,14 +103,14 @@ export default function AgeVerifyScreen({ restrictedItems, onVerified, onBack }:
             <rect x="12" y="8" width="4" height="1" rx="0.5" fill="white" opacity="0.5" />
             <rect x="12" y="11" width="5" height="1" rx="0.5" fill="white" opacity="0.5" />
           </svg>
-          {t('kiosk.convenience.ageVerify.scanId', '신분증 확인')}
+          {t('kkakdugi.convenience.ageVerify.scanId', '신분증 확인')}
         </button>
 
         <p
           className="text-center mt-3"
           style={{ color: CONVENIENCE_THEME.textLight, fontSize: 11 }}
         >
-          {t('kiosk.convenience.ageVerify.hint', '신분증을 리더기에 스캔해주세요')}
+          {t('kkakdugi.convenience.ageVerify.hint', '신분증을 리더기에 스캔해주세요')}
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
 /**
- * Haptic feedback & touch sound utilities for kiosk simulators.
+ * Haptic feedback & touch sound utilities for kkakdugi simulators.
  *
  * Usage guidelines — apply sparingly for realism:
  *  - hapticTap()      → button press, menu item selection

@@ -24,7 +24,7 @@ export default function DineOptionScreen({ onNext, onBack }: Props) {
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          {t('kiosk.nav.back', '이전')}
+          {t('kkakdugi.nav.back', '이전')}
         </button>
         <span className="font-black text-sm tracking-widest" style={{ color: 'white' }}>
           BURGER
@@ -38,10 +38,10 @@ export default function DineOptionScreen({ onNext, onBack }: Props) {
           className="font-bold mb-2"
           style={{ color: '#1A1A1A', fontSize: 20, letterSpacing: '0.02em' }}
         >
-          {t('kiosk.screens.dineOption.title', '주문 방식을 선택하세요')}
+          {t('kkakdugi.screens.dineOption.title', '주문 방식을 선택하세요')}
         </h2>
         <p style={{ color: '#999999', fontSize: 13 }}>
-          {t('kiosk.screens.dineOption.subtitle', '포장 여부를 선택해 주세요')}
+          {t('kkakdugi.screens.dineOption.subtitle', '포장 여부를 선택해 주세요')}
         </p>
       </div>
 
@@ -82,14 +82,14 @@ export default function DineOptionScreen({ onNext, onBack }: Props) {
               className="font-bold mb-1"
               style={{ color: '#1A1A1A', fontSize: 18, letterSpacing: '0.02em' }}
             >
-              {t('kiosk.screens.dineOption.dineIn', '매장')}
+              {t('kkakdugi.screens.dineOption.dineIn', '매장')}
             </p>
             <p style={{ color: '#CC0000', fontSize: 12, fontWeight: 700 }}>FOR HERE</p>
             <p
               className="mt-2 text-xs px-3"
               style={{ color: '#999999', lineHeight: 1.5 }}
             >
-              {t('kiosk.screens.dineOption.dineInSub', '트레이에 제공됩니다')}
+              {t('kkakdugi.screens.dineOption.dineInSub', '트레이에 제공됩니다')}
             </p>
           </div>
         </button>
@@ -126,14 +126,14 @@ export default function DineOptionScreen({ onNext, onBack }: Props) {
               className="font-bold mb-1"
               style={{ color: '#1A1A1A', fontSize: 18, letterSpacing: '0.02em' }}
             >
-              {t('kiosk.screens.dineOption.takeout', '포장')}
+              {t('kkakdugi.screens.dineOption.takeout', '포장')}
             </p>
             <p style={{ color: '#CC0000', fontSize: 12, fontWeight: 700 }}>TAKE OUT</p>
             <p
               className="mt-2 text-xs px-3"
               style={{ color: '#999999', lineHeight: 1.5 }}
             >
-              {t('kiosk.screens.dineOption.takeoutSub', '봉투에 담아 드립니다')}
+              {t('kkakdugi.screens.dineOption.takeoutSub', '봉투에 담아 드립니다')}
             </p>
           </div>
         </button>

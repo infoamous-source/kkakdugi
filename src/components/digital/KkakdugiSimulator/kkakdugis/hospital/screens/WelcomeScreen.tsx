@@ -50,7 +50,7 @@ export default function WelcomeScreen({ onNext }: Props) {
           className="relative z-10 font-light"
           style={{ color: 'rgba(178,236,232,0.9)', fontSize: 14, letterSpacing: '0.25em' }}
         >
-          {t('hospital.kiosk', '무인 접수기')}
+          {t('hospital.kkakdugi', '무인 접수기')}
         </p>
 
         {/* Touch prompt */}

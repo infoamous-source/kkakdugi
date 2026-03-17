@@ -84,7 +84,7 @@ export default function WelcomeScreen({ onNext }: Props) {
             className="text-center font-medium"
             style={{ color: 'rgba(255,248,240,0.85)', fontSize: 14, letterSpacing: '0.05em' }}
           >
-            {t('kiosk.screens.welcome.touch', '주문하시려면 화면을 터치해 주세요')}
+            {t('kkakdugi.screens.welcome.touch', '주문하시려면 화면을 터치해 주세요')}
           </p>
         </div>
       </div>

@@ -36,12 +36,12 @@ export interface PaymentMethod {
 }
 
 export const categories: { id: MenuCategory; nameKey: string }[] = [
-  { id: 'all', nameKey: 'kiosk.screens.menu.all' },
-  { id: 'coffee', nameKey: 'kiosk.screens.menu.coffee' },
-  { id: 'decaf', nameKey: 'kiosk.screens.menu.decaf' },
-  { id: 'smoothie', nameKey: 'kiosk.screens.menu.smoothie' },
-  { id: 'tea', nameKey: 'kiosk.screens.menu.tea' },
-  { id: 'dessert', nameKey: 'kiosk.screens.menu.dessert' },
+  { id: 'all', nameKey: 'kkakdugi.screens.menu.all' },
+  { id: 'coffee', nameKey: 'kkakdugi.screens.menu.coffee' },
+  { id: 'decaf', nameKey: 'kkakdugi.screens.menu.decaf' },
+  { id: 'smoothie', nameKey: 'kkakdugi.screens.menu.smoothie' },
+  { id: 'tea', nameKey: 'kkakdugi.screens.menu.tea' },
+  { id: 'dessert', nameKey: 'kkakdugi.screens.menu.dessert' },
 ];
 
 export const menuItems: MenuItem[] = [
@@ -64,35 +64,35 @@ export const menuItems: MenuItem[] = [
 export const optionGroups: OptionGroup[] = [
   {
     id: 'tumbler',
-    titleKey: 'kiosk.screens.options.tumbler',
+    titleKey: 'kkakdugi.screens.options.tumbler',
     options: [
-      { id: 'personal-cup', nameKey: 'kiosk.screens.options.personalCup', emoji: '🥤', priceAdd: 0 },
+      { id: 'personal-cup', nameKey: 'kkakdugi.screens.options.personalCup', emoji: '🥤', priceAdd: 0 },
     ],
   },
   {
     id: 'shot',
-    titleKey: 'kiosk.screens.options.shot',
+    titleKey: 'kkakdugi.screens.options.shot',
     options: [
-      { id: 'extra-shot', nameKey: 'kiosk.screens.options.addShot', emoji: '☕', priceAdd: 500 },
-      { id: 'double-shot', nameKey: 'kiosk.screens.options.addDoubleShot', emoji: '☕☕', priceAdd: 1000 },
+      { id: 'extra-shot', nameKey: 'kkakdugi.screens.options.addShot', emoji: '☕', priceAdd: 500 },
+      { id: 'double-shot', nameKey: 'kkakdugi.screens.options.addDoubleShot', emoji: '☕☕', priceAdd: 1000 },
     ],
   },
   {
     id: 'sweetness',
-    titleKey: 'kiosk.screens.options.sweetness',
+    titleKey: 'kkakdugi.screens.options.sweetness',
     options: [
-      { id: 'vanilla-syrup', nameKey: 'kiosk.screens.options.vanillaSyrup', emoji: '🍶', priceAdd: 700 },
-      { id: 'caramel-syrup', nameKey: 'kiosk.screens.options.caramelSyrup', emoji: '🍮', priceAdd: 700 },
-      { id: 'hazelnut-syrup', nameKey: 'kiosk.screens.options.hazelnutSyrup', emoji: '🌰', priceAdd: 700 },
+      { id: 'vanilla-syrup', nameKey: 'kkakdugi.screens.options.vanillaSyrup', emoji: '🍶', priceAdd: 700 },
+      { id: 'caramel-syrup', nameKey: 'kkakdugi.screens.options.caramelSyrup', emoji: '🍮', priceAdd: 700 },
+      { id: 'hazelnut-syrup', nameKey: 'kkakdugi.screens.options.hazelnutSyrup', emoji: '🌰', priceAdd: 700 },
     ],
   },
 ];
 
 export const paymentMethods: PaymentMethod[] = [
-  { id: 'card', nameKey: 'kiosk.screens.payment.card', subKey: 'kiosk.screens.payment.cardSub', emoji: '💳' },
-  { id: 'app-card', nameKey: 'kiosk.screens.payment.appCard', subKey: 'kiosk.screens.payment.appCardSub', emoji: '📱' },
-  { id: 'kakao-pay', nameKey: 'kiosk.screens.payment.kakaoPay', emoji: '💛' },
-  { id: 'naver-pay', nameKey: 'kiosk.screens.payment.naverPay', emoji: '💚' },
+  { id: 'card', nameKey: 'kkakdugi.screens.payment.card', subKey: 'kkakdugi.screens.payment.cardSub', emoji: '💳' },
+  { id: 'app-card', nameKey: 'kkakdugi.screens.payment.appCard', subKey: 'kkakdugi.screens.payment.appCardSub', emoji: '📱' },
+  { id: 'kakao-pay', nameKey: 'kkakdugi.screens.payment.kakaoPay', emoji: '💛' },
+  { id: 'naver-pay', nameKey: 'kkakdugi.screens.payment.naverPay', emoji: '💚' },
 ];
 
 export const recommendItems: MenuItem[] = [
@@ -100,7 +100,7 @@ export const recommendItems: MenuItem[] = [
   menuItems.find((m) => m.id === 'strawberry-smoothie')!,
 ];
 
-export type KioskScreen =
+export type KkakdugiScreen =
   | 'welcome'
   | 'menu'
   | 'options'
@@ -111,7 +111,7 @@ export type KioskScreen =
   | 'receipt'
   | 'complete';
 
-export const SCREEN_ORDER: KioskScreen[] = [
+export const SCREEN_ORDER: KkakdugiScreen[] = [
   'welcome',
   'menu',
   'options',

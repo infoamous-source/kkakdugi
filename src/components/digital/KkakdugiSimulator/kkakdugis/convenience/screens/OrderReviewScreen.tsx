@@ -42,10 +42,10 @@ export default function OrderReviewScreen({
           className="text-xs font-medium px-3 py-1.5 rounded transition-opacity hover:opacity-75"
           style={{ color: CONVENIENCE_THEME.border, border: '1px solid rgba(167,243,208,0.4)' }}
         >
-          {t('kiosk.nav.back', '이전')}
+          {t('kkakdugi.nav.back', '이전')}
         </button>
         <span className="font-bold text-sm tracking-wider" style={{ color: 'white' }}>
-          {t('kiosk.convenience.review.header', '주문 확인')}
+          {t('kkakdugi.convenience.review.header', '주문 확인')}
         </span>
         <div style={{ width: 50 }} />
       </div>
@@ -64,7 +64,7 @@ export default function OrderReviewScreen({
                   {s.item.name}
                 </p>
                 <p className="text-xs mt-0.5" style={{ color: CONVENIENCE_THEME.textLight }}>
-                  {formatPrice(s.item.price)}{t('kiosk.currency', '원')}
+                  {formatPrice(s.item.price)}{t('kkakdugi.currency', '원')}
                 </p>
               </div>
 
@@ -99,7 +99,7 @@ export default function OrderReviewScreen({
 
               {/* Subtotal */}
               <span className="font-bold text-sm flex-shrink-0" style={{ color: CONVENIENCE_THEME.primary, minWidth: 60, textAlign: 'right' }}>
-                {formatPrice(s.item.price * s.quantity)}{t('kiosk.currency', '원')}
+                {formatPrice(s.item.price * s.quantity)}{t('kkakdugi.currency', '원')}
               </span>
 
               {/* Remove button */}
@@ -131,7 +131,7 @@ export default function OrderReviewScreen({
             </span>
           </div>
           <span className="text-sm font-medium" style={{ color: CONVENIENCE_THEME.textLight }}>
-            {bagFee > 0 ? `${formatPrice(bagFee)}${t('kiosk.currency', '원')}` : '0원'}
+            {bagFee > 0 ? `${formatPrice(bagFee)}${t('kkakdugi.currency', '원')}` : '0원'}
           </span>
         </div>
       </div>
@@ -145,19 +145,19 @@ export default function OrderReviewScreen({
         <div className="space-y-1 mb-3">
           <div className="flex justify-between">
             <span className="text-xs" style={{ color: CONVENIENCE_THEME.textLight }}>
-              {t('kiosk.convenience.review.subtotal', '상품 금액')}
+              {t('kkakdugi.convenience.review.subtotal', '상품 금액')}
             </span>
             <span className="text-xs" style={{ color: CONVENIENCE_THEME.text }}>
-              {formatPrice(subtotal)}{t('kiosk.currency', '원')}
+              {formatPrice(subtotal)}{t('kkakdugi.currency', '원')}
             </span>
           </div>
           {bagFee > 0 && (
             <div className="flex justify-between">
               <span className="text-xs" style={{ color: CONVENIENCE_THEME.textLight }}>
-                {t('kiosk.convenience.review.bagFee', '봉투')}
+                {t('kkakdugi.convenience.review.bagFee', '봉투')}
               </span>
               <span className="text-xs" style={{ color: CONVENIENCE_THEME.text }}>
-                {formatPrice(bagFee)}{t('kiosk.currency', '원')}
+                {formatPrice(bagFee)}{t('kkakdugi.currency', '원')}
               </span>
             </div>
           )}
@@ -166,10 +166,10 @@ export default function OrderReviewScreen({
             style={{ borderTop: `1px solid ${CONVENIENCE_THEME.border}` }}
           >
             <span className="font-bold text-sm" style={{ color: CONVENIENCE_THEME.text }}>
-              {t('kiosk.convenience.review.total', '합계')}
+              {t('kkakdugi.convenience.review.total', '합계')}
             </span>
             <span className="font-bold text-base" style={{ color: CONVENIENCE_THEME.primary }}>
-              {formatPrice(total)}{t('kiosk.currency', '원')}
+              {formatPrice(total)}{t('kkakdugi.currency', '원')}
             </span>
           </div>
         </div>
@@ -183,7 +183,7 @@ export default function OrderReviewScreen({
             color: 'white',
           }}
         >
-          {t('kiosk.convenience.review.pay', '결제하기')}
+          {t('kkakdugi.convenience.review.pay', '결제하기')}
         </button>
       </div>
     </div>

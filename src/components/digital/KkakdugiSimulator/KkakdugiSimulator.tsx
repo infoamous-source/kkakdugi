@@ -5,20 +5,20 @@ import {
   CreditCard, MessageCircle,
 } from 'lucide-react';
 import {
-  type KioskScreen, type MenuItem, type OptionItem, type CartItem, type MenuCategory,
+  type KkakdugiScreen, type MenuItem, type OptionItem, type CartItem, type MenuCategory,
   menuItems, categories, optionGroups, paymentMethods, recommendItems,
   formatPrice, calculateItemPrice, calculateCartTotal, calculateTax,
   SCREEN_ORDER,
-} from './kioskData';
+} from './kkakdugiData';
 
 interface Props {
   onClose: () => void;
   onComplete: () => void;
 }
 
-export default function KioskSimulator({ onClose, onComplete }: Props) {
+export default function KkakdugiSimulator({ onClose, onComplete }: Props) {
   const { t } = useTranslation();
-  const [screen, setScreen] = useState<KioskScreen>('welcome');
+  const [screen, setScreen] = useState<KkakdugiScreen>('welcome');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [selectedOptions, setSelectedOptions] = useState<OptionItem[]>([]);
@@ -41,16 +41,16 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
   const currentStepIndex = SCREEN_ORDER.indexOf(screen);
   const totalSteps = SCREEN_ORDER.length;
 
-  const helperMessages: Record<KioskScreen, string> = {
-    welcome: t('kiosk.helper.welcome'),
-    menu: t('kiosk.helper.menu'),
-    options: t('kiosk.helper.options'),
-    orderConfirm: t('kiosk.helper.orderConfirm'),
-    payment: t('kiosk.helper.payment'),
-    cardPayment: t('kiosk.helper.card'),
-    points: t('kiosk.helper.points'),
-    receipt: t('kiosk.helper.receipt'),
-    complete: t('kiosk.helper.complete'),
+  const helperMessages: Record<KkakdugiScreen, string> = {
+    welcome: t('kkakdugi.helper.welcome'),
+    menu: t('kkakdugi.helper.menu'),
+    options: t('kkakdugi.helper.options'),
+    orderConfirm: t('kkakdugi.helper.orderConfirm'),
+    payment: t('kkakdugi.helper.payment'),
+    cardPayment: t('kkakdugi.helper.card'),
+    points: t('kkakdugi.helper.points'),
+    receipt: t('kkakdugi.helper.receipt'),
+    complete: t('kkakdugi.helper.complete'),
   };
 
   const addToCart = useCallback(() => {
@@ -123,7 +123,7 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
         {/* Top bar */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 flex items-center justify-between">
           <span className="text-white text-sm font-medium">
-            {t('kiosk.step', '단계')} {currentStepIndex + 1}/{totalSteps}
+            {t('kkakdugi.step', '단계')} {currentStepIndex + 1}/{totalSteps}
           </span>
           <div className="flex-1 mx-3 h-1.5 bg-white/20 rounded-full overflow-hidden">
             <div
@@ -146,13 +146,13 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
               <div className="flex flex-col items-center justify-center h-full min-h-[500px] p-6">
                 <div className="text-8xl mb-6">☕</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  {t('kiosk.screens.welcome.title', '카페')}
+                  {t('kkakdugi.screens.welcome.title', '카페')}
                 </h2>
                 <button
                   onClick={() => { setScreen('menu'); setTimer(120); }}
                   className="mt-8 w-full py-5 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xl font-bold rounded-2xl hover:shadow-xl transition-all active:scale-[0.98] border-b-4 border-purple-700"
                 >
-                  {t('kiosk.screens.welcome.touch', '주문하시려면 터치하세요')}
+                  {t('kkakdugi.screens.welcome.touch', '주문하시려면 터치하세요')}
                 </button>
               </div>
             )}
@@ -164,12 +164,12 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                 <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 flex items-center justify-between">
                   <button onClick={() => { setScreen('welcome'); setCart([]); }} className="flex items-center gap-1 bg-white/20 text-white px-3 py-1.5 rounded-full text-sm">
                     <Home size={14} />
-                    {t('kiosk.screens.menu.home', '처음으로')}
+                    {t('kkakdugi.screens.menu.home', '처음으로')}
                   </button>
-                  <span className="text-white font-bold">{t('kiosk.screens.welcome.title', '카페')}</span>
+                  <span className="text-white font-bold">{t('kkakdugi.screens.welcome.title', '카페')}</span>
                   <button className="flex items-center gap-1 bg-white/20 text-white px-3 py-1.5 rounded-full text-sm">
                     <Globe size={14} />
-                    {t('kiosk.screens.menu.language', 'LANGUAGE')}
+                    {t('kkakdugi.screens.menu.language', 'LANGUAGE')}
                   </button>
                 </div>
 
@@ -208,13 +208,13 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                 {/* Cart bar */}
                 <div className="bg-white border-t-2 border-gray-200">
                   <div className="px-4 py-1 flex text-xs text-gray-400 border-b border-gray-100">
-                    <span className="flex-1">{t('kiosk.screens.menu.cartHeader.menu', '메뉴')}</span>
-                    <span className="w-16 text-center">{t('kiosk.screens.menu.cartHeader.quantity', '수량')}</span>
-                    <span className="w-20 text-right">{t('kiosk.screens.menu.cartHeader.price', '가격')}</span>
+                    <span className="flex-1">{t('kkakdugi.screens.menu.cartHeader.menu', '메뉴')}</span>
+                    <span className="w-16 text-center">{t('kkakdugi.screens.menu.cartHeader.quantity', '수량')}</span>
+                    <span className="w-20 text-right">{t('kkakdugi.screens.menu.cartHeader.price', '가격')}</span>
                   </div>
                   {cart.length === 0 ? (
                     <div className="px-4 py-3 text-center text-sm text-gray-400">
-                      {t('kiosk.screens.menu.emptyCart', '메뉴를 선택해주세요')}
+                      {t('kkakdugi.screens.menu.emptyCart', '메뉴를 선택해주세요')}
                     </div>
                   ) : (
                     <div className="max-h-24 overflow-y-auto">
@@ -240,16 +240,16 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                   )}
                   {cart.length > 0 && (
                     <div className="px-3 py-2 flex items-center gap-2 bg-gray-50">
-                      <span className="text-xs text-gray-500">{t('kiosk.screens.cart.timeLeft', '남은시간')} <span className="text-red-500 font-bold">{timer}{t('kiosk.screens.cart.seconds', '초')}</span></span>
+                      <span className="text-xs text-gray-500">{t('kkakdugi.screens.cart.timeLeft', '남은시간')} <span className="text-red-500 font-bold">{timer}{t('kkakdugi.screens.cart.seconds', '초')}</span></span>
                       <button onClick={() => setCart([])} className="px-3 py-1.5 bg-red-100 text-red-600 rounded-full text-xs font-medium">
-                        {t('kiosk.screens.cart.clearAll', '전체삭제')}
+                        {t('kkakdugi.screens.cart.clearAll', '전체삭제')}
                       </button>
-                      <span className="text-xs text-gray-600 flex-1 text-center">{t('kiosk.screens.cart.selectedItems', '선택한 상품')} <span className="font-bold">{cartCount}{t('kiosk.screens.cart.itemUnit', '개')}</span></span>
+                      <span className="text-xs text-gray-600 flex-1 text-center">{t('kkakdugi.screens.cart.selectedItems', '선택한 상품')} <span className="font-bold">{cartCount}{t('kkakdugi.screens.cart.itemUnit', '개')}</span></span>
                       <button
                         onClick={() => setScreen('orderConfirm')}
                         className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl text-xs font-bold"
                       >
-                        {formatPrice(cartTotal)}원 {t('kiosk.screens.cart.pay', '결제하기')}
+                        {formatPrice(cartTotal)}원 {t('kkakdugi.screens.cart.pay', '결제하기')}
                       </button>
                     </div>
                   )}
@@ -261,7 +261,7 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
             {screen === 'options' && selectedItem && (
               <div className="p-4">
                 <div className="bg-blue-600 text-white rounded-2xl p-3 mb-4 flex items-center justify-between">
-                  <span className="text-sm">{t('kiosk.screens.options.header', '선택하신 상품의 옵션을 선택하세요.')}</span>
+                  <span className="text-sm">{t('kkakdugi.screens.options.header', '선택하신 상품의 옵션을 선택하세요.')}</span>
                   <button onClick={() => { setScreen('menu'); setSelectedItem(null); }} className="text-white/70 hover:text-white">
                     <X size={18} />
                   </button>
@@ -276,7 +276,7 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                 </div>
 
                 <div className="flex items-center justify-between mb-4 p-2 bg-gray-200 rounded-xl">
-                  <span className="text-sm text-gray-600 ml-2">{t('kiosk.screens.options.selectedOptions', '선택된 옵션')}</span>
+                  <span className="text-sm text-gray-600 ml-2">{t('kkakdugi.screens.options.selectedOptions', '선택된 옵션')}</span>
                   <div className="flex-1 mx-2 text-xs text-gray-500">
                     {selectedOptions.map((o) => t(o.nameKey)).join(', ') || '-'}
                   </div>
@@ -284,7 +284,7 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                     onClick={() => setSelectedOptions([])}
                     className="px-3 py-1 bg-gray-800 text-white rounded-lg text-xs"
                   >
-                    {t('kiosk.screens.options.reset', '초기화')}
+                    {t('kkakdugi.screens.options.reset', '초기화')}
                   </button>
                 </div>
 
@@ -327,13 +327,13 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                     onClick={() => { setScreen('menu'); setSelectedItem(null); }}
                     className="flex-1 py-4 bg-gray-200 text-gray-700 rounded-2xl font-bold text-sm"
                   >
-                    {t('kiosk.screens.options.cancel', '취소')}
+                    {t('kkakdugi.screens.options.cancel', '취소')}
                   </button>
                   <button
                     onClick={addToCart}
                     className="flex-1 py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-bold text-sm border-b-4 border-purple-700 active:scale-[0.98]"
                   >
-                    {t('kiosk.screens.options.addToCart', '주문담기')}
+                    {t('kkakdugi.screens.options.addToCart', '주문담기')}
                   </button>
                 </div>
               </div>
@@ -343,7 +343,7 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
             {screen === 'orderConfirm' && (
               <div className="p-4">
                 <div className="bg-blue-600 text-white rounded-2xl p-3 mb-4 flex items-center justify-between">
-                  <span className="text-sm font-medium">{t('kiosk.screens.orderConfirm.header')}</span>
+                  <span className="text-sm font-medium">{t('kkakdugi.screens.orderConfirm.header')}</span>
                   <button onClick={() => setScreen('menu')} className="text-white/70 hover:text-white">
                     <X size={18} />
                   </button>
@@ -353,26 +353,26 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                   <div key={i} className="flex items-center py-3 border-b border-gray-200 text-sm">
                     <span className="w-6 text-gray-400">{i + 1}</span>
                     <span className="flex-1 text-gray-900">{item.menuItem.nameKey}</span>
-                    <span className="w-12 text-center text-gray-600">{item.quantity}{t('kiosk.screens.cart.itemUnit', '개')}</span>
+                    <span className="w-12 text-center text-gray-600">{item.quantity}{t('kkakdugi.screens.cart.itemUnit', '개')}</span>
                     <span className="w-20 text-right font-medium text-gray-900">{formatPrice(item.totalPrice * item.quantity)}원</span>
                   </div>
                 ))}
 
-                <p className="text-xs text-red-500 mt-3 mb-2">※ {t('kiosk.screens.orderConfirm.noDisposableCup')}</p>
+                <p className="text-xs text-red-500 mt-3 mb-2">※ {t('kkakdugi.screens.orderConfirm.noDisposableCup')}</p>
 
                 <div className="bg-gray-50 rounded-xl p-4 mb-4">
                   <div className="flex justify-between mb-2">
-                    <span className="text-gray-600">{t('kiosk.screens.orderConfirm.totalQuantity')}</span>
-                    <span className="font-bold">{cartCount}{t('kiosk.screens.cart.itemUnit', '개')}</span>
+                    <span className="text-gray-600">{t('kkakdugi.screens.orderConfirm.totalQuantity')}</span>
+                    <span className="font-bold">{cartCount}{t('kkakdugi.screens.cart.itemUnit', '개')}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">{t('kiosk.screens.orderConfirm.totalAmount')}</span>
+                    <span className="text-gray-600">{t('kkakdugi.screens.orderConfirm.totalAmount')}</span>
                     <span className="font-bold text-blue-600 text-lg">{formatPrice(cartTotal)}원</span>
                   </div>
                 </div>
 
                 {/* Recommend */}
-                <p className="text-sm font-medium text-gray-600 mb-2">{t('kiosk.screens.orderConfirm.recommend')}</p>
+                <p className="text-sm font-medium text-gray-600 mb-2">{t('kkakdugi.screens.orderConfirm.recommend')}</p>
                 <div className="flex gap-3 mb-6">
                   {recommendItems.map((item) => (
                     <button
@@ -392,15 +392,15 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                     onClick={() => { setDineIn(true); setScreen('payment'); }}
                     className="flex-1 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl font-bold text-sm border-b-4 border-blue-700 active:scale-[0.98]"
                   >
-                    {t('kiosk.screens.orderConfirm.dineIn', '먹고가기')}
-                    <br /><span className="text-xs font-normal opacity-80">{t('kiosk.screens.orderConfirm.dineInSub', '(다회용컵)')}</span>
+                    {t('kkakdugi.screens.orderConfirm.dineIn', '먹고가기')}
+                    <br /><span className="text-xs font-normal opacity-80">{t('kkakdugi.screens.orderConfirm.dineInSub', '(다회용컵)')}</span>
                   </button>
                   <button
                     onClick={() => { setDineIn(false); setScreen('payment'); }}
                     className="flex-1 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-bold text-sm border-b-4 border-orange-700 active:scale-[0.98]"
                   >
-                    {t('kiosk.screens.orderConfirm.takeout', '포장하기')}
-                    <br /><span className="text-xs font-normal opacity-80">{t('kiosk.screens.orderConfirm.takeoutSub', '(일회용컵)')}</span>
+                    {t('kkakdugi.screens.orderConfirm.takeout', '포장하기')}
+                    <br /><span className="text-xs font-normal opacity-80">{t('kkakdugi.screens.orderConfirm.takeoutSub', '(일회용컵)')}</span>
                   </button>
                 </div>
                 <button
@@ -408,7 +408,7 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                   className="w-full py-3 bg-gray-200 text-gray-700 rounded-2xl font-medium text-sm flex items-center justify-center gap-2"
                 >
                   <ChevronLeft size={16} />
-                  {t('kiosk.screens.orderConfirm.back', '돌아가기')}
+                  {t('kkakdugi.screens.orderConfirm.back', '돌아가기')}
                 </button>
               </div>
             )}
@@ -417,7 +417,7 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
             {screen === 'payment' && (
               <div className="p-4">
                 <div className="bg-blue-600 text-white rounded-2xl p-3 mb-4 flex items-center justify-between">
-                  <span className="text-sm font-medium">{t('kiosk.screens.payment.title')}</span>
+                  <span className="text-sm font-medium">{t('kkakdugi.screens.payment.title')}</span>
                   <button onClick={() => setScreen('orderConfirm')} className="text-white/70 hover:text-white">
                     <X size={18} />
                   </button>
@@ -426,7 +426,7 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="bg-yellow-400 text-xs font-bold px-2 py-1 rounded">STEP1</span>
-                    <span className="text-sm">{t('kiosk.screens.payment.step1')}</span>
+                    <span className="text-sm">{t('kkakdugi.screens.payment.step1')}</span>
                   </div>
                   <div className="flex gap-2">
                     {['KT VIP', 'SKT', 'CJ ONE'].map((name) => (
@@ -440,7 +440,7 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                 <div className="mb-6">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="bg-yellow-400 text-xs font-bold px-2 py-1 rounded">STEP2</span>
-                    <span className="text-sm">{t('kiosk.screens.payment.step2')}</span>
+                    <span className="text-sm">{t('kkakdugi.screens.payment.step2')}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     {paymentMethods.map((method) => (
@@ -463,11 +463,11 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
 
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-600">{t('kiosk.screens.payment.orderAmount')}</span>
+                    <span className="text-sm text-gray-600">{t('kkakdugi.screens.payment.orderAmount')}</span>
                     <span className="font-bold">{formatPrice(cartTotal)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-red-500 font-medium">{t('kiosk.screens.payment.payAmount')}</span>
+                    <span className="text-sm text-red-500 font-medium">{t('kkakdugi.screens.payment.payAmount')}</span>
                     <span className="text-lg font-bold text-red-500">{formatPrice(cartTotal)}</span>
                   </div>
                 </div>
@@ -478,30 +478,30 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
             {screen === 'cardPayment' && (
               <div className="p-4">
                 <div className="bg-white rounded-2xl border-2 border-gray-200 p-5">
-                  <h3 className="text-lg font-bold mb-4">{t('kiosk.screens.cardPayment.title')}</h3>
+                  <h3 className="text-lg font-bold mb-4">{t('kkakdugi.screens.cardPayment.title')}</h3>
 
                   <div className="bg-gray-50 rounded-xl p-4 mb-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">{t('kiosk.screens.cardPayment.total')}</span>
+                      <span className="text-gray-600">{t('kkakdugi.screens.cardPayment.total')}</span>
                       <span className="text-xl font-bold text-red-500">{formatPrice(cartTotal)}원</span>
                     </div>
                   </div>
 
                   <div className="flex justify-between py-2">
-                    <span className="text-gray-600">{t('kiosk.screens.cardPayment.installment')}</span>
-                    <span>{t('kiosk.screens.cardPayment.lumpSum')}</span>
+                    <span className="text-gray-600">{t('kkakdugi.screens.cardPayment.installment')}</span>
+                    <span>{t('kkakdugi.screens.cardPayment.lumpSum')}</span>
                   </div>
 
                   <div className="bg-gray-50 rounded-xl p-3 mb-4">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">{t('kiosk.screens.cardPayment.cardNumber')}</span>
+                      <span className="text-gray-600">{t('kkakdugi.screens.cardPayment.cardNumber')}</span>
                       <span className="text-red-500">1234-5678-****-****</span>
                     </div>
                   </div>
 
                   <div className="text-center mb-4 p-4 bg-gray-50 rounded-xl">
                     <CreditCard size={48} className="mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-500">{t('kiosk.screens.cardPayment.insertGuide')}</p>
+                    <p className="text-sm text-gray-500">{t('kkakdugi.screens.cardPayment.insertGuide')}</p>
                   </div>
 
                   <div className="flex gap-3">
@@ -509,13 +509,13 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                       onClick={() => setScreen('payment')}
                       className="flex-1 py-4 bg-gray-800 text-white rounded-2xl font-bold"
                     >
-                      {t('kiosk.screens.cardPayment.cancel', '취소')}
+                      {t('kkakdugi.screens.cardPayment.cancel', '취소')}
                     </button>
                     <button
                       onClick={() => setScreen('points')}
                       className="flex-1 py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-bold border-b-4 border-purple-700 active:scale-[0.98]"
                     >
-                      {t('kiosk.screens.cardPayment.approve', '승인요청')}
+                      {t('kkakdugi.screens.cardPayment.approve', '승인요청')}
                     </button>
                   </div>
                 </div>
@@ -526,19 +526,19 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
             {screen === 'points' && (
               <div className="p-4 flex flex-col items-center justify-center min-h-[400px]">
                 <div className="bg-white rounded-2xl border-2 border-gray-200 p-8 w-full text-center">
-                  <p className="text-lg font-bold mb-8">{t('kiosk.screens.points.ask')}</p>
+                  <p className="text-lg font-bold mb-8">{t('kkakdugi.screens.points.ask')}</p>
                   <div className="flex gap-4">
                     <button
                       onClick={() => setScreen('receipt')}
                       className="flex-1 py-5 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-2xl font-bold text-lg border-b-4 border-orange-600 active:scale-[0.98]"
                     >
-                      {t('kiosk.screens.points.yes', '예')}
+                      {t('kkakdugi.screens.points.yes', '예')}
                     </button>
                     <button
                       onClick={() => setScreen('receipt')}
                       className="flex-1 py-5 bg-gray-800 text-white rounded-2xl font-bold text-lg border-b-4 border-gray-900 active:scale-[0.98]"
                     >
-                      {t('kiosk.screens.points.no', '아니오')}
+                      {t('kkakdugi.screens.points.no', '아니오')}
                     </button>
                   </div>
                 </div>
@@ -550,21 +550,21 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
               <div className="p-4 flex flex-col items-center justify-center min-h-[400px]">
                 <div className="bg-white rounded-2xl border-2 border-gray-200 p-8 w-full text-center">
                   <div className="bg-yellow-400 text-center py-2 rounded-xl mb-4">
-                    <p className="font-bold">[{t('kiosk.screens.receipt.approved')}]</p>
+                    <p className="font-bold">[{t('kkakdugi.screens.receipt.approved')}]</p>
                   </div>
-                  <p className="text-lg font-bold mb-8">{t('kiosk.screens.receipt.ask')}</p>
+                  <p className="text-lg font-bold mb-8">{t('kkakdugi.screens.receipt.ask')}</p>
                   <div className="flex gap-4">
                     <button
                       onClick={() => setScreen('complete')}
                       className="flex-1 py-5 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-2xl font-bold text-lg border-b-4 border-orange-600 active:scale-[0.98]"
                     >
-                      {t('kiosk.screens.receipt.print', '출력')}
+                      {t('kkakdugi.screens.receipt.print', '출력')}
                     </button>
                     <button
                       onClick={() => setScreen('complete')}
                       className="flex-1 py-5 bg-gray-800 text-white rounded-2xl font-bold text-lg border-b-4 border-gray-900 active:scale-[0.98]"
                     >
-                      {t('kiosk.screens.receipt.noPrint', '미출력')}
+                      {t('kkakdugi.screens.receipt.noPrint', '미출력')}
                     </button>
                   </div>
                 </div>
@@ -575,44 +575,44 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
             {screen === 'complete' && (
               <div className="p-4">
                 <h2 className="text-xl font-bold text-center text-orange-500 mb-2">
-                  {t('kiosk.screens.complete.receiptTitle', '영수증')}
+                  {t('kkakdugi.screens.complete.receiptTitle', '영수증')}
                 </h2>
-                <p className="text-center text-gray-600 mb-4">{t('kiosk.screens.complete.receiptCollect')}</p>
+                <p className="text-center text-gray-600 mb-4">{t('kkakdugi.screens.complete.receiptCollect')}</p>
 
                 <div className="bg-white border-2 border-gray-200 rounded-2xl p-5 mb-6">
-                  <h3 className="text-center font-bold mb-2">{t('kiosk.screens.complete.receiptTitle')}</h3>
-                  <p className="text-center text-sm text-gray-500 mb-1">{t('kiosk.screens.complete.paymentDetail')}</p>
-                  <p className="text-center text-sm text-gray-500 mb-4">{t('kiosk.screens.complete.icApproval')}</p>
+                  <h3 className="text-center font-bold mb-2">{t('kkakdugi.screens.complete.receiptTitle')}</h3>
+                  <p className="text-center text-sm text-gray-500 mb-1">{t('kkakdugi.screens.complete.paymentDetail')}</p>
+                  <p className="text-center text-sm text-gray-500 mb-4">{t('kkakdugi.screens.complete.icApproval')}</p>
 
                   {(() => {
                     const { amount, tax } = calculateTax(cartTotal);
                     return (
                       <div className="space-y-2 mb-4">
                         <div className="flex justify-between">
-                          <span>{t('kiosk.screens.complete.amount')}</span>
+                          <span>{t('kkakdugi.screens.complete.amount')}</span>
                           <span>{formatPrice(amount)}원</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>{t('kiosk.screens.complete.tax')}</span>
+                          <span>{t('kkakdugi.screens.complete.tax')}</span>
                           <span>{formatPrice(tax)}원</span>
                         </div>
                         <div className="flex justify-between font-bold border-t pt-2">
-                          <span>{t('kiosk.screens.complete.total')}</span>
+                          <span>{t('kkakdugi.screens.complete.total')}</span>
                           <span>{formatPrice(cartTotal)}원</span>
                         </div>
                         <div className="flex justify-between text-sm text-gray-500">
-                          <span>{t('kiosk.screens.complete.cardName')}</span>
-                          <span>{t('kiosk.screens.complete.lumpSum', '일시불')}</span>
+                          <span>{t('kkakdugi.screens.complete.cardName')}</span>
+                          <span>{t('kkakdugi.screens.complete.lumpSum', '일시불')}</span>
                         </div>
                         <div className="flex justify-between text-sm text-gray-500">
-                          <span>{t('kiosk.screens.cardPayment.cardNumber')}</span>
-                          <span>{t('kiosk.screens.complete.cardNumber')}</span>
+                          <span>{t('kkakdugi.screens.cardPayment.cardNumber')}</span>
+                          <span>{t('kkakdugi.screens.complete.cardNumber')}</span>
                         </div>
                       </div>
                     );
                   })()}
 
-                  <p className="text-center font-bold text-lg">{t('kiosk.screens.complete.thanks')}</p>
+                  <p className="text-center font-bold text-lg">{t('kkakdugi.screens.complete.thanks')}</p>
                 </div>
 
                 {showConfetti && (
@@ -622,15 +622,15 @@ export default function KioskSimulator({ onClose, onComplete }: Props) {
                 )}
 
                 <div className="text-center mb-4">
-                  <h3 className="text-xl font-bold text-green-600">{t('kiosk.screens.complete.congrats')}</h3>
-                  <p className="text-gray-600 mt-1">{t('kiosk.screens.complete.message')}</p>
+                  <h3 className="text-xl font-bold text-green-600">{t('kkakdugi.screens.complete.congrats')}</h3>
+                  <p className="text-gray-600 mt-1">{t('kkakdugi.screens.complete.message')}</p>
                 </div>
 
                 <button
                   onClick={handleComplete}
                   className="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl font-bold text-lg border-b-4 border-green-700 active:scale-[0.98]"
                 >
-                  {t('kiosk.screens.complete.done', '연습 끝내기')}
+                  {t('kkakdugi.screens.complete.done', '연습 끝내기')}
                 </button>
               </div>
             )}

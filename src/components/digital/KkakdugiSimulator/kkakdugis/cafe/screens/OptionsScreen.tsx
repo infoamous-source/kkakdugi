@@ -42,15 +42,15 @@ export default function OptionsScreen({ item, onAdd, onBack }: Props) {
   };
 
   const optionLabelMap: Record<string, string> = {
-    'kiosk.screens.options.tumbler':        '개인컵 할인',
-    'kiosk.screens.options.shot':           '샷 추가',
-    'kiosk.screens.options.sweetness':      '시럽 추가',
-    'kiosk.screens.options.personalCup':    '개인컵 사용 (-0원)',
-    'kiosk.screens.options.addShot':        '샷 추가',
-    'kiosk.screens.options.addDoubleShot':  '더블샷 추가',
-    'kiosk.screens.options.vanillaSyrup':   '바닐라 시럽',
-    'kiosk.screens.options.caramelSyrup':   '카라멜 시럽',
-    'kiosk.screens.options.hazelnutSyrup':  '헤이즐넛 시럽',
+    'kkakdugi.screens.options.tumbler':        '개인컵 할인',
+    'kkakdugi.screens.options.shot':           '샷 추가',
+    'kkakdugi.screens.options.sweetness':      '시럽 추가',
+    'kkakdugi.screens.options.personalCup':    '개인컵 사용 (-0원)',
+    'kkakdugi.screens.options.addShot':        '샷 추가',
+    'kkakdugi.screens.options.addDoubleShot':  '더블샷 추가',
+    'kkakdugi.screens.options.vanillaSyrup':   '바닐라 시럽',
+    'kkakdugi.screens.options.caramelSyrup':   '카라멜 시럽',
+    'kkakdugi.screens.options.hazelnutSyrup':  '헤이즐넛 시럽',
   };
 
   const label = (key: string) => t(key, optionLabelMap[key] ?? key);
@@ -67,7 +67,7 @@ export default function OptionsScreen({ item, onAdd, onBack }: Props) {
           className="text-xs font-medium px-3 py-1.5 rounded transition-opacity hover:opacity-75"
           style={{ color: '#C89B3C', border: '1px solid rgba(200,155,60,0.4)' }}
         >
-          {t('kiosk.nav.back', '취소')}
+          {t('kkakdugi.nav.back', '취소')}
         </button>
         <span className="font-bold text-sm tracking-widest" style={{ color: 'white', fontFamily: 'Georgia, serif' }}>
           옵션 선택
@@ -245,7 +245,7 @@ export default function OptionsScreen({ item, onAdd, onBack }: Props) {
             className="flex-1 py-3.5 rounded font-bold text-sm transition-opacity hover:opacity-75"
             style={{ backgroundColor: '#F5EDE2', color: '#6B4E35' }}
           >
-            {t('kiosk.screens.options.cancel', '취소')}
+            {t('kkakdugi.screens.options.cancel', '취소')}
           </button>
           <button
             onClick={() => { feedbackConfirm(); onAdd(selectedOptions, quantity); }}
@@ -253,7 +253,7 @@ export default function OptionsScreen({ item, onAdd, onBack }: Props) {
             style={{ backgroundColor: '#3D2B1F', color: 'white' }}
           >
             <span style={{ color: '#C89B3C' }}>{formatPrice(totalPrice)}원 </span>
-            {t('kiosk.screens.options.addToCart', '담기')}
+            {t('kkakdugi.screens.options.addToCart', '담기')}
           </button>
         </div>
       </div>
