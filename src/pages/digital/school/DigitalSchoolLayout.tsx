@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Loader2 } from 'lucide-react';
@@ -54,7 +55,9 @@ export default function DigitalSchoolLayout() {
       </header>
 
       <main className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 py-4">
-        <Outlet />
+        <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-kk-red/40" /></div>}>
+          <Outlet />
+        </Suspense>
       </main>
 
       <DigitalBottomNav />

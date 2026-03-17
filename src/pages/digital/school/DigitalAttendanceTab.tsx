@@ -9,7 +9,7 @@ import StudentCard from '../../../components/school/StudentCard';
 import DigitalStampBoard from '../../../components/digital/school/DigitalStampBoard';
 import GraduationModal from '../../../components/school/GraduationModal';
 import GraduationCertificate from '../../../components/school/GraduationCertificate';
-import { GraduationCap, UserCircle, Award } from 'lucide-react';
+import { GraduationCap, UserCircle, Award, Loader2 } from 'lucide-react';
 
 export default function DigitalAttendanceTab() {
   const { t } = useTranslation('common');
@@ -38,7 +38,11 @@ export default function DigitalAttendanceTab() {
   const { progress, isLoading: schoolLoading, isGraduated: graduated, canGraduate: canGrad } = useDigitalSchoolProgress();
 
   if (!user) return null;
-  if (schoolLoading || !progress) return null;
+  if (schoolLoading || !progress) return (
+    <div className="flex justify-center py-12">
+      <Loader2 className="w-6 h-6 animate-spin text-kk-red/40" />
+    </div>
+  );
 
   const handleGraduationComplete = () => {
     setShowGraduationModal(false);

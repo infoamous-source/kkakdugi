@@ -1,18 +1,22 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Monitor, Globe, ChevronRight } from 'lucide-react';
-import { kioskRegistry } from '../../../components/digital/KioskSimulator/registry';
-import type { KioskType } from '../../../components/digital/KioskSimulator/core/types';
+import { Monitor, Globe, ChevronRight, Loader2 } from 'lucide-react';
+import { kkakdugiRegistry } from '../../../components/digital/KkakdugiSimulator/registry';
+import type { KkakdugiType } from '../../../components/digital/KkakdugiSimulator/core/types';
 
-const kioskTypes: KioskType[] = ['cafe', 'fastfood', 'cinema', 'convenience', 'hospital', 'bank', 'government', 'airport'];
+const kkakdugiTypes: KkakdugiType[] = ['cafe', 'fastfood', 'cinema', 'convenience', 'hospital', 'bank', 'government', 'airport'];
 
 export default function DigitalLabTab() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  if (!user) return null;
+  if (!user || isLoading) return (
+    <div className="flex justify-center py-12">
+      <Loader2 className="w-6 h-6 animate-spin text-kk-red/40" />
+    </div>
+  );
 
   return (
     <div className="space-y-4">
@@ -32,22 +36,22 @@ export default function DigitalLabTab() {
       {/* 키오스크 시뮬레이터 섹션 */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5">
         <h3 className="font-semibold text-gray-800 mb-1 flex items-center gap-2">
-          🖥️ {t('digitalSchool.lab.kioskSection', '키오스크 시뮬레이터')}
+          🖥️ {t('digitalSchool.lab.kkakdugiSection', '키오스크 시뮬레이터')}
         </h3>
         <p className="text-xs text-gray-500 mb-4">
-          {t('digitalSchool.lab.kioskDesc', '8종 키오스크를 실제처럼 연습해보세요')}
+          {t('digitalSchool.lab.kkakdugiDesc', '8종 키오스크를 실제처럼 연습해보세요')}
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {kioskTypes.map((type) => {
-            const entry = kioskRegistry[type];
+          {kkakdugiTypes.map((type) => {
+            const entry = kkakdugiRegistry[type];
             if (!entry) return null;
             const config = entry.config;
 
             return (
               <button
                 key={type}
-                onClick={() => navigate('/track/digital-basics/kiosk-practice')}
+                onClick={() => navigate('/track/digital-basics/kkakdugi-practice')}
                 className="group p-3 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all text-center"
               >
                 <div className="text-3xl mb-2">{config.icon}</div>

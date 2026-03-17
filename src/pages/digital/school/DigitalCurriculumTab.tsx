@@ -8,7 +8,7 @@ import type { TeamGroup } from '../../../types/team';
 import { DIGITAL_CURRICULUM_SECTIONS } from '../../../types/digitalSchool';
 import type { DigitalPeriodId, DigitalCurriculumSection, DigitalSectionType } from '../../../types/digitalSchool';
 import {
-  Sparkles, Trophy,
+  Sparkles, Trophy, Loader2,
   Smartphone, ShieldCheck, Monitor, FileText, Languages, ShieldAlert,
   PartyPopper, Award, BookOpen, GraduationCap,
 } from 'lucide-react';
@@ -95,9 +95,13 @@ export default function DigitalCurriculumTab() {
     });
   }, [user]);
 
-  const { hasAllStamps: allDone, isGraduated: graduated, canGraduate: canGrad, hasStamp } = useDigitalSchoolProgress();
+  const { hasAllStamps: allDone, isGraduated: graduated, canGraduate: canGrad, hasStamp, isLoading: schoolLoading } = useDigitalSchoolProgress();
 
-  if (!user) return null;
+  if (!user || schoolLoading) return (
+    <div className="flex justify-center py-12">
+      <Loader2 className="w-6 h-6 animate-spin text-kk-red/40" />
+    </div>
+  );
 
   const handleSectionClick = (section: DigitalCurriculumSection) => {
     if (section.id === 'graduation-ceremony') {
