@@ -1632,7 +1632,7 @@
               "2": "Bank accounts and cards must also be under your own name"
             }
           },
-          "kioskIntro": {
+          "kkakdugiIntro": {
             "title": "Kiosk Basics",
             "description": "A kiosk is a touchscreen machine at cafes, restaurants, and theaters that lets you order without talking to staff.",
             "substeps": {
@@ -1650,7 +1650,7 @@
           "2": "Paying with KakaoPay may give you discounts or points"
         },
         "practices": {
-          "kiosk": {
+          "kkakdugi": {
             "title": "Cafe Kiosk Order Practice",
             "description": "Practice ordering at a cafe kiosk using the simulator!",
             "checklist": {
@@ -1855,12 +1855,22 @@
       }
     }
   },
-  "kiosk": {
+  "kkakdugi": {
+    "types": {
+      "cafe": { "name": "Cafe", "description": "Order drinks at a cafe" },
+      "fastfood": { "name": "Fast Food", "description": "Order a burger set" },
+      "hospital": { "name": "Hospital", "description": "Register at a hospital" },
+      "bank": { "name": "Bank", "description": "Use a bank ATM" },
+      "government": { "name": "Gov Office", "description": "Get documents issued" },
+      "cinema": { "name": "Cinema", "description": "Book movie tickets" },
+      "convenience": { "name": "Conv. Store", "description": "Self-checkout at a store" },
+      "airport": { "name": "Airport", "description": "Self check-in" }
+    },
     "title": "Kiosk Practice",
     "subtitle": "Order drinks at a cafe",
     "description": "Practice ordering and paying on a screen that looks just like a real cafe kiosk.",
-    "whatIsKiosk": "What is a Kiosk?",
-    "whatIsKioskDesc": "A kiosk is a self-service touchscreen machine found at cafes, restaurants, theaters, and more. In Korea, they're in almost every store.",
+    "whatIsKkakdugi": "What is a Kiosk?",
+    "whatIsKkakdugiDesc": "A kiosk is a self-service touchscreen machine found at cafes, restaurants, theaters, and more. In Korea, they're in almost every store.",
     "whatYouLearn": "What You'll Learn",
     "learn": {
       "touchScreen": "Start ordering by touching the screen",
@@ -2009,9 +2019,9 @@
       "schoolDescription": "Learn digital basics through a 6-period curriculum with kiosk practice!",
       "schoolBadge": "2-Day 6-Period Course",
       "graduated": "Completed",
-      "kioskTitle": "Kiosk Practice Lab",
-      "kioskDescription": "Practice 8 types of kiosks freely — cafe, fast food, hospital, and more.",
-      "kioskBadge": "8 Simulators"
+      "kkakdugiTitle": "Kiosk Practice Lab",
+      "kkakdugiDescription": "Practice 8 types of kiosks freely — cafe, fast food, hospital, and more.",
+      "kkakdugiBadge": "8 Simulators"
     },
     "layout": {
       "title": "Digital Classroom"
@@ -2042,8 +2052,8 @@
     "lab": {
       "title": "Practice Lab",
       "subtitle": "Kiosk Simulators & Korean Life Apps",
-      "kioskSection": "Kiosk Simulators",
-      "kioskDesc": "Practice 8 types of kiosks just like the real thing",
+      "kkakdugiSection": "Kiosk Simulators",
+      "kkakdugiDesc": "Practice 8 types of kiosks just like the real thing",
       "appsSection": "Essential Korean Life Apps",
       "appsDesc": "Install and learn how to use apps needed for life in Korea",
       "viewAllApps": "View All Apps"
@@ -2057,7 +2067,7 @@
         "name": "Kakao & Identity Verification",
         "description": "Issue a KakaoTalk certificate, set up KakaoPay, and manage security"
       },
-      "kioskChallenge": {
+      "kkakdugiChallenge": {
         "name": "Kiosk Challenge",
         "description": "Practice with 8 kiosk simulators in real-life situations"
       },
@@ -2251,7 +2261,7 @@
           "Emergency contact registered"
         ]
       },
-      "kioskChallenge": {
+      "kkakdugiChallenge": {
         "title": "Kiosk Challenge Checklist",
         "items": [
           "Cafe kiosk completed",

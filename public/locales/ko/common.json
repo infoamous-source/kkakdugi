@@ -1821,7 +1821,7 @@
               "2": "은행 계좌, 카드도 반드시 본인 명의로 만드세요"
             }
           },
-          "kioskIntro": {
+          "kkakdugiIntro": {
             "title": "키오스크 사용법 - 기본 개념",
             "description": "키오스크는 카페, 식당, 영화관 등에서 직원 대신 주문할 수 있는 터치 화면 기계예요.",
             "substeps": {
@@ -1839,7 +1839,7 @@
           "2": "카카오페이로 결제하면 할인이나 포인트 혜택이 있을 수 있어요"
         },
         "practices": {
-          "kiosk": {
+          "kkakdugi": {
             "title": "카페 키오스크 주문 연습",
             "description": "시뮬레이터로 카페 키오스크 주문을 연습해보세요!",
             "checklist": {
@@ -2044,12 +2044,22 @@
       }
     }
   },
-  "kiosk": {
+  "kkakdugi": {
+    "types": {
+      "cafe": { "name": "카페", "description": "카페에서 음료 주문하기" },
+      "fastfood": { "name": "패스트푸드", "description": "햄버거 세트 주문하기" },
+      "hospital": { "name": "병원", "description": "병원 접수하기" },
+      "bank": { "name": "은행", "description": "은행 ATM 이용하기" },
+      "government": { "name": "주민센터", "description": "서류 발급받기" },
+      "cinema": { "name": "영화관", "description": "영화표 예매하기" },
+      "convenience": { "name": "편의점", "description": "편의점 셀프 계산하기" },
+      "airport": { "name": "공항", "description": "셀프 체크인하기" }
+    },
     "title": "키오스크 연습",
     "subtitle": "카페에서 음료 주문해보기",
     "description": "실제 카페 키오스크와 같은 화면으로 주문부터 결제까지 연습할 수 있어요.",
-    "whatIsKiosk": "키오스크란?",
-    "whatIsKioskDesc": "카페, 식당, 영화관 등에서 직원 대신 터치 화면으로 주문·결제하는 무인 기계예요. 한국에서는 거의 모든 가게에 있어요.",
+    "whatIsKkakdugi": "키오스크란?",
+    "whatIsKkakdugiDesc": "카페, 식당, 영화관 등에서 직원 대신 터치 화면으로 주문·결제하는 무인 기계예요. 한국에서는 거의 모든 가게에 있어요.",
     "whatYouLearn": "이 연습에서 배울 것",
     "learn1": "메뉴를 보고 원하는 음료를 선택하기",
     "learn2": "옵션(샷, 시럽 등)을 추가하기",
@@ -2224,7 +2234,7 @@
       "description": "한국 대표 메신저. 인증서 발급, 카카오페이, GPT 연동.",
       "tagline": "한국 필수 메신저"
     },
-    "kioskPractice": {
+    "kkakdugiPractice": {
       "name": "키오스크 연습",
       "description": "키오스크 주문 연습하기. 메뉴 선택부터 결제까지.",
       "tagline": "키오스크 마스터"
@@ -2288,9 +2298,9 @@
       "schoolDescription": "6교시 커리큘럼으로 디지털 기초를 배워요. 키오스크 실습과 함께!",
       "schoolBadge": "2일 6교시 과정",
       "graduated": "수료 완료",
-      "kioskTitle": "키오스크 연습실",
-      "kioskDescription": "카페, 패스트푸드, 병원 등 8종 키오스크를 자유롭게 연습하세요.",
-      "kioskBadge": "8종 시뮬레이터"
+      "kkakdugiTitle": "키오스크 연습실",
+      "kkakdugiDescription": "카페, 패스트푸드, 병원 등 8종 키오스크를 자유롭게 연습하세요.",
+      "kkakdugiBadge": "8종 시뮬레이터"
     },
     "layout": {
       "title": "디지털 교실"
@@ -2321,8 +2331,8 @@
     "lab": {
       "title": "실습실",
       "subtitle": "키오스크 시뮬레이터와 한국 생활 앱",
-      "kioskSection": "키오스크 시뮬레이터",
-      "kioskDesc": "8종 키오스크를 실제처럼 연습해보세요",
+      "kkakdugiSection": "키오스크 시뮬레이터",
+      "kkakdugiDesc": "8종 키오스크를 실제처럼 연습해보세요",
       "appsSection": "한국 생활 필수 앱",
       "appsDesc": "한국 생활에 필요한 앱을 설치하고 사용법을 배워요",
       "viewAllApps": "전체 앱 보기"
@@ -2336,7 +2346,7 @@
         "name": "카카오 & 본인인증",
         "description": "카카오톡 인증서 발급, 카카오페이 설정, 보안 관리"
       },
-      "kioskChallenge": {
+      "kkakdugiChallenge": {
         "name": "키오스크 도전",
         "description": "8종 키오스크 시뮬레이터로 실전 연습"
       },
@@ -2530,7 +2540,7 @@
           "긴급 연락처 등록"
         ]
       },
-      "kioskChallenge": {
+      "kkakdugiChallenge": {
         "title": "키오스크 도전 체크리스트",
         "items": [
           "카페 키오스크 완료",
