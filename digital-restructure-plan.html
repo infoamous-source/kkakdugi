@@ -688,12 +688,12 @@
       background: var(--red);
       border-color: var(--red-deep);
     }
-    .kiosk-grid-mini {
+    .kkakdugi-grid-mini {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 6px;
     }
-    .kiosk-cell {
+    .kkakdugi-cell {
       background: var(--bg);
       border: 1px dashed var(--border);
       border-radius: 6px;
@@ -951,7 +951,7 @@
       <div class="problem-item">
         <div class="problem-icon">🎮</div>
         <div class="problem-text">
-          <strong>키오스크 시뮬레이터 매몰 (Buried Kiosk)</strong>
+          <strong>키오스크 시뮬레이터 매몰 (Buried Kkakdugi)</strong>
           <span>가장 체험 효과가 큰 키오스크 시뮬레이터(8종)가 db-02의 하위 실습 섹션에 숨겨져 있습니다. 독립 실습실로 분리해야 합니다.</span>
         </div>
       </div>
@@ -1218,7 +1218,7 @@ Gateway<br/>
       </div>
       <div class="flow-row" style="gap:24px;">
         <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-          <div class="flow-node leaf">🎮 키오스크 연습실<br/><span style="font-size:10px; opacity:0.7;">/digital/kiosk</span></div>
+          <div class="flow-node leaf">🎮 키오스크 연습실<br/><span style="font-size:10px; opacity:0.7;">/digital/kkakdugi</span></div>
         </div>
         <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
           <div class="flow-arrow" style="transform:none;">→</div>
@@ -1278,8 +1278,8 @@ Gateway<br/>
         /digital/period/:id    <span style="color:#16743a; font-weight:700;">← NEW DigitalPeriodPage</span><br/>
         <br/>
         <span style="color:#6b7280;"># 기존 라우트 (유지)</span><br/>
-        /digital/kiosk         <span style="color:#2563eb; font-weight:700;">← KEEP KioskPage</span><br/>
-        /kiosk/:type           <span style="color:#2563eb; font-weight:700;">← KEEP KioskSimulator</span><br/>
+        /digital/kkakdugi         <span style="color:#2563eb; font-weight:700;">← KEEP KkakdugiPage</span><br/>
+        /kkakdugi/:type           <span style="color:#2563eb; font-weight:700;">← KEEP KkakdugiSimulator</span><br/>
         <br/>
         <span style="color:#6b7280;"># 기존 라우트 (리디렉션)</span><br/>
         /digital               <span style="color:#f59e0b; font-weight:700;">← REDIRECT → /digital/hub</span>
@@ -1429,15 +1429,15 @@ Gateway<br/>
             <div class="wf-tab active">🔬 실습실</div>
           </div>
           <div style="font-size:11px; color:var(--text-sub); margin-bottom:8px; font-weight:700;">🎮 키오스크 시뮬레이터 (8종)</div>
-          <div class="kiosk-grid-mini">
-            <div class="kiosk-cell">🍔<br/>맥도날드</div>
-            <div class="kiosk-cell">🍔<br/>버거킹</div>
-            <div class="kiosk-cell">☕<br/>스타벅스</div>
-            <div class="kiosk-cell">🍗<br/>롯데리아</div>
-            <div class="kiosk-cell">🏪<br/>GS25</div>
-            <div class="kiosk-cell">🏪<br/>CU</div>
-            <div class="kiosk-cell">🏥<br/>병원</div>
-            <div class="kiosk-cell">🏧<br/>ATM</div>
+          <div class="kkakdugi-grid-mini">
+            <div class="kkakdugi-cell">🍔<br/>맥도날드</div>
+            <div class="kkakdugi-cell">🍔<br/>버거킹</div>
+            <div class="kkakdugi-cell">☕<br/>스타벅스</div>
+            <div class="kkakdugi-cell">🍗<br/>롯데리아</div>
+            <div class="kkakdugi-cell">🏪<br/>GS25</div>
+            <div class="kkakdugi-cell">🏪<br/>CU</div>
+            <div class="kkakdugi-cell">🏥<br/>병원</div>
+            <div class="kkakdugi-cell">🏧<br/>ATM</div>
           </div>
           <div style="font-size:11px; color:var(--text-sub); margin:10px 0 6px; font-weight:700;">📱 한국 앱 모음</div>
           <div style="display:flex; flex-wrap:wrap; gap:4px;">
@@ -1487,14 +1487,14 @@ Gateway<br/>
           <span>App.tsx (라우트 추가)</span>
           <span>GatewayPage.tsx (허브 링크)</span>
           <span>digital-tracks.ts (데이터)</span>
-          <span>KioskPage.tsx (진입점 수정)</span>
+          <span>KkakdugiPage.tsx (진입점 수정)</span>
         </div>
       </div>
       <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:16px 18px;">
         <div style="font-size:12px; font-weight:800; color:#1e40af; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">🔒 유지할 파일</div>
         <div style="display:flex; flex-direction:column; gap:4px; font-size:12.5px; font-family:'Courier New',monospace; color:#1e40af;">
-          <span>KioskSimulator.tsx</span>
-          <span>KioskSelector.tsx</span>
+          <span>KkakdugiSimulator.tsx</span>
+          <span>KkakdugiSelector.tsx</span>
           <span>SchoolIllustrations.tsx</span>
           <span>KkakdugiCharacter.tsx</span>
           <span>db-01 ~ db-04 content</span>
@@ -1524,7 +1524,7 @@ Gateway<br/>
 │
 ├── <span class="ft-mod">App.tsx                       ← MOD: /digital/hub, /digital/school 라우트 추가</span>
 ├── <span class="ft-mod">GatewayPage.tsx               ← MOD: 디지털 카드 → /digital/hub 링크</span>
-└── <span class="ft-keep">kiosk/ (전체 유지)           ← KEEP: KioskSimulator, KioskSelector 등</span>
+└── <span class="ft-keep">kkakdugi/ (전체 유지)           ← KEEP: KkakdugiSimulator, KkakdugiSelector 등</span>
       </pre>
     </div>
 

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>디지털교실 시간표 - UI 리디자인 프로토타입</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
+  body { font-family: 'Noto Sans KR', sans-serif; }
+
+  :root {
+    --kk-cream: #fef3dc;
+    --kk-warm: #fce8c3;
+    --kk-red: #e8816b;
+    --kk-red-deep: #c43025;
+    --kk-brown: #4a3a2e;
+    --kk-bg: #faf7f2;
+    --kk-gold: #f7c88a;
+  }
+
+  .kk-bg { background: var(--kk-bg); }
+  .kk-brown { color: var(--kk-brown); }
+
+  /* 아코디언 애니메이션 */
+  .accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.25s ease;
+    opacity: 0;
+  }
+  .accordion-body.open {
+    max-height: 600px;
+    opacity: 1;
+  }
+
+  /* 체브론 회전 */
+  .chevron {
+    transition: transform 0.3s ease;
+  }
+  .chevron.open {
+    transform: rotate(180deg);
+  }
+
+  /* 탭 전환 */
+  .day-panel {
+    display: none;
+  }
+  .day-panel.active {
+    display: block;
+  }
+
+  /* 탭 인디케이터 */
+  .tab-indicator {
+    transition: left 0.3s ease, width 0.3s ease;
+  }
+
+  /* 프로그레스 바 */
+  .progress-fill {
+    transition: width 0.6s ease;
+  }
+</style>
+</head>
+<body class="kk-bg min-h-screen pb-24">
+
+<!-- 헤더 -->
+<header class="bg-white/80 backdrop-blur-sm border-b border-orange-100 sticky top-0 z-40">
+  <div class="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
+    <button class="p-1.5 hover:bg-orange-50 rounded-lg">
+      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </button>
+    <div class="flex items-center gap-2">
+      <span class="text-xl">🥒</span>
+      <span class="text-xl">🏫</span>
+      <h1 class="font-bold" style="color: var(--kk-brown)">디지털 교실</h1>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-lg mx-auto px-4 py-4 space-y-4">
+
+  <!-- ──── 전체 진행률 요약 카드 ──── -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-5">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-bold" style="color: var(--kk-brown)">📋 시간표</h2>
+      <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">3/6 완료</span>
+    </div>
+
+    <!-- 진행률 바 -->
+    <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-3">
+      <div class="progress-fill h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full" style="width: 50%"></div>
+    </div>
+
+    <p class="text-xs text-gray-400">디지털 기초 교실 2일 과정 · 총 6교시</p>
+  </div>
+
+  <!-- ──── 1일차 / 2일차 탭 ──── -->
+  <div class="relative">
+    <div class="flex bg-white rounded-2xl border border-gray-200 p-1 relative">
+      <!-- 슬라이딩 인디케이터 -->
+      <div id="tab-indicator" class="tab-indicator absolute top-1 bottom-1 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 shadow-sm" style="left: 4px; width: calc(50% - 4px);"></div>
+
+      <button onclick="switchDay(1)" id="tab-day1"
+        class="relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-orange-700">
+        📅 1일차
+        <span class="ml-1 text-[10px] font-normal text-orange-500">입학식 + 3교시</span>
+      </button>
+      <button onclick="switchDay(2)" id="tab-day2"
+        class="relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-gray-400">
+        📅 2일차
+        <span class="ml-1 text-[10px] font-normal text-gray-400">3교시 + 졸업</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════ 1일차 패널 ════════════ -->
+  <div id="day1" class="day-panel active space-y-3">
+
+    <!-- 입학식 (특별 카드) -->
+    <div class="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl border border-pink-200 overflow-hidden">
+      <button onclick="toggleAccordion('entrance')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="w-11 h-11 rounded-xl bg-white/80 border border-pink-200 flex items-center justify-center shadow-sm">
+          <span class="text-xl">🎒</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-pink-600 bg-pink-100 px-2 py-0.5 rounded-full">Pre-School</span>
+            <span class="text-green-500 text-xs">✓</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">입학식</h3>
+          <p class="text-[11px] text-gray-500 truncate">디지털학과에 오신 것을 환영합니다</p>
+        </div>
+        <svg id="chevron-entrance" class="chevron w-5 h-5 text-pink-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-entrance" class="accordion-body">
+        <div class="px-4 pb-4 space-y-2">
+          <div class="bg-white/70 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">디지털학과 소개</p>
+              <p class="text-[11px] text-gray-400">2일간 배울 내용과 학습 목표를 알아봐요</p>
+            </div>
+          </div>
+          <div class="bg-white/70 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">2일 과정 안내</p>
+              <p class="text-[11px] text-gray-400">1일차 3교시 + 2일차 3교시 = 총 6교시</p>
+            </div>
+          </div>
+          <div class="bg-white/70 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">내 학생증 확인</p>
+              <p class="text-[11px] text-gray-400">학생 정보와 출석 현황을 확인해요</p>
+            </div>
+            <button class="text-[10px] font-bold text-pink-600 bg-pink-100 px-2.5 py-1 rounded-lg whitespace-nowrap">학생증 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1교시: 스마트폰 기초 세팅 -->
+    <div class="bg-white rounded-2xl border border-blue-200 overflow-hidden" id="section-p1">
+      <button onclick="toggleAccordion('p1')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="relative w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center">
+          <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          <!-- 도장 -->
+          <span class="absolute -top-1 -right-1 text-sm">✅</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-blue-500 px-2 py-0.5 rounded-full">1교시</span>
+            <span class="text-green-500 text-xs font-bold">완료</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">스마트폰 기초 세팅</h3>
+        </div>
+        <svg id="chevron-p1" class="chevron w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p1" class="accordion-body">
+        <div class="border-t border-blue-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">Naver 계정 만들기</p>
+              <p class="text-[11px] text-gray-400">네이버 앱을 설치하고 계정을 생성합니다</p>
+            </div>
+            <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">이론</span>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">이메일 & 특수문자 입력</p>
+              <p class="text-[11px] text-gray-400">이메일 주소 입력법과 @, # 등 특수문자 찾기</p>
+            </div>
+            <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">이론</span>
+          </div>
+          <div class="bg-blue-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-blue-700 font-medium">설정 완료 체크리스트</p>
+              <p class="text-[11px] text-blue-500/70">기초 세팅이 모두 완료되었는지 확인해요</p>
+            </div>
+            <button class="text-[10px] font-bold text-white bg-blue-500 px-2.5 py-1 rounded-lg whitespace-nowrap">실습 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2교시: 카카오 & 본인인증 -->
+    <div class="bg-white rounded-2xl border border-amber-200 overflow-hidden">
+      <button onclick="toggleAccordion('p2')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="relative w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center">
+          <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          <span class="absolute -top-1 -right-1 text-sm">✅</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-amber-500 px-2 py-0.5 rounded-full">2교시</span>
+            <span class="text-green-500 text-xs font-bold">완료</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">카카오 & 본인인증</h3>
+        </div>
+        <svg id="chevron-p2" class="chevron w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p2" class="accordion-body">
+        <div class="border-t border-amber-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">카카오톡 & 인증서 발급</p>
+              <p class="text-[11px] text-gray-400">카카오톡 설치, 카카오 인증서 발급받기</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">카카오페이 & 보안 설정</p>
+              <p class="text-[11px] text-gray-400">카카오페이 등록, 비밀번호와 보안 설정하기</p>
+            </div>
+          </div>
+          <div class="bg-amber-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-amber-700 font-medium">인증 완료 체크리스트</p>
+              <p class="text-[11px] text-amber-500/70">카카오 인증 관련 설정을 모두 마쳤는지 확인</p>
+            </div>
+            <button class="text-[10px] font-bold text-white bg-amber-500 px-2.5 py-1 rounded-lg whitespace-nowrap">실습 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3교시: 키오스크 도전 (현재 진행 중 - 펼쳐진 상태) -->
+    <div class="bg-white rounded-2xl border-2 border-purple-300 overflow-hidden shadow-md ring-2 ring-purple-100">
+      <button onclick="toggleAccordion('p3')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="relative w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center">
+          <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <!-- 진행 중 아이콘 -->
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
+            <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+          </span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-purple-500 px-2 py-0.5 rounded-full">3교시</span>
+            <span class="text-purple-500 text-xs font-bold animate-pulse">진행 중</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">키오스크 도전</h3>
+        </div>
+        <svg id="chevron-p3" class="chevron open w-5 h-5 text-purple-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p3" class="accordion-body open">
+        <div class="border-t border-purple-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">키오스크란 무엇인가?</p>
+              <p class="text-[11px] text-gray-400">키오스크의 종류와 사용 방법을 알아봐요</p>
+            </div>
+            <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">이론</span>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">키오스크 UI 패턴</p>
+              <p class="text-[11px] text-gray-400">화면 터치, 메뉴 선택, 결제 흐름 이해하기</p>
+            </div>
+            <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">이론</span>
+          </div>
+          <div class="bg-purple-50 rounded-xl px-3 py-2.5">
+            <div class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">3</span>
+              <div class="flex-1">
+                <p class="text-sm text-purple-700 font-medium">키오스크 시뮬레이터 실습</p>
+                <p class="text-[11px] text-purple-500/70">8종 키오스크로 실전처럼 연습해요</p>
+              </div>
+            </div>
+            <button class="mt-2 ml-9 flex items-center gap-2 px-3 py-2 bg-purple-500 text-white rounded-lg text-xs font-bold hover:bg-purple-600 transition-colors">
+              ✨ 실습 도구 열기 →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════════ 2일차 패널 ════════════ -->
+  <div id="day2" class="day-panel space-y-3">
+
+    <!-- 4교시 -->
+    <div class="bg-white rounded-2xl border border-emerald-200 overflow-hidden">
+      <button onclick="toggleAccordion('p4')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center">
+          <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-emerald-500 px-2 py-0.5 rounded-full">4교시</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">정부24 & 서류발급</h3>
+        </div>
+        <svg id="chevron-p4" class="chevron w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p4" class="accordion-body">
+        <div class="border-t border-emerald-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">정부24 가입하기</p>
+              <p class="text-[11px] text-gray-400">정부24 앱 설치와 회원가입 방법</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">서류 검색 & PDF 저장</p>
+              <p class="text-[11px] text-gray-400">필요한 서류 찾기와 PDF로 저장하는 방법</p>
+            </div>
+          </div>
+          <div class="bg-emerald-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-emerald-700 font-medium">서류 발급 체크리스트</p>
+              <p class="text-[11px] text-emerald-500/70">정부24 서류 발급 과정을 체크해요</p>
+            </div>
+            <button class="text-[10px] font-bold text-white bg-emerald-500 px-2.5 py-1 rounded-lg whitespace-nowrap">실습 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5교시 -->
+    <div class="bg-white rounded-2xl border border-rose-200 overflow-hidden">
+      <button onclick="toggleAccordion('p5')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="w-11 h-11 rounded-xl bg-rose-50 flex items-center justify-center">
+          <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12"/><path d="M7 2h10"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-rose-500 px-2 py-0.5 rounded-full">5교시</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">번역 & AI 도구</h3>
+        </div>
+        <svg id="chevron-p5" class="chevron w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p5" class="accordion-body">
+        <div class="border-t border-rose-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">파파고 & 구글 번역</p>
+              <p class="text-[11px] text-gray-400">네이버 파파고와 구글 번역 사용법 비교</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">ChatGPT 활용하기</p>
+              <p class="text-[11px] text-gray-400">AI 챗봇으로 질문하고 도움 받는 방법</p>
+            </div>
+          </div>
+          <div class="bg-rose-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-rose-700 font-medium">번역 비교 체크리스트</p>
+              <p class="text-[11px] text-rose-500/70">다양한 번역/AI 도구를 비교 체험해요</p>
+            </div>
+            <button class="text-[10px] font-bold text-white bg-rose-500 px-2.5 py-1 rounded-lg whitespace-nowrap">실습 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6교시 -->
+    <div class="bg-white rounded-2xl border border-orange-200 overflow-hidden">
+      <button onclick="toggleAccordion('p6')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center">
+          <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-orange-500 px-2 py-0.5 rounded-full">6교시</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">디지털 안전 & 앱 정리</h3>
+        </div>
+        <svg id="chevron-p6" class="chevron w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p6" class="accordion-body">
+        <div class="border-t border-orange-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">앱 권한 & 저장공간 관리</p>
+              <p class="text-[11px] text-gray-400">불필요한 앱 권한 해제와 저장공간 정리</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">스팸/피싱 방지</p>
+              <p class="text-[11px] text-gray-400">스팸 문자, 피싱 링크 구별법과 차단 방법</p>
+            </div>
+          </div>
+          <div class="bg-orange-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-orange-700 font-medium">안전 점검 체크리스트</p>
+              <p class="text-[11px] text-orange-500/70">디지털 안전 설정을 모두 완료했는지 확인</p>
+            </div>
+            <button class="text-[10px] font-bold text-white bg-orange-500 px-2.5 py-1 rounded-lg whitespace-nowrap">실습 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 졸업 (특별 카드) - 잠금 -->
+    <div class="rounded-2xl border border-amber-200 overflow-hidden opacity-60">
+      <div class="bg-gradient-to-br from-amber-50 to-yellow-50 p-4 flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-white/80 border border-amber-200 flex items-center justify-center shadow-sm">
+          <span class="text-xl">🎓</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">After-School</span>
+            <span class="text-xs text-gray-400">🔒</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">졸업식</h3>
+          <p class="text-[11px] text-gray-500">모든 교시를 완료하면 수료할 수 있어요</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- 하단 네비 (참고용) -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+  <div class="max-w-lg mx-auto flex">
+    <button class="flex-1 py-3 flex flex-col items-center gap-0.5 text-gray-400">
+      <span class="text-lg">📋</span>
+      <span class="text-[10px]">출석부</span>
+    </button>
+    <button class="flex-1 py-3 flex flex-col items-center gap-0.5" style="color: var(--kk-red)">
+      <span class="text-lg">📅</span>
+      <span class="text-[10px] font-bold">시간표</span>
+    </button>
+    <button class="flex-1 py-3 flex flex-col items-center gap-0.5 text-gray-400">
+      <span class="text-lg">🖥️</span>
+      <span class="text-[10px]">실습실</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+function toggleAccordion(id) {
+  const body = document.getElementById('body-' + id);
+  const chevron = document.getElementById('chevron-' + id);
+  body.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+
+function switchDay(day) {
+  // 패널 전환
+  document.getElementById('day1').classList.toggle('active', day === 1);
+  document.getElementById('day2').classList.toggle('active', day === 2);
+
+  // 탭 스타일
+  const tab1 = document.getElementById('tab-day1');
+  const tab2 = document.getElementById('tab-day2');
+  const indicator = document.getElementById('tab-indicator');
+
+  if (day === 1) {
+    tab1.className = 'relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-orange-700';
+    tab2.className = 'relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-gray-400';
+    indicator.style.left = '4px';
+  } else {
+    tab1.className = 'relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-gray-400';
+    tab2.className = 'relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-orange-700';
+    indicator.style.left = 'calc(50% + 0px)';
+  }
+}
+</script>
+</body>
+</html>

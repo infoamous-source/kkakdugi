@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마케팅교실 시간표 - UI 리디자인 프로토타입</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
+  body { font-family: 'Noto Sans KR', sans-serif; }
+
+  :root {
+    --kk-cream: #fef3dc;
+    --kk-warm: #fce8c3;
+    --kk-red: #e8816b;
+    --kk-red-deep: #c43025;
+    --kk-brown: #4a3a2e;
+    --kk-bg: #faf7f2;
+    --kk-gold: #f7c88a;
+  }
+
+  .kk-bg { background: var(--kk-bg); }
+
+  .accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.25s ease;
+    opacity: 0;
+  }
+  .accordion-body.open {
+    max-height: 600px;
+    opacity: 1;
+  }
+  .chevron {
+    transition: transform 0.3s ease;
+  }
+  .chevron.open {
+    transform: rotate(180deg);
+  }
+  .day-panel { display: none; }
+  .day-panel.active { display: block; }
+  .tab-indicator {
+    transition: left 0.3s ease;
+  }
+  .progress-fill {
+    transition: width 0.6s ease;
+  }
+</style>
+</head>
+<body class="kk-bg min-h-screen pb-24">
+
+<!-- 헤더 -->
+<header class="bg-white/80 backdrop-blur-sm border-b border-orange-100 sticky top-0 z-40">
+  <div class="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
+    <button class="p-1.5 hover:bg-orange-50 rounded-lg">
+      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </button>
+    <div class="flex items-center gap-2">
+      <span class="text-xl">🥒</span>
+      <span class="text-xl">📈</span>
+      <h1 class="font-bold" style="color: var(--kk-brown)">마케팅 교실</h1>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-lg mx-auto px-4 py-4 space-y-4">
+
+  <!-- ──── 전체 진행률 요약 카드 ──── -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-5">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-bold" style="color: var(--kk-brown)">📋 시간표</h2>
+      <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">4/6 완료</span>
+    </div>
+    <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-3">
+      <div class="progress-fill h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full" style="width: 66%"></div>
+    </div>
+    <p class="text-xs text-gray-400">마케팅 실전 교실 2일 과정 · 총 6교시</p>
+  </div>
+
+  <!-- ──── 1일차 / 2일차 탭 ──── -->
+  <div class="relative">
+    <div class="flex bg-white rounded-2xl border border-gray-200 p-1 relative">
+      <div id="tab-indicator" class="tab-indicator absolute top-1 bottom-1 rounded-xl bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 shadow-sm" style="left: 4px; width: calc(50% - 4px);"></div>
+      <button onclick="switchDay(1)" id="tab-day1"
+        class="relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-rose-700">
+        📅 1일차
+        <span class="ml-1 text-[10px] font-normal text-rose-500">입학식 + 3교시</span>
+      </button>
+      <button onclick="switchDay(2)" id="tab-day2"
+        class="relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-gray-400">
+        📅 2일차
+        <span class="ml-1 text-[10px] font-normal text-gray-400">3교시 + 졸업</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════ 1일차 패널 ════════════ -->
+  <div id="day1" class="day-panel active space-y-3">
+
+    <!-- 입학식 -->
+    <div class="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl border border-pink-200 overflow-hidden">
+      <button onclick="toggleAccordion('entrance')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="w-11 h-11 rounded-xl bg-white/80 border border-pink-200 flex items-center justify-center shadow-sm">
+          <span class="text-xl">🎒</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-pink-600 bg-pink-100 px-2 py-0.5 rounded-full">Pre-School</span>
+            <span class="text-green-500 text-xs">✓</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">입학식: 환영합니다</h3>
+        </div>
+        <svg id="chevron-entrance" class="chevron w-5 h-5 text-pink-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-entrance" class="accordion-body">
+        <div class="px-4 pb-4 space-y-2">
+          <div class="bg-white/70 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">웰컴 오리엔테이션</p>
+              <p class="text-[11px] text-gray-400">학교 소개 및 전체 과정 안내</p>
+            </div>
+          </div>
+          <div class="bg-white/70 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">마케터 선서</p>
+              <p class="text-[11px] text-gray-400">좋은 마케터가 되기 위한 약속과 마음가짐</p>
+            </div>
+          </div>
+          <div class="bg-white/70 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">학생증 발급</p>
+              <p class="text-[11px] text-gray-400">시스템 접속 및 프로필 설정</p>
+            </div>
+            <button class="text-[10px] font-bold text-pink-600 bg-pink-100 px-2.5 py-1 rounded-lg whitespace-nowrap">학생증 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1교시: 기초 다지기 -->
+    <div class="bg-white rounded-2xl border border-rose-200 overflow-hidden">
+      <button onclick="toggleAccordion('p1')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="relative w-11 h-11 rounded-xl bg-rose-50 flex items-center justify-center">
+          <span class="text-lg">📋</span>
+          <span class="absolute -top-1 -right-1 text-sm">✅</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-rose-500 px-2 py-0.5 rounded-full">1교시</span>
+            <span class="text-green-500 text-xs font-bold">완료</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">기초 다지기</h3>
+        </div>
+        <svg id="chevron-p1" class="chevron w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p1" class="accordion-body">
+        <div class="border-t border-rose-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">마케팅이란? & 2026 트렌드</p>
+              <p class="text-[11px] text-gray-400">고객의 문제 해결법 배우기 + 최신 마케팅 흐름 파악</p>
+            </div>
+            <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">이론</span>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">마케터의 역할</p>
+              <p class="text-[11px] text-gray-400">기획, 분석, 디자인 등 다양한 직무 이해하기</p>
+            </div>
+            <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">이론</span>
+          </div>
+          <div class="bg-rose-50 rounded-xl px-3 py-2.5">
+            <div class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-bold">3</span>
+              <div class="flex-1">
+                <p class="text-sm text-rose-700 font-medium">직무 적성 테스트</p>
+                <p class="text-[11px] text-rose-500/70">나의 마케팅 DNA 분석 (Find My Role)</p>
+              </div>
+              <button class="text-[10px] font-bold text-white bg-rose-500 px-2.5 py-1 rounded-lg whitespace-nowrap">실습 →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2교시: 시장 조사 -->
+    <div class="bg-white rounded-2xl border border-blue-200 overflow-hidden">
+      <button onclick="toggleAccordion('p2')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="relative w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center">
+          <span class="text-lg">📡</span>
+          <span class="absolute -top-1 -right-1 text-sm">✅</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-blue-500 px-2 py-0.5 rounded-full">2교시</span>
+            <span class="text-green-500 text-xs font-bold">완료</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">시장 조사</h3>
+        </div>
+        <svg id="chevron-p2" class="chevron w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p2" class="accordion-body">
+        <div class="border-t border-blue-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">경쟁자 조사</p>
+              <p class="text-[11px] text-gray-400">다른 회사 제품의 장점과 단점 비교하기</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">타겟 고객 정하기</p>
+              <p class="text-[11px] text-gray-400">내 물건을 살 사람들의 특징 구체적으로 그려보기</p>
+            </div>
+          </div>
+          <div class="bg-blue-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-blue-700 font-medium">시장 스캐너 (Market Scanner AI)</p>
+              <p class="text-[11px] text-blue-500/70">경쟁사 및 타겟 분석</p>
+            </div>
+            <button class="text-[10px] font-bold text-white bg-blue-500 px-2.5 py-1 rounded-lg whitespace-nowrap">실습 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3교시: 브랜드 기획 (현재 진행 중) -->
+    <div class="bg-white rounded-2xl border-2 border-amber-300 overflow-hidden shadow-md ring-2 ring-amber-100">
+      <button onclick="toggleAccordion('p3')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="relative w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center">
+          <span class="text-lg">⚡</span>
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center">
+            <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+          </span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-amber-500 px-2 py-0.5 rounded-full">3교시</span>
+            <span class="text-amber-500 text-xs font-bold animate-pulse">진행 중</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">브랜드 기획</h3>
+        </div>
+        <svg id="chevron-p3" class="chevron open w-5 h-5 text-amber-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p3" class="accordion-body open">
+        <div class="border-t border-amber-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">특별한 점 찾기 (USP)</p>
+              <p class="text-[11px] text-gray-400">"왜 우리 제품인가?"에 대한 단 하나의 이유 정하기</p>
+            </div>
+            <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">이론</span>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">기획의 뼈대</p>
+              <p class="text-[11px] text-gray-400">논리적인 마케팅 계획을 세우는 6단계 학습</p>
+            </div>
+            <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">이론</span>
+          </div>
+          <div class="bg-amber-50 rounded-xl px-3 py-2.5">
+            <div class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold">3</span>
+              <div class="flex-1">
+                <p class="text-sm text-amber-700 font-medium">브랜드 빌더 (Brand Builder AI)</p>
+                <p class="text-[11px] text-amber-500/70">브랜드 전략 및 슬로건 만들기</p>
+              </div>
+            </div>
+            <button class="mt-2 ml-9 flex items-center gap-2 px-3 py-2 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 transition-colors">
+              ✨ 실습 도구 열기 →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════════ 2일차 패널 ════════════ -->
+  <div id="day2" class="day-panel space-y-3">
+
+    <!-- 4교시: 광고 만들기 -->
+    <div class="bg-white rounded-2xl border border-purple-200 overflow-hidden">
+      <button onclick="toggleAccordion('p4')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="relative w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center">
+          <span class="text-lg">📢</span>
+          <span class="absolute -top-1 -right-1 text-sm">✅</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-purple-500 px-2 py-0.5 rounded-full">4교시</span>
+            <span class="text-green-500 text-xs font-bold">완료</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">광고 만들기</h3>
+        </div>
+        <svg id="chevron-p4" class="chevron w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p4" class="accordion-body">
+        <div class="border-t border-purple-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">시선 잡기</p>
+              <p class="text-[11px] text-gray-400">사람들의 관심을 끄는 강렬한 제목 쓰기</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">잘 팔리는 공식</p>
+              <p class="text-[11px] text-gray-400">4단계 구조(Hook-공감-해결-행동) 배우기</p>
+            </div>
+          </div>
+          <div class="bg-purple-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-purple-700 font-medium">콘텐츠 메이커 (Content Maker AI)</p>
+              <p class="text-[11px] text-purple-500/70">SNS 광고 만들기</p>
+            </div>
+            <button class="text-[10px] font-bold text-white bg-purple-500 px-2.5 py-1 rounded-lg whitespace-nowrap">실습 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5교시: 설득의 기술 -->
+    <div class="bg-white rounded-2xl border border-emerald-200 overflow-hidden">
+      <button onclick="toggleAccordion('p5')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="relative w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center">
+          <span class="text-lg">🎯</span>
+          <span class="absolute -top-1 -right-1 text-sm">✅</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-emerald-500 px-2 py-0.5 rounded-full">5교시</span>
+            <span class="text-green-500 text-xs font-bold">완료</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">설득의 기술</h3>
+        </div>
+        <svg id="chevron-p5" class="chevron w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p5" class="accordion-body">
+        <div class="border-t border-emerald-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">지갑을 여는 심리</p>
+              <p class="text-[11px] text-gray-400">고객이 구매를 결정하게 만드는 설득의 기술</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">상세페이지 구조</p>
+              <p class="text-[11px] text-gray-400">이탈을 줄이고 판매를 높이는 웹페이지 구성</p>
+            </div>
+          </div>
+          <div class="bg-emerald-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-emerald-700 font-medium">세일즈 라이터 (Sales Writer AI)</p>
+              <p class="text-[11px] text-emerald-500/70">설득 문구 및 상세페이지 작성</p>
+            </div>
+            <button class="text-[10px] font-bold text-white bg-emerald-500 px-2.5 py-1 rounded-lg whitespace-nowrap">실습 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6교시: 성과 측정 -->
+    <div class="bg-white rounded-2xl border border-orange-200 overflow-hidden">
+      <button onclick="toggleAccordion('p6')" class="w-full p-4 flex items-center gap-3 text-left">
+        <div class="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center">
+          <span class="text-lg">📊</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white bg-orange-500 px-2 py-0.5 rounded-full">6교시</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">성과 측정</h3>
+        </div>
+        <svg id="chevron-p6" class="chevron w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="body-p6" class="accordion-body">
+        <div class="border-t border-orange-100 px-4 pb-4 pt-3 space-y-2">
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">광고비와 수익</p>
+              <p class="text-[11px] text-gray-400">마케팅 성적표(ROAS, CPC 등) 읽는 법</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 font-medium">예산 세우기</p>
+              <p class="text-[11px] text-gray-400">한정된 돈을 어디에 써야 효율적일지 계획하기</p>
+            </div>
+          </div>
+          <div class="bg-orange-50 rounded-xl px-3 py-2.5 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-orange-700 font-medium">ROAS 예측기 (ROAS Forecast AI)</p>
+              <p class="text-[11px] text-orange-500/70">광고 수익률 및 성과 시뮬레이션</p>
+            </div>
+            <button class="text-[10px] font-bold text-white bg-orange-500 px-2.5 py-1 rounded-lg whitespace-nowrap">실습 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 졸업과제 - 잠금 -->
+    <div class="rounded-2xl border border-violet-200 overflow-hidden opacity-60">
+      <div class="bg-gradient-to-br from-violet-50 to-purple-50 p-4 flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-white/80 border border-violet-200 flex items-center justify-center shadow-sm">
+          <span class="text-xl">📝</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-violet-600 bg-violet-100 px-2 py-0.5 rounded-full">Final Step</span>
+            <span class="text-xs text-gray-400">🔒</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">졸업 과제: 팀 프로젝트</h3>
+          <p class="text-[11px] text-gray-500">모든 교시를 완료하면 열려요</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 졸업식 - 잠금 -->
+    <div class="rounded-2xl border border-amber-200 overflow-hidden opacity-60">
+      <div class="bg-gradient-to-br from-amber-50 to-yellow-50 p-4 flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-white/80 border border-amber-200 flex items-center justify-center shadow-sm">
+          <span class="text-xl">🎓</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">After-School</span>
+            <span class="text-xs text-gray-400">🔒</span>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800 mt-0.5">졸업식: 마케터 데뷔</h3>
+          <p class="text-[11px] text-gray-500">모든 과정을 마치면 수료할 수 있어요</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- 하단 네비 -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+  <div class="max-w-lg mx-auto flex">
+    <button class="flex-1 py-3 flex flex-col items-center gap-0.5 text-gray-400">
+      <span class="text-lg">🎓</span>
+      <span class="text-[10px]">등교</span>
+    </button>
+    <button class="flex-1 py-3 flex flex-col items-center gap-0.5" style="color: var(--kk-red)">
+      <span class="text-lg">📅</span>
+      <span class="text-[10px] font-bold">시간표</span>
+    </button>
+    <button class="flex-1 py-3 flex flex-col items-center gap-0.5 text-gray-400">
+      <span class="text-lg">🧰</span>
+      <span class="text-[10px]">도구함</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+function toggleAccordion(id) {
+  const body = document.getElementById('body-' + id);
+  const chevron = document.getElementById('chevron-' + id);
+  body.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+
+function switchDay(day) {
+  document.getElementById('day1').classList.toggle('active', day === 1);
+  document.getElementById('day2').classList.toggle('active', day === 2);
+
+  const tab1 = document.getElementById('tab-day1');
+  const tab2 = document.getElementById('tab-day2');
+  const indicator = document.getElementById('tab-indicator');
+
+  if (day === 1) {
+    tab1.className = 'relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-rose-700';
+    tab1.querySelector('span').className = 'ml-1 text-[10px] font-normal text-rose-500';
+    tab2.className = 'relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-gray-400';
+    tab2.querySelector('span').className = 'ml-1 text-[10px] font-normal text-gray-400';
+    indicator.style.left = '4px';
+  } else {
+    tab1.className = 'relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-gray-400';
+    tab1.querySelector('span').className = 'ml-1 text-[10px] font-normal text-gray-400';
+    tab2.className = 'relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-rose-700';
+    tab2.querySelector('span').className = 'ml-1 text-[10px] font-normal text-rose-500';
+    indicator.style.left = 'calc(50%)';
+  }
+}
+</script>
+</body>
+</html>

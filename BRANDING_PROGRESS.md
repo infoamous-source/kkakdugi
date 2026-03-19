@@ -2,7 +2,7 @@
 
 > 작성일: 2025-02-10
 > 프로젝트: 깍두기 학교 (Kkakdugi School)
-> 배포: https://kiosk-seven-gamma.vercel.app/
+> 배포: https://kkakdugi-seven-gamma.vercel.app/
 
 ---
 
@@ -52,7 +52,7 @@
 
 | 변경 전 | 변경 후 (ko) | 변경 후 (en) |
 |---------|-------------|-------------|
-| Kiosk Seven | 깍두기 학교 | Kkakdugi School |
+| Kkakdugi Seven | 깍두기 학교 | Kkakdugi School |
 | 교육 플랫폼 | 이주민/유학생을 위한 교육 학교 | Education School for Migrants & Students |
 | 디지털 기초 | 디지털 학과 | Digital Dept. |
 | 마케팅 실무 | 마케팅 학과 | Marketing Dept. |
