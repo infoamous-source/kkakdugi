@@ -12,7 +12,6 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useVisibility } from '../../contexts/VisibilityContext';
 import { tracks } from '../../data/tracks';
-import { marketingTools } from '../../data/marketing/modules';
 import type { TrackId } from '../../types/track';
 
 // ─── 토글 스위치 컴포넌트 ───
@@ -98,11 +97,7 @@ export default function ContentManager() {
   };
 
   // 해당 트랙에 연결된 툴 목록 가져오기
-  const getToolsForTrack = (trackId: string) => {
-    if (trackId === 'marketing') {
-      return marketingTools;
-    }
-    // 다른 트랙은 아직 툴이 없음
+  const getToolsForTrack = (_trackId: string): { id: string; nameKey: string; type: string }[] => {
     return [];
   };
 

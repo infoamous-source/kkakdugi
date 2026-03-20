@@ -6,7 +6,6 @@ import { isStudentAssignedToTrack } from '../../services/teamService';
 import {
   SchoolBellIcon,
   DigitalDeptIcon,
-  MarketingDeptIcon,
   CareerDeptIcon,
 } from '../brand/SchoolIllustrations';
 
@@ -21,7 +20,6 @@ interface TabDef {
 const tabs: TabDef[] = [
   { id: 'home', labelKey: 'sidebar.home', svgIcon: SchoolBellIcon, path: '/' },
   { id: 'digital', labelKey: 'sidebar.digitalBasics', svgIcon: DigitalDeptIcon, path: '/track/digital-basics' },
-  { id: 'marketing', labelKey: 'sidebar.marketing', svgIcon: MarketingDeptIcon, path: '/marketing/hub' },
   { id: 'career', labelKey: 'sidebar.career', svgIcon: CareerDeptIcon, path: '/track/career' },
   { id: 'settings', labelKey: 'sidebar.settings', lucideIcon: Settings, path: '/settings' },
 ];
@@ -47,14 +45,12 @@ export default function MobileTabBar() {
 
   const isActive = (tab: TabDef) => {
     if (tab.path === '/') return location.pathname === '/';
-    if (tab.id === 'marketing') return location.pathname.startsWith('/marketing');
     return location.pathname.startsWith(tab.path);
   };
 
   // 학과 탭 ID 목록
   const trackTabIds: Record<string, string> = {
     digital: 'digital-basics',
-    marketing: 'marketing',
     career: 'career',
   };
 

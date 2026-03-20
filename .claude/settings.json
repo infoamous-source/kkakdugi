@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "AGENT_ROLE=developer AGENT_ID=agent-dev PROJECT_ID=proj-kkakdugi /Users/suni/amous/scripts/hooks/on-tool-use.sh \"$TOOL_NAME\" \"$TOOL_INPUT\" &"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "AGENT_ROLE=developer AGENT_ID=agent-dev PROJECT_ID=proj-kkakdugi /Users/suni/amous/scripts/hooks/on-session-end.sh &"
+          }
+        ]
+      }
+    ]
+  }
+}

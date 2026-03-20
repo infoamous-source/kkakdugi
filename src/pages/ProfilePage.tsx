@@ -101,7 +101,7 @@ export default function ProfilePage() {
 
   const { enrollments } = useEnrollments();
   const { isGraduated: graduated } = useSchoolProgress();
-  const isMarketingEnrolled = enrollments.some(e => e.school_id === 'marketing' && e.status === 'active');
+  const isDigitalEnrolled = enrollments.some(e => e.school_id === 'digital-basics' && e.status === 'active');
 
   const handleStartEditName = () => {
     setEditName(user.name);
@@ -198,7 +198,7 @@ export default function ProfilePage() {
               }`}>
                 {isInstructor ? t('header.instructor') : t('header.student')}
               </span>
-              {!isInstructor && isMarketingEnrolled && (
+              {!isInstructor && isDigitalEnrolled && (
                 <span className={`px-3 py-0.5 rounded-full text-xs font-medium ${
                   graduated
                     ? 'bg-kk-gold/20 text-kk-brown font-bold'
@@ -211,9 +211,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {!isInstructor && isMarketingEnrolled && (
+        {!isInstructor && isDigitalEnrolled && (
           <button
-            onClick={() => navigate('/marketing/hub')}
+            onClick={() => navigate('/digital/hub')}
             className="mt-3 flex items-center gap-2 px-4 py-2 bg-white/40 hover:bg-white/60 rounded-xl transition-colors text-sm font-medium text-kk-brown"
           >
             <School className="w-4 h-4" />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,12 +11,10 @@ import {
 import type { TrackId } from '../../types/track';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEnrollments } from '../../contexts/EnrollmentContext';
-import { useSchoolProgress } from '../../hooks/useSchoolProgress';
 import { isStudentAssignedToTrack } from '../../services/teamService';
 import KkakdugiMascot from '../brand/KkakdugiMascot';
 import {
   DigitalDeptIcon,
-  MarketingDeptIcon,
   CareerDeptIcon,
   SchoolBellIcon,
   BookIcon,
@@ -40,17 +38,6 @@ interface NavItem {
 const mainNavItems: NavItem[] = [
   { id: 'home', labelKey: 'sidebar.home', svgIcon: SchoolBellIcon, path: '/' },
   { id: 'digital', labelKey: 'sidebar.digitalBasics', svgIcon: DigitalDeptIcon, path: '/track/digital-basics', trackId: 'digital-basics' },
-  {
-    id: 'marketing',
-    labelKey: 'sidebar.marketing',
-    svgIcon: MarketingDeptIcon,
-    path: '/marketing/hub',
-    trackId: 'marketing',
-    children: [
-      { id: 'marketing-school', labelKey: 'sidebar.marketingSchool', svgIcon: NotebookIcon, path: '/marketing/hub' },
-      { id: 'marketing-pro', labelKey: 'sidebar.marketingPro', svgIcon: BackpackIcon, path: '/marketing/pro' },
-    ],
-  },
   { id: 'career', labelKey: 'sidebar.career', svgIcon: CareerDeptIcon, path: '/track/career', trackId: 'career' },
 ];
 
@@ -68,23 +55,14 @@ export default function Sidebar({ currentTrack }: SidebarProps) {
   const { enrollments } = useEnrollments();
   const [collapsed, setCollapsed] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
-  const { isGraduated, isProAccessValid } = useSchoolProgress();
 
   // 강사인지 확인
   const isInstructor = user?.role === 'instructor';
-
-  // /marketing 경로에 있으면 자동으로 마케팅 메뉴 펼치기
-  useEffect(() => {
-    if (location.pathname.startsWith('/marketing')) {
-      setExpandedMenu('marketing');
-    }
-  }, [location.pathname]);
 
   const isActive = (item: NavItem) => {
     if (item.trackId && currentTrack) {
       return item.trackId === currentTrack;
     }
-    // 마케팅 하위 경로에서도 활성화
     if (item.path !== '/' && location.pathname.startsWith(item.path)) {
       return true;
     }
@@ -92,13 +70,6 @@ export default function Sidebar({ currentTrack }: SidebarProps) {
   };
 
   const isChildActive = (item: NavItem) => {
-    if (item.id === 'marketing-school') {
-      return location.pathname.startsWith('/marketing/hub') ||
-             location.pathname.startsWith('/marketing/school');
-    }
-    if (item.id === 'marketing-pro') {
-      return location.pathname.startsWith('/marketing/pro');
-    }
     return location.pathname === item.path;
   };
 
@@ -152,48 +123,8 @@ export default function Sidebar({ currentTrack }: SidebarProps) {
     }
   };
 
-  const handleMarketingSchoolClick = async () => {
-    if (!isAuthenticated || !user) {
-      navigate('/login', { state: { redirectTo: '/' } });
-      return;
-    }
-    if (isInstructor) {
-      navigate('/marketing/hub');
-      return;
-    }
-    try {
-      const assigned = await isStudentAssignedToTrack(user.id, 'marketing');
-      if (assigned) {
-        navigate('/marketing/hub');
-      } else {
-        showToast('학과 배정 대기중이에요! 선생님에게 문의하세요');
-      }
-    } catch {
-      navigate('/marketing/hub');
-    }
-  };
-
-  const handleMarketingProClick = () => {
-    if (!user) return;
-    if (!isGraduated) {
-      alert(t('school.hub.proLocked'));
-      return;
-    }
-    if (!isProAccessValid) {
-      alert(t('school.hub.proExpired'));
-      return;
-    }
-    navigate('/marketing/pro');
-  };
-
   const handleChildClick = async (child: NavItem) => {
-    if (child.id === 'marketing-school') {
-      await handleMarketingSchoolClick();
-    } else if (child.id === 'marketing-pro') {
-      handleMarketingProClick();
-    } else {
-      navigate(child.path);
-    }
+    navigate(child.path);
   };
 
   const NavButton = ({ item }: { item: NavItem }) => {

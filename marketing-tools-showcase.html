@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>완벽한 기획을 위한 완벽한 AI 비서</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans KR', -apple-system, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    line-height: 1.6;
+  }
+
+  /* ─── Hero ─── */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 72px 24px 56px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(139,92,246,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(59,130,246,0.1) 0%, transparent 50%);
+    animation: rotate 20s linear infinite;
+  }
+  @keyframes rotate { to { transform: rotate(360deg); } }
+  .hero > * { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(139,92,246,0.2);
+    border: 1px solid rgba(139,92,246,0.4);
+    color: #c4b5fd;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+  }
+  .hero h1 {
+    font-size: 40px;
+    font-weight: 900;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+    line-height: 1.3;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, #a78bfa, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 17px;
+    color: #94a3b8;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 36px;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-number {
+    font-size: 36px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #a78bfa, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-stat-label { font-size: 13px; color: #64748b; margin-top: 2px; }
+
+  /* ─── Pipeline ─── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 32px;
+    padding: 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .pipeline-arrow { color: #475569; font-size: 16px; }
+  .ps-rose { background: rgba(225,29,72,0.15); color: #fda4af; }
+  .ps-blue { background: rgba(37,99,235,0.15); color: #93c5fd; }
+  .ps-amber { background: rgba(217,119,6,0.15); color: #fcd34d; }
+  .ps-purple { background: rgba(124,58,237,0.15); color: #c4b5fd; }
+  .ps-emerald { background: rgba(5,150,105,0.15); color: #6ee7b7; }
+  .ps-orange { background: rgba(234,88,12,0.15); color: #fdba74; }
+  .ps-indigo { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+  .ps-cyan { background: rgba(6,182,212,0.15); color: #67e8f9; }
+
+  /* ─── Section ─── */
+  .container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+  .section { padding: 48px 0; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .section-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .section-title { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+  .section-subtitle { font-size: 14px; color: #64748b; font-weight: 400; }
+
+  .section-1 .section-icon { background: linear-gradient(135deg, #eff6ff, #dbeafe); color: #2563eb; }
+  .section-2 .section-icon { background: linear-gradient(135deg, #f5f3ff, #ede9fe); color: #7c3aed; }
+  .section-3 .section-icon { background: linear-gradient(135deg, #fef2f2, #fecaca); color: #dc2626; }
+
+  /* ─── Tool Cards ─── */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .tool-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 24px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    border-color: transparent;
+  }
+  .tool-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .tool-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .tool-name { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+  .tool-name-en { font-size: 12px; color: #94a3b8; font-weight: 500; }
+  .tool-desc { font-size: 14px; color: #64748b; line-height: 1.7; margin-bottom: 16px; }
+  .tool-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tool-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.2px;
+  }
+  .tag-ai { background: #fef2f2; color: #dc2626; }
+  .tag-interactive { background: #f5f3ff; color: #7c3aed; }
+  .tag-static { background: #eff6ff; color: #2563eb; }
+  .tag-feature { background: #f0fdf4; color: #16a34a; }
+
+  /* Color accents */
+  .accent-rose .tool-icon { background: #fff1f2; color: #e11d48; }
+  .accent-rose:hover { border-color: #fda4af !important; }
+  .accent-blue .tool-icon { background: #eff6ff; color: #2563eb; }
+  .accent-blue:hover { border-color: #93c5fd !important; }
+  .accent-amber .tool-icon { background: #fffbeb; color: #d97706; }
+  .accent-amber:hover { border-color: #fcd34d !important; }
+  .accent-purple .tool-icon { background: #f5f3ff; color: #7c3aed; }
+  .accent-purple:hover { border-color: #c4b5fd !important; }
+  .accent-emerald .tool-icon { background: #ecfdf5; color: #059669; }
+  .accent-emerald:hover { border-color: #6ee7b7 !important; }
+  .accent-orange .tool-icon { background: #fff7ed; color: #ea580c; }
+  .accent-orange:hover { border-color: #fdba74 !important; }
+  .accent-red .tool-icon { background: #fef2f2; color: #dc2626; }
+  .accent-red:hover { border-color: #fca5a5 !important; }
+  .accent-indigo .tool-icon { background: #eef2ff; color: #4f46e5; }
+  .accent-indigo:hover { border-color: #a5b4fc !important; }
+  .accent-cyan .tool-icon { background: #ecfeff; color: #0891b2; }
+  .accent-cyan:hover { border-color: #67e8f9 !important; }
+
+  /* ─── Divider ─── */
+  .divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+    margin: 0;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: #94a3b8;
+    font-size: 13px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .footer strong { color: #64748b; }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 28px; }
+    .hero-stats { gap: 20px; }
+    .hero-stat-number { font-size: 26px; }
+    .tool-grid { grid-template-columns: 1fr; }
+    .pipeline { flex-direction: column; }
+    .pipeline-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">AI-Powered Planning Tools</div>
+  <h1>완벽한 기획을 위한<br><span>완벽한 AI 비서</span></h1>
+  <p>아이디어 발굴부터 시장조사, 브랜드 전략, 콘텐츠 제작, 수익 시뮬레이션까지 — 기획의 모든 단계를 AI가 함께합니다</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-number">14</div>
+      <div class="hero-stat-label">AI 기획 도구</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-number">6</div>
+      <div class="hero-stat-label">핵심 기획 단계</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-number">8</div>
+      <div class="hero-stat-label">실무 보조 도구</div>
+    </div>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="pipeline">
+    <div class="pipeline-step ps-rose">📋 역량 분석</div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step ps-blue">🔍 시장 리서치</div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step ps-amber">⚡ 컨셉 기획</div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step ps-purple">📱 콘텐츠 기획</div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step ps-emerald">💰 세일즈 기획</div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step ps-orange">📊 수익 시뮬레이션</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- STEP 1~6: 핵심 기획 도구 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="section section-1">
+    <div class="section-header">
+      <div class="section-icon">🧭</div>
+      <div>
+        <div class="section-title">기획 핵심 도구 — 6단계 AI 어시스턴트</div>
+        <div class="section-subtitle">기획안 작성의 전체 흐름을 따라가며 AI가 각 단계를 도와줍니다</div>
+      </div>
+    </div>
+
+    <div class="tool-grid">
+
+      <!-- STEP 1 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/school/tools/aptitude-test" target="_blank" class="tool-card accent-rose">
+        <div class="tool-card-header">
+          <div class="tool-icon">📋</div>
+          <div>
+            <div class="tool-name">기획자 적성 분석기</div>
+            <div class="tool-name-en">Planner DNA Test</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          나는 어떤 유형의 기획자일까? 5가지 유형(전략가, 프로젝트매니저, 크리에이터, 커뮤니케이터, 리더)을 분석해주는 적성 테스트.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-interactive">STEP 1</span>
+          <span class="tool-tag tag-feature">역량 분석</span>
+        </div>
+      </a>
+
+      <!-- STEP 2 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/school/tools/market-scanner" target="_blank" class="tool-card accent-blue">
+        <div class="tool-card-header">
+          <div class="tool-icon">📡</div>
+          <div>
+            <div class="tool-name">시장 리서치 AI</div>
+            <div class="tool-name-en">Market Research AI</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          키워드·타겟층·성별을 입력하면 AI가 연관 키워드, 경쟁 현황, 고객 니즈를 자동 분석해주는 리서치 도구.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-ai">STEP 2 — AI</span>
+          <span class="tool-tag tag-feature">시장 리서치</span>
+        </div>
+      </a>
+
+      <!-- STEP 3 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/school/tools/edge-maker" target="_blank" class="tool-card accent-amber">
+        <div class="tool-card-header">
+          <div class="tool-icon">⚡</div>
+          <div>
+            <div class="tool-name">컨셉 빌더 AI</div>
+            <div class="tool-name-en">Concept Builder AI</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          고객 니즈와 강점을 입력하면 AI가 차별화 포인트(USP), 네이밍 후보, 슬로건, 무드보드(색상·톤·키워드)를 기획해주는 도구.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-ai">STEP 3 — AI</span>
+          <span class="tool-tag tag-feature">컨셉 기획</span>
+        </div>
+      </a>
+
+      <!-- STEP 4 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/school/tools/viral-card-maker" target="_blank" class="tool-card accent-purple">
+        <div class="tool-card-header">
+          <div class="tool-icon">📱</div>
+          <div>
+            <div class="tool-name">콘텐츠 기획 AI</div>
+            <div class="tool-name-en">Content Planner AI</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          AI가 4장짜리 카드뉴스(Hook→공감→해결→행동)를 자동 기획. 톤(자극적/감성적/정보성)과 비주얼 스타일 선택 가능.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-ai">STEP 4 — AI</span>
+          <span class="tool-tag tag-feature">콘텐츠 기획</span>
+        </div>
+      </a>
+
+      <!-- STEP 5 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/school/tools/perfect-planner" target="_blank" class="tool-card accent-emerald">
+        <div class="tool-card-header">
+          <div class="tool-icon">💰</div>
+          <div>
+            <div class="tool-name">세일즈 전략 기획 AI</div>
+            <div class="tool-name-en">Sales Strategy AI</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          AI가 랜딩페이지 구성안(AIDA 공식) + 라이브커머스 대본(4단계 공식)을 한 번에 기획. 설득력 있는 세일즈 시나리오 작성.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-ai">STEP 5 — AI</span>
+          <span class="tool-tag tag-feature">세일즈 기획</span>
+        </div>
+      </a>
+
+      <!-- STEP 6 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/school/tools/roas-simulator" target="_blank" class="tool-card accent-orange">
+        <div class="tool-card-header">
+          <div class="tool-icon">📊</div>
+          <div>
+            <div class="tool-name">수익 시뮬레이터 AI</div>
+            <div class="tool-name-en">Revenue Simulator AI</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          상품·가격·예산·채널(인스타/네이버/카카오/유튜브)을 입력하면 예상 노출수, CTR, 전환율, 수익률까지 AI가 시뮬레이션.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-ai">STEP 6 — AI</span>
+          <span class="tool-tag tag-feature">수익 시뮬레이션</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- 실무 보조 도구 8개 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="section section-2">
+    <div class="section-header">
+      <div class="section-icon">🛠️</div>
+      <div>
+        <div class="section-title">기획 실무 보조 도구</div>
+        <div class="section-subtitle">기획안의 각 파트를 채울 때 바로 활용할 수 있는 보조 도구 8종</div>
+      </div>
+    </div>
+
+    <div class="tool-grid">
+
+      <!-- 1. 용어 사전 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/tools/glossary" target="_blank" class="tool-card accent-blue">
+        <div class="tool-card-header">
+          <div class="tool-icon">📖</div>
+          <div>
+            <div class="tool-name">기획 용어 사전</div>
+            <div class="tool-name-en">Planning Glossary</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          기획서에 자주 등장하는 비즈니스·디지털·SNS·퍼포먼스·브랜딩·AI 용어를 카테고리별로 쉽게 검색.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-static">📖 레퍼런스</span>
+          <span class="tool-tag tag-feature">기획 기초</span>
+        </div>
+      </a>
+
+      <!-- 2. 타겟 설정 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/tools/persona-maker" target="_blank" class="tool-card accent-indigo">
+        <div class="tool-card-header">
+          <div class="tool-icon">👤</div>
+          <div>
+            <div class="tool-name">타겟 페르소나 설계</div>
+            <div class="tool-name-en">Target Persona Builder</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          기획안의 타겟 고객을 구체적 인물로 설정. 이름·나이·직업·관심사·고민·목표를 입력하면 페르소나 카드가 완성됩니다.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-interactive">🛠️ 인터랙티브</span>
+          <span class="tool-tag tag-feature">타겟 설정</span>
+        </div>
+      </a>
+
+      <!-- 3. 차별화 포인트 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/tools/usp-finder" target="_blank" class="tool-card accent-cyan">
+        <div class="tool-card-header">
+          <div class="tool-icon">🎯</div>
+          <div>
+            <div class="tool-name">차별화 포인트 도출기</div>
+            <div class="tool-name-en">USP Finder</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          4단계 질문으로 핵심 차별화 포인트를 찾아주는 기획 도우미. 제품 → 경쟁자 → 강점 → 차별점 순서로 USP를 도출.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-interactive">🛠️ 인터랙티브</span>
+          <span class="tool-tag tag-feature">전략 기획</span>
+        </div>
+      </a>
+
+      <!-- 4. 컬러 기획 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/tools/color-picker" target="_blank" class="tool-card accent-purple">
+        <div class="tool-card-header">
+          <div class="tool-icon">🎨</div>
+          <div>
+            <div class="tool-name">브랜드 컬러 기획</div>
+            <div class="tool-name-en">Brand Color Planner</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          기획안에 들어갈 브랜드 감정을 선택하면 색상 심리학 기반으로 메인·서브 컬러 조합과 미리보기를 추천.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-interactive">🛠️ 인터랙티브</span>
+          <span class="tool-tag tag-feature">비주얼 기획</span>
+        </div>
+      </a>
+
+      <!-- 5. 키워드 기획 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/tools/hashtag-generator" target="_blank" class="tool-card accent-emerald">
+        <div class="tool-card-header">
+          <div class="tool-icon">#️⃣</div>
+          <div>
+            <div class="tool-name">키워드 전략 생성기</div>
+            <div class="tool-name-en">Keyword Strategy Generator</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          핵심 키워드를 입력하면 인기/니치/일반 키워드를 자동 추천. 콘텐츠 기획안의 키워드 전략 섹션에 바로 활용.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-interactive">🛠️ 인터랙티브</span>
+          <span class="tool-tag tag-feature">키워드 전략</span>
+        </div>
+      </a>
+
+      <!-- 6. 예산 기획 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/tools/roi-calculator" target="_blank" class="tool-card accent-orange">
+        <div class="tool-card-header">
+          <div class="tool-icon">🧮</div>
+          <div>
+            <div class="tool-name">예산 수익률 분석기</div>
+            <div class="tool-name-en">Budget ROI Analyzer</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          투입 비용과 예상 매출을 입력하면 ROAS·ROI·순이익을 자동 계산. 기획안의 예산 파트에 근거 자료로 활용 가능.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-interactive">🛠️ 인터랙티브</span>
+          <span class="tool-tag tag-feature">예산 기획</span>
+        </div>
+      </a>
+
+      <!-- 7. 카피 기획 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/tools/k-copywriter" target="_blank" class="tool-card accent-red">
+        <div class="tool-card-header">
+          <div class="tool-icon">✍️</div>
+          <div>
+            <div class="tool-name">카피라이팅 AI</div>
+            <div class="tool-name-en">Copywriting AI</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          상품명과 타겟을 입력하고 톤(감성적/유쾌한/전문적)을 선택하면 AI가 기획안에 넣을 카피를 3가지 버전으로 생성.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-ai">🤖 AI</span>
+          <span class="tool-tag tag-feature">카피 기획</span>
+        </div>
+      </a>
+
+      <!-- 8. 비주얼 기획 -->
+      <a href="https://kkakdugischool.vercel.app/marketing/tools/sns-ad-maker" target="_blank" class="tool-card accent-red">
+        <div class="tool-card-header">
+          <div class="tool-icon">🖼️</div>
+          <div>
+            <div class="tool-name">비주얼 시안 생성기</div>
+            <div class="tool-name-en">Visual Draft AI</div>
+          </div>
+        </div>
+        <div class="tool-desc">
+          이미지 컨셉과 스타일(사실적/일러스트/3D/팝아트)을 선택하면 AI가 시안 이미지를 생성하고 SNS 미리보기를 제공.
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag tag-ai">🤖 AI</span>
+          <span class="tool-tag tag-feature">비주얼 기획</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <strong>AI Planning Assistant</strong> — 완벽한 기획을 위한 완벽한 AI 비서<br>
+  Powered by Gemini AI &nbsp;|&nbsp; © 2026
+</div>
+
+</body>
+</html>

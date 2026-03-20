@@ -16,18 +16,6 @@ const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 const OrganizationDetailPage = lazy(() => import('./pages/OrganizationDetailPage'));
 const KoreaAppsPage = lazy(() => import('./pages/KoreaAppsPage'));
-const MarketingModuleDetailPage = lazy(() => import('./pages/marketing/MarketingModuleDetailPage'));
-const MarketingToolRouter = lazy(() => import('./pages/marketing/MarketingToolRouter'));
-const MarketingHubPage = lazy(() => import('./pages/marketing/MarketingHubPage'));
-const MarketingSchoolLayout = lazy(() => import('./pages/marketing/school/MarketingSchoolLayout'));
-const AttendanceTab = lazy(() => import('./pages/marketing/school/AttendanceTab'));
-const CurriculumTab = lazy(() => import('./pages/marketing/school/CurriculumTab'));
-const LabTab = lazy(() => import('./pages/marketing/school/LabTab'));
-const SchoolToolRouter = lazy(() => import('./pages/marketing/school/SchoolToolRouter'));
-const PeriodDetailPage = lazy(() => import('./pages/marketing/school/PeriodDetailPage'));
-const ProToolsDashboard = lazy(() => import('./pages/marketing/ProToolsDashboard'));
-const AISetupPage = lazy(() => import('./pages/marketing/school/AISetupPage'));
-const GraduationProjectPage = lazy(() => import('./pages/marketing/school/GraduationProjectPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const DigitalModulePage = lazy(() => import('./pages/DigitalModulePage'));
 const KkakdugiPracticePage = lazy(() => import('./pages/KkakdugiPracticePage'));
@@ -69,27 +57,6 @@ export default function App() {
           <Route path="/admin/organization/:orgCode" element={<OrganizationDetailPage />} />
           <Route path="/admin/organizations" element={<AdminPage />} />
 
-          {/* 마케팅 허브 (학교 시스템) */}
-          <Route path="/marketing/hub" element={<MarketingHubPage />} />
-          <Route path="/marketing/pro" element={<ProToolsDashboard />} />
-          <Route path="/marketing/school/ai-setup" element={<AISetupPage />} />
-
-          {/* 마케팅 학교 (Bottom Tab 레이아웃) */}
-          <Route path="/marketing/school" element={<MarketingSchoolLayout />}>
-            <Route path="attendance" element={<AttendanceTab />} />
-            <Route path="curriculum" element={<CurriculumTab />} />
-            <Route path="lab" element={<LabTab />} />
-          </Route>
-
-          {/* 교시 상세 페이지 (독립 페이지) */}
-          <Route path="/marketing/school/periods/:periodId" element={<PeriodDetailPage />} />
-
-          {/* 졸업과제 안내 페이지 */}
-          <Route path="/marketing/school/graduation-project" element={<GraduationProjectPage />} />
-
-          {/* 학교 툴 (독립 페이지) */}
-          <Route path="/marketing/school/tools/:toolId" element={<SchoolToolRouter />} />
-
           {/* 디지털 허브 (학교 시스템) */}
           <Route path="/digital/hub" element={<DigitalHubPage />} />
 
@@ -110,11 +77,6 @@ export default function App() {
             <Route path="/track/digital-basics/module/:moduleId" element={<DigitalModulePage />} />
             <Route path="/track/digital-basics/kkakdugi-practice" element={<KkakdugiPracticePage />} />
             <Route path="/track/digital-basics/korea-apps" element={<KoreaAppsPage />} />
-
-            {/* 기존 마케팅 (레거시) → 허브로 리다이렉트 */}
-            <Route path="/marketing" element={<Navigate to="/marketing/hub" replace />} />
-            <Route path="/marketing/modules/:moduleId" element={<MarketingModuleDetailPage />} />
-            <Route path="/marketing/tools/:toolId" element={<MarketingToolRouter />} />
 
             {/* 내 프로필 */}
             <Route path="/profile" element={<ProfilePage />} />

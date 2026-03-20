@@ -89,8 +89,8 @@ export function useSchoolProgress() {
   const { user } = useAuth();
   const { getEnrollment } = useEnrollments();
   const userId = user?.id;
-  const marketingEnrollment = getEnrollment('marketing');
-  const enrollmentId = marketingEnrollment?.id;
+  const digitalEnrollment = getEnrollment('digital-basics');
+  const enrollmentId = digitalEnrollment?.id;
   const [progress, setProgress] = useState<SchoolProgress | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
