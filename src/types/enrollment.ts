@@ -1,11 +1,12 @@
 // ─── 학교 ID ───
 
-export type SchoolId = 'digital-basics' | 'career';
+export type SchoolId = 'digital-basics' | 'marketing' | 'career';
 
-export const SCHOOL_IDS: SchoolId[] = ['digital-basics', 'career'];
+export const SCHOOL_IDS: SchoolId[] = ['digital-basics', 'marketing', 'career'];
 
 export const SCHOOL_NAMES: Record<SchoolId, { ko: string; en: string; labelKey: string }> = {
   'digital-basics': { ko: '디지털 기초', en: 'Digital Basics', labelKey: 'school.digital' },
+  'marketing': { ko: '마케팅', en: 'Marketing', labelKey: 'school.marketing' },
   'career': { ko: '취업', en: 'Career', labelKey: 'school.career' },
 };
 

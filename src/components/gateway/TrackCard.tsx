@@ -6,15 +6,17 @@ import type { Track } from '../../types/track';
 import { useActivityLog } from '../../hooks/useActivityLog';
 import { useAuth } from '../../contexts/AuthContext';
 import { isStudentAssignedToTrack } from '../../services/teamService';
-import { DigitalDeptIcon, CareerDeptIcon } from '../brand/SchoolIllustrations';
+import { DigitalDeptIcon, MarketingDeptIcon, CareerDeptIcon } from '../brand/SchoolIllustrations';
 
 const deptIconMap: Record<string, React.FC<{ size?: number; className?: string }>> = {
   'digital-basics': DigitalDeptIcon,
+  marketing: MarketingDeptIcon,
   career: CareerDeptIcon,
 };
 
 // 학과별 허브 경로
 const trackHubPath: Record<string, string> = {
+  marketing: '/marketing/hub',
   'digital-basics': '/digital/hub',
   career: '/track/career',
 };

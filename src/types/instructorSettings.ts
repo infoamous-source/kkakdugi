@@ -41,6 +41,11 @@ export function createDefaultSettings(instructorCode: string): InstructorSetting
         modules: {},
         tools: {},
       },
+      marketing: {
+        visible: true,
+        modules: {},
+        tools: {},
+      },
       career: {
         visible: true,
         modules: {},

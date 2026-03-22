@@ -1,4 +1,4 @@
-export type TrackId = 'digital-basics' | 'career';
+export type TrackId = 'digital-basics' | 'marketing' | 'career';
 
 export interface Track {
   id: TrackId;
