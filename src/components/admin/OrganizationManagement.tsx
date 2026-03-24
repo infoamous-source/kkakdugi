@@ -10,6 +10,7 @@ import {
   getOrgStudentCount,
   type OrganizationRow,
 } from '../../services/organizationService';
+import { SCHOOL_IDS, SCHOOL_NAMES, type SchoolId } from '../../types/enrollment';
 
 interface OrgWithCount extends OrganizationRow {
   studentCount: number;
@@ -23,6 +24,7 @@ export default function OrganizationManagement() {
   const [newOrgName, setNewOrgName] = useState('');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [selectedProgramTypes, setSelectedProgramTypes] = useState<SchoolId[]>(['marketing']);
 
   const loadData = useCallback(async () => {
     if (!user?.id) return;
@@ -40,13 +42,22 @@ export default function OrganizationManagement() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  const handleToggleProgramType = (schoolId: SchoolId) => {
+    setSelectedProgramTypes(prev =>
+      prev.includes(schoolId)
+        ? prev.filter(id => id !== schoolId)
+        : [...prev, schoolId],
+    );
+  };
+
   const handleCreate = async () => {
-    if (!user?.id || !newOrgName.trim()) return;
+    if (!user?.id || !newOrgName.trim() || selectedProgramTypes.length === 0) return;
     setIsCreating(true);
-    const result = await createOrganization(user.id, newOrgName.trim());
+    const result = await createOrganization(user.id, newOrgName.trim(), selectedProgramTypes);
     if (result) {
       setShowCreateModal(false);
       setNewOrgName('');
+      setSelectedProgramTypes(['marketing']);
       await loadData();
     } else {
       alert('기관 생성에 실패했습니다. 다시 시도해주세요.');
@@ -151,6 +162,20 @@ export default function OrganizationManagement() {
                   </button>
                 </div>
 
+                {/* 프로그램 유형 */}
+                {org.program_types && org.program_types.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {org.program_types.map(pt => (
+                      <span
+                        key={pt}
+                        className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-medium"
+                      >
+                        {SCHOOL_NAMES[pt]?.ko || pt}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 {/* 학생 수 + 생성일 */}
                 <div className="flex items-center justify-between text-xs text-gray-400">
                   <span className="flex items-center gap-1">
@@ -215,6 +240,37 @@ export default function OrganizationManagement() {
                   autoFocus
                 />
               </div>
+              {/* 프로그램 유형 선택 */}
+              <div>
+                <label className="text-sm text-gray-600 font-medium mb-2 block">프로그램 유형</label>
+                <div className="space-y-2">
+                  {SCHOOL_IDS.map(schoolId => (
+                    <label
+                      key={schoolId}
+                      className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                        selectedProgramTypes.includes(schoolId)
+                          ? 'border-purple-400 bg-purple-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedProgramTypes.includes(schoolId)}
+                        onChange={() => handleToggleProgramType(schoolId)}
+                        className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                      />
+                      <span className="text-sm text-gray-700 font-medium">
+                        {SCHOOL_NAMES[schoolId].ko}
+                      </span>
+                      <span className="text-xs text-gray-400">({schoolId})</span>
+                    </label>
+                  ))}
+                </div>
+                {selectedProgramTypes.length === 0 && (
+                  <p className="text-xs text-red-500 mt-1">최소 1개 이상의 프로그램을 선택해주세요.</p>
+                )}
+              </div>
+
               <p className="text-xs text-gray-400 bg-gray-50 p-3 rounded-lg">
                 💡 기관코드는 자동으로 생성됩니다. 생성된 코드를 학생에게 전달해주세요.
               </p>
@@ -228,7 +284,7 @@ export default function OrganizationManagement() {
               </button>
               <button
                 onClick={handleCreate}
-                disabled={!newOrgName.trim() || isCreating}
+                disabled={!newOrgName.trim() || isCreating || selectedProgramTypes.length === 0}
                 className="flex-1 py-2.5 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 {isCreating ? '생성 중...' : '생성'}

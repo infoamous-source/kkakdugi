@@ -25,6 +25,8 @@ import {
   RotateCcw,
   Plus,
   X,
+  FileText,
+  BarChart3,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -34,6 +36,7 @@ import { getClassroomGroups, addClassroomMember } from '../../services/teamServi
 import { SCHOOL_NAMES, type SchoolId } from '../../types/enrollment';
 import type { ProfileRow } from '../../types/database';
 import type { ClassroomGroup } from '../../types/team';
+import type { ActivityLogRow } from '../../services/activityLogService';
 import ContentManager from './ContentManager';
 import SchoolManagement from './SchoolManagement';
 import StudentEnrollmentManager from './StudentEnrollmentManager';
@@ -42,7 +45,10 @@ import NotificationSender from './NotificationSender';
 import StudentAIUsageView from './StudentAIUsageView';
 import OrganizationManagement from './OrganizationManagement';
 
-type DashboardTab = 'organizations' | 'students' | 'content' | 'school' | 'enrollment' | 'teams' | 'notifications';
+// 5-tab consolidated dashboard
+type DashboardTab = 'organizations' | 'students' | 'teams' | 'learning' | 'notifications';
+type StudentSubTab = 'accounts' | 'enrollment';
+type LearningSubTab = 'progress' | 'content' | 'analytics';
 
 // 정렬 타입
 type SortType = 'name' | 'email' | 'organization' | 'lastActive';
@@ -75,6 +81,10 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<DashboardTab>('organizations');
+  const [studentSubTab, setStudentSubTab] = useState<StudentSubTab>('accounts');
+  const [learningSubTab, setLearningSubTab] = useState<LearningSubTab>('progress');
+  const [activityLogs, setActivityLogs] = useState<ActivityLogRow[]>([]);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortType, setSortType] = useState<SortType>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
@@ -192,6 +202,32 @@ export default function AdminDashboard() {
     };
   }, [isRealTimeEnabled, user]);
 
+  // Load activity logs for analytics
+  useEffect(() => {
+    if (activeTab !== 'learning' || learningSubTab !== 'analytics') return;
+    if (!realtimeStudents.length) return;
+
+    const loadLogs = async () => {
+      setIsLoadingLogs(true);
+      try {
+        const studentIds = realtimeStudents.map(s => s.id);
+        const { data, error } = await supabase
+          .from('activity_logs')
+          .select('*')
+          .in('user_id', studentIds.slice(0, 50)) // limit to 50 students for performance
+          .order('created_at', { ascending: false })
+          .limit(500);
+        if (!error && data) {
+          setActivityLogs(data as ActivityLogRow[]);
+        }
+      } catch (err) {
+        console.error('[AdminDashboard] Failed to load activity logs:', err);
+      }
+      setIsLoadingLogs(false);
+    };
+    loadLogs();
+  }, [activeTab, learningSubTab, realtimeStudents]);
+
   // 한글 정렬
   const koreanSort = useCallback((a: string, b: string): number => {
     return a.localeCompare(b, 'ko');
@@ -254,8 +290,107 @@ export default function AdminDashboard() {
     {} as Record<string, { name: string; orgCode: string; students: RealStudent[]; assignedCount: number; apiCount: number }>,
   );
 
-  const handleExportExcel = () => {
-    alert(t('admin.exportStarted'));
+  // CSV Export - student data
+  const handleExportCSV = () => {
+    const headers = ['이름', '이메일', '기관', '기관코드', 'AI연결', '배정학과', '가입일'];
+    const rows = sortedStudents.map(s => [
+      s.name,
+      s.email,
+      s.organization,
+      s.orgCode,
+      s.hasApiKey ? 'Y' : 'N',
+      s.assignments.map(a => `${getTrackName(a.track)}/${a.classroomName}`).join('; ') || '미배정',
+      new Date(s.createdAt).toLocaleDateString('ko-KR'),
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `학생현황_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // PDF Report - student summary
+  const handleExportPDF = async () => {
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF();
+
+      // Title
+      doc.setFontSize(18);
+      doc.text('Student Report', 14, 22);
+      doc.setFontSize(10);
+      doc.text(`Generated: ${new Date().toLocaleString('ko-KR')}`, 14, 30);
+      doc.text(`Instructor: ${user?.name || ''} (${user?.instructorCode || ''})`, 14, 36);
+
+      // Summary stats
+      doc.setFontSize(12);
+      doc.text('Summary', 14, 48);
+      doc.setFontSize(10);
+      doc.text(`Total Students: ${totalStudents}`, 14, 56);
+      doc.text(`Assigned: ${assignedStudents}`, 14, 62);
+      doc.text(`Unassigned: ${unassignedCount}`, 14, 68);
+      doc.text(`AI Connected: ${apiConnectedCount}`, 14, 74);
+      doc.text(`Organizations: ${orgCount}`, 14, 80);
+
+      // Student table
+      doc.setFontSize(12);
+      doc.text('Student List', 14, 94);
+      doc.setFontSize(8);
+
+      let y = 102;
+      doc.text('Name', 14, y);
+      doc.text('Email', 50, y);
+      doc.text('Organization', 110, y);
+      doc.text('AI', 160, y);
+      doc.text('Date', 175, y);
+      y += 6;
+      doc.line(14, y - 2, 196, y - 2);
+
+      sortedStudents.forEach(s => {
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(s.name.slice(0, 15), 14, y);
+        doc.text(s.email.slice(0, 30), 50, y);
+        doc.text((s.organization || '-').slice(0, 20), 110, y);
+        doc.text(s.hasApiKey ? 'Y' : 'N', 160, y);
+        doc.text(new Date(s.createdAt).toLocaleDateString('ko-KR'), 175, y);
+        y += 6;
+      });
+
+      doc.save(`학생리포트_${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert('PDF 생성에 실패했습니다.');
+    }
+  };
+
+  // Activity logs CSV export
+  const handleExportActivityLogs = () => {
+    if (activityLogs.length === 0) {
+      alert('다운로드할 활동 로그가 없습니다.');
+      return;
+    }
+    const headers = ['학생ID', '트랙', '모듈', '액션', '날짜'];
+    const rows = activityLogs.map(log => [
+      log.user_id,
+      log.track_id || '',
+      log.module_id || '',
+      log.action,
+      new Date(log.created_at).toLocaleString('ko-KR'),
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `활동로그_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleSortToggle = (type: SortType) => {
@@ -345,15 +480,13 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {/* 탭 네비게이션 */}
+      {/* 탭 네비게이션 (5 tabs) */}
       <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-8 overflow-x-auto scrollbar-hide">
         {([
           { id: 'organizations' as DashboardTab, icon: Building2, label: '기관 관리' },
-          { id: 'students' as DashboardTab, icon: Users, label: '학생 계정' },
-          { id: 'teams' as DashboardTab, icon: UsersRound, label: '팀 관리' },
-          { id: 'content' as DashboardTab, icon: Settings2, label: t('admin.tabs.content') },
-          { id: 'school' as DashboardTab, icon: GraduationCap, label: '학습 진행' },
-          { id: 'enrollment' as DashboardTab, icon: UserPlus, label: '등록 관리' },
+          { id: 'students' as DashboardTab, icon: Users, label: '학생 관리' },
+          { id: 'teams' as DashboardTab, icon: UsersRound, label: '팀·프로젝트' },
+          { id: 'learning' as DashboardTab, icon: GraduationCap, label: '학습 현황' },
           { id: 'notifications' as DashboardTab, icon: Bell, label: '공지' },
         ]).map(tab => {
           const Icon = tab.icon;
@@ -377,16 +510,188 @@ export default function AdminDashboard() {
       {/* 기관 관리 탭 */}
       {activeTab === 'organizations' && <OrganizationManagement />}
 
-      {/* 콘텐츠 관리 탭 */}
-      {activeTab === 'content' && <ContentManager />}
-      {activeTab === 'school' && <SchoolManagement />}
-      {activeTab === 'enrollment' && <StudentEnrollmentManager />}
+      {/* 팀·프로젝트 탭 */}
       {activeTab === 'teams' && <TeamManagement />}
+
+      {/* 공지 탭 */}
       {activeTab === 'notifications' && <NotificationSender students={realtimeStudents} />}
 
-      {/* 학생 현황 탭 */}
+      {/* 학습 현황 탭 (merged: 학습진행 + 콘텐츠관리 + 학습 데이터 분석) */}
+      {activeTab === 'learning' && (
+        <>
+          {/* Sub-tabs */}
+          <div className="flex gap-2 mb-6">
+            {([
+              { id: 'progress' as LearningSubTab, label: '학습 진행' },
+              { id: 'content' as LearningSubTab, label: '콘텐츠 관리' },
+              { id: 'analytics' as LearningSubTab, label: '학습 데이터' },
+            ]).map(sub => (
+              <button
+                key={sub.id}
+                onClick={() => setLearningSubTab(sub.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  learningSubTab === sub.id
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'bg-white text-gray-500 border border-gray-200 hover:text-gray-700'
+                }`}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
+
+          {learningSubTab === 'progress' && <SchoolManagement />}
+          {learningSubTab === 'content' && <ContentManager />}
+          {learningSubTab === 'analytics' && (
+            <div className="space-y-6">
+              {/* Activity logs analytics */}
+              <div className="bg-white rounded-xl border border-gray-100 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-indigo-600" />
+                    학습 활동 분석
+                  </h3>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleExportActivityLogs}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      활동로그 CSV
+                    </button>
+                  </div>
+                </div>
+
+                {isLoadingLogs ? (
+                  <div className="text-center py-8">
+                    <RefreshCw className="w-6 h-6 text-gray-300 mx-auto mb-2 animate-spin" />
+                    <p className="text-sm text-gray-400">활동 로그를 불러오는 중...</p>
+                  </div>
+                ) : activityLogs.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <Activity className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                    <p className="text-sm">아직 기록된 학습 활동이 없습니다</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Summary cards */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                      <div className="text-center p-3 bg-blue-50 rounded-xl">
+                        <p className="text-2xl font-bold text-blue-600">{activityLogs.length}</p>
+                        <p className="text-xs text-gray-500">전체 활동</p>
+                      </div>
+                      <div className="text-center p-3 bg-green-50 rounded-xl">
+                        <p className="text-2xl font-bold text-green-600">
+                          {new Set(activityLogs.map(l => l.user_id)).size}
+                        </p>
+                        <p className="text-xs text-gray-500">활동 학생</p>
+                      </div>
+                      <div className="text-center p-3 bg-purple-50 rounded-xl">
+                        <p className="text-2xl font-bold text-purple-600">
+                          {new Set(activityLogs.map(l => l.action)).size}
+                        </p>
+                        <p className="text-xs text-gray-500">활동 유형</p>
+                      </div>
+                      <div className="text-center p-3 bg-amber-50 rounded-xl">
+                        <p className="text-2xl font-bold text-amber-600">
+                          {new Set(activityLogs.filter(l => l.track_id).map(l => l.track_id)).size}
+                        </p>
+                        <p className="text-xs text-gray-500">활성 트랙</p>
+                      </div>
+                    </div>
+
+                    {/* Action type distribution */}
+                    <div className="mb-6">
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">활동 유형 분포</h4>
+                      <div className="space-y-2">
+                        {Object.entries(
+                          activityLogs.reduce((acc, log) => {
+                            acc[log.action] = (acc[log.action] || 0) + 1;
+                            return acc;
+                          }, {} as Record<string, number>)
+                        )
+                          .sort(([, a], [, b]) => b - a)
+                          .slice(0, 10)
+                          .map(([action, count]) => (
+                            <div key={action} className="flex items-center gap-3">
+                              <span className="text-xs text-gray-600 w-36 truncate">{action}</span>
+                              <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+                                <div
+                                  className="bg-indigo-500 h-full rounded-full"
+                                  style={{ width: `${(count / activityLogs.length) * 100}%` }}
+                                />
+                              </div>
+                              <span className="text-xs text-gray-500 w-12 text-right">{count}</span>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* Recent activity logs table */}
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">최근 활동 로그</h4>
+                    <div className="overflow-x-auto max-h-64 overflow-y-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-gray-50 sticky top-0">
+                          <tr>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500">학생</th>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500">액션</th>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500">트랙</th>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500">시간</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {activityLogs.slice(0, 50).map(log => {
+                            const student = realtimeStudents.find(s => s.id === log.user_id);
+                            return (
+                              <tr key={log.id} className="hover:bg-gray-50">
+                                <td className="px-3 py-2 text-gray-700">{student?.name || log.user_id.slice(0, 8)}</td>
+                                <td className="px-3 py-2">
+                                  <span className="px-2 py-0.5 rounded-full text-xs bg-indigo-100 text-indigo-700">{log.action}</span>
+                                </td>
+                                <td className="px-3 py-2 text-gray-500">{log.track_id ? getTrackName(log.track_id) : '-'}</td>
+                                <td className="px-3 py-2 text-gray-400 text-xs">
+                                  {new Date(log.created_at).toLocaleString('ko-KR')}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* 학생 관리 탭 (merged: 학생계정 + 등록관리) */}
       {activeTab === 'students' && (
         <>
+          {/* Sub-tabs */}
+          <div className="flex gap-2 mb-6">
+            {([
+              { id: 'accounts' as StudentSubTab, label: '학생 계정' },
+              { id: 'enrollment' as StudentSubTab, label: '등록 관리' },
+            ]).map(sub => (
+              <button
+                key={sub.id}
+                onClick={() => setStudentSubTab(sub.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  studentSubTab === sub.id
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'bg-white text-gray-500 border border-gray-200 hover:text-gray-700'
+                }`}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
+
+          {studentSubTab === 'enrollment' && <StudentEnrollmentManager />}
+          {studentSubTab === 'accounts' && (
+            <>
           {/* 통계 카드 */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-white rounded-xl border border-gray-100 p-5">
@@ -599,13 +904,21 @@ export default function AdminDashboard() {
                     ))}
                   </div>
 
-                  {/* 엑셀 다운로드 */}
+                  {/* CSV 다운로드 */}
                   <button
-                    onClick={handleExportExcel}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                    onClick={handleExportCSV}
+                    className="flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
                   >
                     <Download className="w-4 h-4" />
-                    <span className="hidden sm:inline">{t('admin.exportExcel')}</span>
+                    <span className="hidden sm:inline">CSV</span>
+                  </button>
+                  {/* PDF 리포트 */}
+                  <button
+                    onClick={handleExportPDF}
+                    className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span className="hidden sm:inline">PDF</span>
                   </button>
                 </div>
               </div>
@@ -842,6 +1155,8 @@ export default function AdminDashboard() {
               </>
             ) : null}
           </div>
+            </>
+          )}
         </>
       )}
 

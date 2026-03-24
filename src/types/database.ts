@@ -4,7 +4,7 @@ export interface ProfileRow {
   id: string;
   name: string;
   email: string;
-  role: 'student' | 'instructor';
+  role: 'student' | 'instructor' | 'ceo';
   organization: string;
   org_code: string;
   instructor_code: string;

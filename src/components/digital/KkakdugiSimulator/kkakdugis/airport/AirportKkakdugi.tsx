@@ -159,19 +159,15 @@ export default function AirportKkakdugi({ onClose, onComplete }: KkakdugiCompone
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 kiosk-overlay">
       {/* Kkakdugi frame */}
       <div
-        className="w-full flex flex-col overflow-hidden shadow-2xl"
+        className="kiosk-frame w-full flex flex-col overflow-hidden shadow-2xl"
         style={{
-          maxWidth: 400,
-          height: '90vh',
-          maxHeight: 750,
-          borderRadius: 12,
           backgroundColor: '#082F49',
-          border: '3px solid #0C4A6E',
-          boxShadow: '0 0 0 1px #164E63, 0 25px 60px rgba(0,0,0,0.6)',
-        }}
+          '--kiosk-border-color': '#0C4A6E',
+          '--kiosk-shadow-color': '#164E63',
+        } as React.CSSProperties}
       >
         {/* ── Progress bar header ── */}
         <div

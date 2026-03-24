@@ -152,19 +152,15 @@ export default function BankKkakdugi({ onClose, onComplete }: KkakdugiComponentP
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 kiosk-overlay">
       {/* Kkakdugi frame */}
       <div
-        className="w-full flex flex-col overflow-hidden shadow-2xl"
+        className="kiosk-frame w-full flex flex-col overflow-hidden shadow-2xl"
         style={{
-          maxWidth: 400,
-          height: '90vh',
-          maxHeight: 750,
-          borderRadius: 12,
           backgroundColor: '#0F1B2D',
-          border: '3px solid #1A365D',
-          boxShadow: '0 0 0 1px #2B4A7A, 0 25px 60px rgba(0,0,0,0.6)',
-        }}
+          '--kiosk-border-color': '#1A365D',
+          '--kiosk-shadow-color': '#2B4A7A',
+        } as React.CSSProperties}
       >
         {/* ── Progress bar header ── */}
         <div

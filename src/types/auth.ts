@@ -1,4 +1,4 @@
-export type UserRole = 'student' | 'instructor';
+export type UserRole = 'student' | 'instructor' | 'ceo';
 
 // ─── 사용자 타입 (Supabase profiles 테이블 기반) ───
 

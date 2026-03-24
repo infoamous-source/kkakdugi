@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import type { SchoolId } from '../types/enrollment';
 
 // ─── Types ───
 
@@ -7,6 +8,7 @@ export interface OrganizationRow {
   name: string;
   code: string;
   instructor_id: string;
+  program_types: SchoolId[];
   created_at: string;
 }
 
@@ -28,6 +30,7 @@ function generateOrgCode(): string {
 export async function createOrganization(
   instructorId: string,
   name: string,
+  programTypes: SchoolId[] = ['marketing'],
 ): Promise<OrganizationRow | null> {
   let retries = 3;
 
@@ -35,7 +38,7 @@ export async function createOrganization(
     const code = generateOrgCode();
     const { data, error } = await supabase
       .from('organizations')
-      .insert({ instructor_id: instructorId, name, code })
+      .insert({ instructor_id: instructorId, name, code, program_types: programTypes })
       .select()
       .single();
 
@@ -85,22 +88,42 @@ export async function deleteOrganization(orgId: string): Promise<boolean> {
 }
 
 /** 기관코드 검증 (가입 시 사용) */
-export async function validateOrgCode(code: string): Promise<{ valid: boolean; orgName: string | null }> {
+export async function validateOrgCode(code: string): Promise<{ valid: boolean; orgName: string | null; programTypes: SchoolId[] | null }> {
   const { data, error } = await supabase
     .from('organizations')
-    .select('name')
+    .select('name, program_types')
     .eq('code', code.toUpperCase())
     .limit(1);
 
   if (error) {
     console.error('Validate org code error:', error.message);
-    return { valid: false, orgName: null };
+    return { valid: false, orgName: null, programTypes: null };
   }
 
   if (data && data.length > 0) {
-    return { valid: true, orgName: data[0].name };
+    const programTypes = (data[0].program_types as SchoolId[] | null) || null;
+    return { valid: true, orgName: data[0].name, programTypes };
   }
-  return { valid: false, orgName: null };
+  return { valid: false, orgName: null, programTypes: null };
+}
+
+/** 기관코드로 program_types 조회 */
+export async function getOrgProgramTypes(orgCode: string): Promise<SchoolId[]> {
+  const { data, error } = await supabase
+    .from('organizations')
+    .select('program_types')
+    .eq('code', orgCode.toUpperCase())
+    .limit(1);
+
+  if (error) {
+    console.error('Get org program types error:', error.message);
+    return ['marketing'];
+  }
+
+  if (data && data.length > 0 && data[0].program_types && (data[0].program_types as SchoolId[]).length > 0) {
+    return data[0].program_types as SchoolId[];
+  }
+  return ['marketing'];
 }
 
 /** 기관코드별 학생 수 조회 */

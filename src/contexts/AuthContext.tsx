@@ -6,12 +6,14 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { updateProfile, validateInstructorCode } from '../services/profileService';
 import { getStoredApiKey, restoreGeminiConnection, clearGeminiConnection } from '../services/gemini/geminiClient';
 import { createEnrollment } from '../services/enrollmentService';
+import { getOrgProgramTypes } from '../services/organizationService';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string, rememberMe?: boolean) => Promise<boolean>;
   logout: () => void;
   register: (data: RegisterData, rememberMe?: boolean) => Promise<boolean>;
   refreshUser: () => Promise<void>;
+  setUser: (user: User | null) => void;
 }
 
 export interface RegisterData {
@@ -23,6 +25,7 @@ export interface RegisterData {
   country: string;
   gender: 'male' | 'female';
   birthYear: number;
+  authCode?: string; // 특수 인증 코드: "딸기" = instructor, "체리" = ceo
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -161,13 +164,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const setUser = useCallback((user: User | null) => {
+    setState(prev => ({ ...prev, user, isAuthenticated: !!user }));
+  }, []);
+
   const register = useCallback(async (data: RegisterData, _rememberMe = false): Promise<boolean> => {
     if (!isSupabaseConfigured) {
       throw new Error('supabase_not_configured');
     }
 
-    // 0) 선생님코드 유효성 검증 (이중 안전장치)
-    if (data.instructorCode) {
+    // 역할 결정: authCode로 특수 역할 확인
+    let role: 'student' | 'instructor' | 'ceo' = 'student';
+    if (data.authCode === '체리') {
+      role = 'ceo';
+    } else if (data.authCode === '딸기') {
+      role = 'instructor';
+    }
+
+    // 0) 선생님코드 유효성 검증 (학생 역할일 때만)
+    if (role === 'student' && data.instructorCode) {
       const result = await validateInstructorCode(data.instructorCode);
       if (!result.valid) {
         throw new Error('invalid_instructor_code');
@@ -181,7 +196,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       options: {
         data: {
           name: data.name,
-          role: 'student',
+          role,
           instructor_code: data.instructorCode || '',
           org_code: data.orgCode || '',
         },
@@ -212,7 +227,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(loginError.message);
     }
 
-    // 4) 추가 프로필 정보 저장 (country, gender, age, instructor_code, org_code)
+    // 4) 추가 프로필 정보 저장 (country, gender, age, instructor_code, org_code, role)
     const currentYear = new Date().getFullYear();
     await updateProfile(authData.user.id, {
       country: data.country,
@@ -220,17 +235,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       age: currentYear - data.birthYear,
       instructor_code: data.instructorCode || '',
       org_code: data.orgCode || '',
+      role,
     });
 
-    // 5) 마케팅 학교 enrollment 자동 생성 (즉시 active)
-    await createEnrollment(authData.user.id, 'marketing', null, true);
+    // 5) 기관의 program_types에 따라 enrollment 자동 생성 (즉시 active) - 학생만
+    if (role === 'student') {
+      const programTypes = data.orgCode
+        ? await getOrgProgramTypes(data.orgCode)
+        : ['marketing' as const];
+      await Promise.all(
+        programTypes.map(schoolId => createEnrollment(authData.user!.id, schoolId, null, true)),
+      );
+    }
 
     // 6) user 상태가 onAuthStateChange로 자동 업데이트됨
     return true;
   }, []);
 
   return (
-    <AuthContext.Provider value={useMemo(() => ({ ...state, login, logout, register, refreshUser }), [state, login, logout, register, refreshUser])}>
+    <AuthContext.Provider value={useMemo(() => ({ ...state, login, logout, register, refreshUser, setUser }), [state, login, logout, register, refreshUser, setUser])}>
       {children}
     </AuthContext.Provider>
   );

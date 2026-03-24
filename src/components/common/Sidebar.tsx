@@ -70,8 +70,8 @@ export default function Sidebar({ currentTrack }: SidebarProps) {
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
   const { isGraduated, isProAccessValid } = useSchoolProgress();
 
-  // 강사인지 확인
-  const isInstructor = user?.role === 'instructor';
+  // 강사 또는 CEO인지 확인
+  const isInstructor = user?.role === 'instructor' || user?.role === 'ceo';
 
   // /marketing 경로에 있으면 자동으로 마케팅 메뉴 펼치기
   useEffect(() => {

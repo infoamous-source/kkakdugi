@@ -14,6 +14,7 @@ import LoginPage from './pages/LoginPage';
 const TrackPage = lazy(() => import('./pages/TrackPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
+const CeoPage = lazy(() => import('./pages/CeoPage'));
 const OrganizationDetailPage = lazy(() => import('./pages/OrganizationDetailPage'));
 const KoreaAppsPage = lazy(() => import('./pages/KoreaAppsPage'));
 const MarketingModuleDetailPage = lazy(() => import('./pages/marketing/MarketingModuleDetailPage'));
@@ -68,6 +69,9 @@ export default function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/organization/:orgCode" element={<OrganizationDetailPage />} />
           <Route path="/admin/organizations" element={<AdminPage />} />
+
+          {/* CEO 전용 대시보드 */}
+          <Route path="/ceo" element={<CeoPage />} />
 
           {/* 마케팅 허브 (학교 시스템) */}
           <Route path="/marketing/hub" element={<MarketingHubPage />} />

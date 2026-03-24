@@ -50,7 +50,13 @@ export default function RegisterForm() {
     passwordConfirm: '',
     instructorCode: '',
     orgCode: '',
+    authCode: '',
   });
+
+  // authCode가 "체리" 또는 "딸기"이면 특수 역할 가입
+  const isCeoSignup = formData.authCode === '체리';
+  const isInstructorSignup = formData.authCode === '딸기';
+  const isSpecialRole = isCeoSignup || isInstructorSignup;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<AuthError | null>(null);
 
@@ -140,28 +146,31 @@ export default function RegisterForm() {
 
     setIsLoading(true);
     try {
-      // 선생님코드 유효성 검증
-      const codeResult = await validateInstructorCode(formData.instructorCode);
-      if (!codeResult.valid) {
-        setError({
-          title: '선생님코드 오류 (Teacher Code Error)',
-          reason: '유효하지 않은 선생님코드입니다 (Invalid teacher code)',
-          solution: '선생님에게 올바른 코드를 확인해주세요 (Please check the correct code with your teacher)',
-        });
-        setIsLoading(false);
-        return;
-      }
+      // 특수 역할이 아닌 경우에만 선생님코드/기관코드 검증
+      if (!isSpecialRole) {
+        // 선생님코드 유효성 검증
+        const codeResult = await validateInstructorCode(formData.instructorCode);
+        if (!codeResult.valid) {
+          setError({
+            title: '선생님코드 오류 (Teacher Code Error)',
+            reason: '유효하지 않은 선생님코드입니다 (Invalid teacher code)',
+            solution: '선생님에게 올바른 코드를 확인해주세요 (Please check the correct code with your teacher)',
+          });
+          setIsLoading(false);
+          return;
+        }
 
-      // 기관코드 유효성 검증
-      const orgResult = await validateOrgCode(formData.orgCode);
-      if (!orgResult.valid) {
-        setError({
-          title: '기관코드 오류 (Institution Code Error)',
-          reason: '유효하지 않은 기관코드입니다 (Invalid institution code)',
-          solution: '선생님에게 올바른 기관코드를 확인해주세요 (Please check the correct code with your teacher)',
-        });
-        setIsLoading(false);
-        return;
+        // 기관코드 유효성 검증
+        const orgResult = await validateOrgCode(formData.orgCode);
+        if (!orgResult.valid) {
+          setError({
+            title: '기관코드 오류 (Institution Code Error)',
+            reason: '유효하지 않은 기관코드입니다 (Invalid institution code)',
+            solution: '선생님에게 올바른 기관코드를 확인해주세요 (Please check the correct code with your teacher)',
+          });
+          setIsLoading(false);
+          return;
+        }
       }
 
       await register({
@@ -173,8 +182,9 @@ export default function RegisterForm() {
         country: formData.country,
         gender: formData.gender as 'male' | 'female',
         birthYear: parseInt(formData.birthYear, 10),
+        authCode: formData.authCode || undefined,
       });
-      navigate('/register-complete');
+      navigate(isCeoSignup ? '/ceo' : isInstructorSignup ? '/admin' : '/register-complete');
     } catch (err) {
       setError(parseAuthError(err));
     } finally {
@@ -486,6 +496,40 @@ export default function RegisterForm() {
                 <p className="text-xs text-red-500 mt-1 ml-1 flex items-center gap-1">
                   <XCircle className="w-3 h-3" />
                   유효하지 않은 기관코드 (Invalid institution code)
+                </p>
+              )}
+            </div>
+
+            {/* 10. 인증코드 (선택) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                인증코드 (Auth Code) <span className="text-gray-400 text-xs">선택사항</span>
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="authCode"
+                  value={formData.authCode}
+                  onChange={handleChange}
+                  placeholder="특수 인증코드 (선택)"
+                  className={`w-full pl-11 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-kk-red focus:border-transparent transition-all ${
+                    isCeoSignup ? 'border-purple-400 bg-purple-50' :
+                    isInstructorSignup ? 'border-green-400 bg-green-50' :
+                    'border-gray-200'
+                  }`}
+                />
+              </div>
+              {isCeoSignup && (
+                <p className="text-xs text-purple-600 mt-1 ml-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  CEO 계정으로 가입합니다
+                </p>
+              )}
+              {isInstructorSignup && (
+                <p className="text-xs text-green-600 mt-1 ml-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  강사 계정으로 가입합니다
                 </p>
               )}
             </div>

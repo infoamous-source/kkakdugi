@@ -110,15 +110,17 @@ export default function TopHeader() {
                 <p className="text-sm font-semibold text-kk-brown">{user.name}</p>
                 <p className="text-xs text-kk-brown/40">{user.email}</p>
                 <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium ${
-                  user.role === 'instructor' ? 'bg-kk-red/10 text-kk-red-deep' : 'bg-kk-cream text-kk-brown'
+                  user.role === 'instructor' ? 'bg-kk-red/10 text-kk-red-deep' :
+                  user.role === 'ceo' ? 'bg-purple-100 text-purple-700' :
+                  'bg-kk-cream text-kk-brown'
                 }`}>
-                  {user.role === 'instructor' ? t('header.instructor') : t('header.student')}
+                  {user.role === 'instructor' ? t('header.instructor') : user.role === 'ceo' ? 'CEO' : t('header.student')}
                 </span>
               </div>
 
-              {user.role === 'instructor' && (
+              {(user.role === 'instructor' || user.role === 'ceo') && (
                 <button
-                  onClick={() => { navigate('/admin'); setUserMenuOpen(false); }}
+                  onClick={() => { navigate(user.role === 'ceo' ? '/ceo' : '/admin'); setUserMenuOpen(false); }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-kk-brown/70 hover:bg-kk-cream/40 transition-colors"
                 >
                   <Settings className="w-4 h-4" />

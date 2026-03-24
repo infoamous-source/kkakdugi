@@ -43,23 +43,18 @@ export default function KkakdugiFrame({
 
   return (
     /* ── 1. Dim overlay ── */
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 kiosk-overlay">
 
       {/* ── 2. Outer metallic bezel ── */}
       <div
-        className="relative flex flex-col w-full max-w-[420px]"
+        className="kiosk-core-frame relative flex flex-col w-full"
         style={{
           /* Subtle brushed-metal look via radial gradient */
           background: 'linear-gradient(160deg, #2e2e2e 0%, #1a1a1a 40%, #111 70%, #222 100%)',
-          borderRadius: '1.75rem',
-          padding: '10px 10px 14px',
-          boxShadow:
-            '0 0 0 1px #555, 0 8px 40px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.08)',
-          maxHeight: '96vh',
         }}
       >
         {/* ── Bezel top row: brand bar + power LED + close ── */}
-        <div className="flex items-center justify-between px-3 py-1.5 mb-1.5">
+        <div className="kiosk-bezel-top flex items-center justify-between px-3 py-1.5 mb-1.5">
           <div className="flex items-center gap-2">
             {/* Power indicator LED */}
             <span
@@ -83,17 +78,14 @@ export default function KkakdugiFrame({
 
         {/* ── 3. Silver-tone screen ring ── */}
         <div
-          className="rounded-2xl overflow-hidden"
+          className="kiosk-screen-ring rounded-2xl overflow-hidden flex-1"
           style={{
-            background: 'linear-gradient(135deg, #888 0%, #555 50%, #777 100%)',
-            padding: '2px',
             boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.6)',
           }}
         >
           {/* ── 4. White screen canvas ── */}
           <div
-            className="bg-white rounded-[calc(1rem-2px)] overflow-hidden flex flex-col"
-            style={{ minHeight: '560px', maxHeight: 'calc(96vh - 90px)' }}
+            className="kiosk-core-screen bg-white rounded-[calc(1rem-2px)] overflow-hidden flex flex-col"
           >
             {/* Step-progress status bar (inside the screen, at the very top) */}
             <div className={`${headerGradient} px-4 py-2 flex items-center gap-3`}>
@@ -118,7 +110,7 @@ export default function KkakdugiFrame({
         </div>
 
         {/* ── Speaker grille (cosmetic dots at the bottom of the bezel) ── */}
-        <div className="flex justify-center gap-1 mt-2.5 mb-0.5" aria-hidden="true">
+        <div className="kiosk-bezel-bottom flex justify-center gap-1 mt-2.5 mb-0.5" aria-hidden="true">
           {Array.from({ length: 18 }).map((_, i) => (
             <span
               key={i}

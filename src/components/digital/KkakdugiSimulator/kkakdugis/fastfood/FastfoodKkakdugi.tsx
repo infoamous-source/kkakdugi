@@ -202,19 +202,15 @@ export default function FastfoodKkakdugi({ onClose, onComplete }: KkakdugiCompon
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 kiosk-overlay">
       {/* Kkakdugi frame */}
       <div
-        className="w-full flex flex-col overflow-hidden shadow-2xl"
+        className="kiosk-frame w-full flex flex-col overflow-hidden shadow-2xl"
         style={{
-          maxWidth: 400,
-          height: '90vh',
-          maxHeight: 750,
-          borderRadius: 12,
           backgroundColor: '#1A0000',
-          border: '3px solid #2C0000',
-          boxShadow: '0 0 0 1px #4A0000, 0 25px 60px rgba(0,0,0,0.6)',
-        }}
+          '--kiosk-border-color': '#2C0000',
+          '--kiosk-shadow-color': '#4A0000',
+        } as React.CSSProperties}
       >
         {/* ── Progress bar header ── */}
         <div

@@ -42,6 +42,8 @@ export default function LoginForm() {
     if (user) {
       if (user.role === 'instructor') {
         navigate('/admin', { replace: true });
+      } else if (user.role === 'ceo') {
+        navigate('/ceo', { replace: true });
       } else {
         navigate('/', { replace: true });
       }
@@ -85,21 +87,21 @@ export default function LoginForm() {
 
       if (isInstructorMode) {
         // 선생님 모드에서 학생 계정 시도
-        if (role !== 'instructor') {
+        if (role !== 'instructor' && role !== 'ceo') {
           setError('선생님 계정이 아닙니다. 학생 로그인을 이용해주세요.');
           setIsLoading(false);
           return;
         }
-        // 선생님 환영문구
-        setWelcomeMessage(`${name} 선생님 환영합니다!`);
+        // 선생님/CEO 환영문구
+        setWelcomeMessage(`${name} ${role === 'ceo' ? 'CEO' : '선생'}님 환영합니다!`);
         setShowWelcome(true);
         setTimeout(() => {
-          navigate('/admin', { replace: true });
+          navigate(role === 'ceo' ? '/ceo' : '/admin', { replace: true });
         }, 1800);
       } else {
-        // 학생 모드에서 선생님 계정 시도
-        if (role === 'instructor') {
-          setError('학생 로그인에서는 선생님 계정을 사용할 수 없습니다. 하단의 "선생님 로그인"을 이용해주세요.');
+        // 학생 모드에서 선생님/CEO 계정 시도
+        if (role === 'instructor' || role === 'ceo') {
+          setError('학생 로그인에서는 선생님/CEO 계정을 사용할 수 없습니다. 하단의 "선생님 로그인"을 이용해주세요.');
           setIsLoading(false);
           return;
         }

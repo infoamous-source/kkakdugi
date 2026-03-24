@@ -118,8 +118,8 @@ export default function KkakdugiSimulator({ onClose, onComplete }: Props) {
   );
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-100 w-full max-w-[400px] h-[90vh] max-h-[750px] rounded-3xl overflow-hidden shadow-2xl flex flex-col relative">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 kiosk-overlay">
+      <div className="bg-gray-100 w-full kiosk-legacy-frame overflow-hidden shadow-2xl flex flex-col relative">
         {/* Top bar */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 flex items-center justify-between">
           <span className="text-white text-sm font-medium">
@@ -143,7 +143,7 @@ export default function KkakdugiSimulator({ onClose, onComplete }: Props) {
           <div className="pt-12">
             {/* WELCOME */}
             {screen === 'welcome' && (
-              <div className="flex flex-col items-center justify-center h-full min-h-[500px] p-6">
+              <div className="flex flex-col items-center justify-center h-full min-h-0 p-6">
                 <div className="text-8xl mb-6">☕</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   {t('kkakdugi.screens.welcome.title', '카페')}
@@ -524,7 +524,7 @@ export default function KkakdugiSimulator({ onClose, onComplete }: Props) {
 
             {/* POINTS */}
             {screen === 'points' && (
-              <div className="p-4 flex flex-col items-center justify-center min-h-[400px]">
+              <div className="p-4 flex flex-col items-center justify-center min-h-0">
                 <div className="bg-white rounded-2xl border-2 border-gray-200 p-8 w-full text-center">
                   <p className="text-lg font-bold mb-8">{t('kkakdugi.screens.points.ask')}</p>
                   <div className="flex gap-4">
@@ -547,7 +547,7 @@ export default function KkakdugiSimulator({ onClose, onComplete }: Props) {
 
             {/* RECEIPT ASK */}
             {screen === 'receipt' && (
-              <div className="p-4 flex flex-col items-center justify-center min-h-[400px]">
+              <div className="p-4 flex flex-col items-center justify-center min-h-0">
                 <div className="bg-white rounded-2xl border-2 border-gray-200 p-8 w-full text-center">
                   <div className="bg-yellow-400 text-center py-2 rounded-xl mb-4">
                     <p className="font-bold">[{t('kkakdugi.screens.receipt.approved')}]</p>

@@ -31,7 +31,7 @@ export default function MobileTabBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
-  const isInstructor = user?.role === 'instructor';
+  const isInstructor = user?.role === 'instructor' || user?.role === 'ceo';
 
   const showToast = (message: string) => {
     const toast = document.createElement('div');
