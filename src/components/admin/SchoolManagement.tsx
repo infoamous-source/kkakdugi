@@ -25,6 +25,9 @@ export default function SchoolManagement() {
     const stamps = d.progress.stamps.filter((s) => s.completed).length;
     return {
       userId: d.userId,
+      studentName: d.studentName,
+      studentEmail: d.studentEmail,
+      studentOrg: d.studentOrg,
       stamps,
       totalPeriods: TOTAL_PERIODS,
       isGraduated: d.progress.graduation.isGraduated,
@@ -36,9 +39,12 @@ export default function SchoolManagement() {
     };
   });
 
-  const filteredData = allData.filter((d) =>
-    d.userId.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredData = allData.filter((d) => {
+    const q = searchQuery.toLowerCase();
+    return d.studentName.toLowerCase().includes(q) ||
+      d.studentEmail.toLowerCase().includes(q) ||
+      d.studentOrg.toLowerCase().includes(q);
+  });
 
   const graduatedStudents = filteredData.filter((d) => d.isGraduated);
   const reviewStudents = allData.filter((d) => d.review);
@@ -167,7 +173,8 @@ export default function SchoolManagement() {
                 <div key={student.userId} className="px-5 py-4 hover:bg-gray-50">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-gray-800 font-mono text-sm">{student.userId}</p>
+                      <p className="font-medium text-gray-800 text-sm">{student.studentName || '이름 없음'}</p>
+                      <p className="text-xs text-gray-500">{student.studentEmail}{student.studentOrg ? ` · ${student.studentOrg}` : ''}</p>
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-xs text-gray-500">
                           🏆 {student.stamps}/{student.totalPeriods}
@@ -223,7 +230,7 @@ export default function SchoolManagement() {
             reviewStudents.map((student) => (
               <div key={student.userId} className="bg-white rounded-xl border border-gray-100 p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-mono text-sm text-gray-600">{student.userId}</span>
+                  <span className="text-sm text-gray-600">{student.studentName || '이름 없음'} <span className="text-xs text-gray-400">{student.studentEmail}</span></span>
                   <span className="text-xs text-gray-400">
                     {student.graduatedAt && new Date(student.graduatedAt).toLocaleDateString('ko-KR')}
                   </span>

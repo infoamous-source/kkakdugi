@@ -383,7 +383,7 @@ export function useSchoolProgress() {
 // ─── Admin Hook ───
 
 export function useAdminSchoolProgress() {
-  const [allData, setAllData] = useState<Array<{ userId: string; enrollmentId: string; schoolId: string; progress: SchoolProgress }>>([]);
+  const [allData, setAllData] = useState<Array<{ userId: string; enrollmentId: string; schoolId: string; progress: SchoolProgress; studentName: string; studentEmail: string; studentOrg: string }>>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadAll = useCallback(async () => {

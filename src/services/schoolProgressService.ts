@@ -86,11 +86,11 @@ export async function upsertSchoolProgress(
   return true;
 }
 
-/** 관리자: 모든 school_progress 조회 */
-export async function fetchAllSchoolProgress(): Promise<Array<{ userId: string; enrollmentId: string; schoolId: string; progress: SchoolProgress }>> {
+/** 관리자: 모든 school_progress 조회 (프로필 포함) */
+export async function fetchAllSchoolProgress(): Promise<Array<{ userId: string; enrollmentId: string; schoolId: string; progress: SchoolProgress; studentName: string; studentEmail: string; studentOrg: string }>> {
   const { data, error } = await supabase
     .from('school_progress')
-    .select('*')
+    .select('*, profiles:student_id(name, email, organization)')
     .order('updated_at', { ascending: false });
 
   if (error) {
@@ -98,11 +98,14 @@ export async function fetchAllSchoolProgress(): Promise<Array<{ userId: string; 
     return [];
   }
 
-  return (data as SchoolProgressRow[]).map((row) => ({
+  return (data as (SchoolProgressRow & { profiles: { name: string; email: string; organization: string } | null })[]).map((row) => ({
     userId: row.student_id,
     enrollmentId: row.enrollment_id,
     schoolId: row.school_id,
     progress: rowToProgress(row),
+    studentName: row.profiles?.name ?? '',
+    studentEmail: row.profiles?.email ?? '',
+    studentOrg: row.profiles?.organization ?? '',
   }));
 }
 
