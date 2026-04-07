@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Radar, Search, Copy, Check, ChevronDown, ChevronUp, ArrowRight, Gem, Key, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Radar, Search, Copy, Check, ChevronDown, ChevronUp, ArrowRight, Key, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useSchoolProgress } from '../../../../hooks/useSchoolProgress';
 import { generateMarketAnalysis } from '../../../../services/gemini/marketCompassService';
@@ -9,6 +9,8 @@ import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
 import type { MarketScannerResult } from '../../../../types/school';
 import { getMyTeam, addTeamIdea } from '../../../../services/teamService';
 import { SimpleMarkdown } from '@/components/common/SimpleMarkdown';
+import { PlusListInput } from './common/PlusListInput';
+import { SaveToGemBoxButton } from './common/SaveToGemBoxButton';
 
 type Phase = 'input' | 'loading' | 'result';
 
@@ -28,7 +30,8 @@ export default function MarketScannerTool() {
   const completed = hasStamp('market-scanner');
 
   const [phase, setPhase] = useState<Phase>('input');
-  const [keyword, setKeyword] = useState('');
+  // mockup 확정안: 키워드 1개 → +버튼 리스트로 여러 개 입력 (최대 5)
+  const [keywords, setKeywords] = useState<string[]>(['']);
   const [targetAge, setTargetAge] = useState<string>('20s');
   const [targetGender, setTargetGender] = useState<string>('all');
   const [itemType, setItemType] = useState<string>('other');
@@ -61,15 +64,23 @@ export default function MarketScannerTool() {
   const loadPreviousResult = useCallback(() => {
     if (!savedScannerResult) return;
     setResult(savedScannerResult);
-    setKeyword(savedScannerResult.input.itemKeyword);
+    // 이전 데이터는 단일 키워드였을 수 있음 → 콤마/슬래시로 분리
+    const parts = savedScannerResult.input.itemKeyword
+      .split(/[,/]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    setKeywords(parts.length > 0 ? parts : [savedScannerResult.input.itemKeyword]);
     setTargetAge(savedScannerResult.input.targetAge);
     setTargetGender(savedScannerResult.input.targetGender);
     setItemType(savedScannerResult.input.itemType || 'other');
     setPhase('result');
   }, [savedScannerResult]);
 
+  const cleanKeywords = keywords.filter((k) => k.trim());
+  const keywordForAnalysis = cleanKeywords.join(' / ');
+
   const handleAnalyze = async () => {
-    if (!keyword.trim()) return;
+    if (cleanKeywords.length === 0) return;
 
     setPhase('loading');
     setLoadingStep(0);
@@ -80,14 +91,14 @@ export default function MarketScannerTool() {
     const timer2 = setTimeout(() => setLoadingStep(2), 2400);
 
     try {
-      const { result: output, isMock: mock } = await generateMarketAnalysis(keyword, targetAge, targetGender, itemType);
+      const { result: output, isMock: mock } = await generateMarketAnalysis(keywordForAnalysis, targetAge, targetGender, itemType);
 
       // 최소 3초 대기
       await new Promise((resolve) => setTimeout(resolve, 3500));
 
       const scannerResult: MarketScannerResult = {
         completedAt: new Date().toISOString(),
-        input: { itemKeyword: keyword, targetAge, targetGender, itemType },
+        input: { itemKeyword: keywordForAnalysis, targetAge, targetGender, itemType },
         output,
       };
 
@@ -237,20 +248,16 @@ export default function MarketScannerTool() {
             <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
               <h3 className="font-semibold text-kk-brown">{t('school.marketCompass.scanner.inputTitle')}</h3>
 
-              {/* 키워드 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  {t('school.marketCompass.scanner.keyword')}
-                </label>
-                <input
-                  type="text"
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  placeholder={t('school.marketCompass.scanner.keywordPlaceholder')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kk-navy focus:border-transparent"
-                  maxLength={50}
-                />
-              </div>
+              {/* 키워드 (여러 개) */}
+              <PlusListInput
+                label="키워드 *"
+                items={keywords}
+                onChange={setKeywords}
+                placeholder="예: 유기농 캡슐커피"
+                max={5}
+                helpText="💡 팁: 구체적일수록 좋아요. '커피'는 너무 넓어요 → '사무실용 캡슐커피'"
+                addButtonText="➕ 키워드 추가하기 (5개까지)"
+              />
 
               {/* 아이템 형태 */}
               <div>
@@ -309,11 +316,11 @@ export default function MarketScannerTool() {
               {/* 분석 버튼 */}
               <button
                 onClick={handleAnalyze}
-                disabled={!keyword.trim()}
-                className="w-full py-3.5 bg-kk-navy hover:bg-kk-navy-deep text-white font-bold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                disabled={cleanKeywords.length === 0}
+                className="w-full py-3.5 bg-gray-900 hover:bg-black text-white font-bold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <Search className="w-5 h-5" />
-                {t('school.marketCompass.scanner.analyzeButton')}
+                분석 시작 →
               </button>
             </div>
           </div>
@@ -491,15 +498,9 @@ export default function MarketScannerTool() {
               </div>
             )}
 
-            {/* 보석함에 넣기 */}
+            {/* 결과를 아이디어보석함에 저장하기 */}
             {myTeamId && (
-              <button
-                onClick={handleSaveToTeamBox}
-                className="w-full py-3 bg-kk-cream hover:bg-kk-warm text-kk-brown font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
-              >
-                <Gem className="w-4 h-4" />
-                {savedToTeamBox ? '보석함에 저장 완료!' : '💎 보석함에 넣기'}
-              </button>
+              <SaveToGemBoxButton onSave={handleSaveToTeamBox} saved={savedToTeamBox} />
             )}
 
             {/* 다음 단계 */}

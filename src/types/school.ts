@@ -89,107 +89,152 @@ export interface EdgeMakerResult {
 }
 
 // ─── Viral Card Maker (4교시) 타입 ───
+// mockup 확정안: Pexels 이미지 + 5가지 레이아웃 템플릿
 
 export type ViralTone = 'spicy' | 'emotional' | 'informative';
-export type ImageStyle = 'illustration' | 'realistic' | 'minimal' | 'popart' | 'custom';
+export type ViralImageSource = 'pexels' | 'ai';
+export type ViralCardTemplate = 'A' | 'B' | 'C' | 'D' | 'E';
+export type ViralStep = 'hook' | 'empathy' | 'solution' | 'action';
 
 export interface ViralCardSlide {
-  step: 'hook' | 'empathy' | 'solution' | 'action';
-  stepLabel: string;
-  copyText: string;
-  imagePrompt: string;
-  imageBase64?: string;
-  colorScheme: { primary: string; secondary: string; gradient: string };
-  designTip: string;
+  step: ViralStep;
+  stepLabel: string;  // "HOOK" / "EMPATHY" / "SOLUTION" / "ACTION"
+  stepKoLabel: string; // "시선잡기" / "공감" / "해결" / "행동"
+  copyText: string;   // 짧은 한국어 카피 (2-3줄, \n 허용)
+  highlightWord?: string; // 노란색으로 강조할 단어
+  imageKeyword: string; // Pexels용 짧은 영어 키워드 (5단어 이내)
+  imageUrl?: string;   // Pexels URL (런타임에 채워짐)
+  template: ViralCardTemplate; // A~E
+  showBrand: boolean;  // 카드 3,4번만 true
 }
 
 export interface ViralCardResult {
   completedAt: string;
   input: {
     productName: string;
-    targetPersona: string;
+    targetPersonas: string[];
     usp: string;
     tone: ViralTone;
-    imageStyle: ImageStyle;
+    imageSource: ViralImageSource;
   };
   output: {
     slides: ViralCardSlide[];
-    overallStrategy: string;
   };
 }
 
 // ─── Perfect Planner (5교시) 타입 ───
+// mockup 확정안: 상세페이지(모바일 쇼핑몰 톤) + 라이브 방송 대본(큐시트)
 
-export type PlannerMode = 'landing' | 'liveCommerce';
+export type PlannerMode = 'detail' | 'live';
+export type AttentionType = 'B' | 'C'; // B: 어그로형, C: 사회적 증거형
 
-export interface LandingPagePlan {
-  headline: string;
-  subheadline: string;
-  problemSection: { title: string; painPoints: string[] };
-  features: { title: string; description: string; benefit: string }[];
-  trustSignals: { type: 'review' | 'certification' | 'stats'; content: string }[];
-  closingCTA: { mainCopy: string; buttonText: string; urgency: string };
-  checklist: string[];
+export interface DetailPagePainPoint {
+  emoji: string;
+  text: string; // "출근 전 카페에서\n줄 서는 게 지치는 사람!" 형태
 }
 
-export interface LiveCommerceScript {
-  opening: { greeting: string; hook: string; todaysOffer: string };
-  demoPoints: { timestamp: string; action: string; talkingPoint: string }[];
-  qnaHandling: { commonQuestion: string; answer: string }[];
-  closing: { finalOffer: string; urgencyTactic: string; farewell: string };
-  checklist: string[];
+export interface DetailPageFeature {
+  emoji: string;
+  title: string;       // "단 3분"
+  description: string; // "물 붓고 기다리면 끝!\n카페 줄 안 서도 돼요"
+  colorKey: 'amber' | 'green' | 'blue';
+}
+
+export interface DetailPageReview {
+  stars: string; // "★★★★★"
+  text: string;
+  author: string;
+}
+
+export interface DetailPagePlan {
+  productTitle: string;        // 긴 상품명
+  brandLine: string;           // "DripQ 공식"
+  originalPrice: number;
+  salePrice: number;
+  discountPercent: number;
+  rating: number;              // 4.8
+  reviewCount: number;         // 2341
+  countdownLabel: string;      // "⏰ 오늘 자정 종료까지"
+  countdownValue: string;      // "06:23:41"
+  attentionLine: { type: AttentionType; text: string }; // 어그로 한 줄 (\n 허용)
+  headlinePrefix: string;      // "잠깐, 혹시"
+  headline: string;            // "3분이면\n카페가\n우리집?!" (\n 허용)
+  headlineHighlight: string;   // "우리집?!" (노란색 하이라이트 단어)
+  painPointsTitle: string;     // "😩 혹시 이런 분\n아니세요?"
+  painPoints: DetailPagePainPoint[];
+  solutionPrefix: string;      // "그래서 만들었어요"
+  solutionHeadline: string;    // "캡슐 한 알이면\n카페가 부엌에"
+  featuresTitle: string;       // "✅ DripQ만의\n3가지 약속"
+  features: DetailPageFeature[];
+  reviews: DetailPageReview[];
+  finalCtaDeadline: string;    // "⏰ 오늘 자정 종료"
+  finalCtaHeadline: string;    // "놓치면\n30,000원 그대로"
+  stickyCtaText: string;       // "21,000원 · 구매하기"
+}
+
+export interface LiveCueSheetItem {
+  emoji: string;          // "🎬"
+  timeRange: string;      // "0:00 ~ 2:00"
+  title: string;          // "오프닝"
+  duration: string;       // "2분"
+  hostScript: string;     // 진행자 멘트
+  action?: string;        // 📌 액션
+  audienceReaction?: string; // 💬 시청자
+  extra?: string;         // 추가 노트
+  colorKey: 'orange' | 'amber' | 'green' | 'blue' | 'red';
+}
+
+export interface LiveScript {
+  title: string;           // "DripQ 캡슐 · 30분 라이브 큐시트"
+  expectedViewers: string; // "예상 시청 600+"
+  items: LiveCueSheetItem[];
+}
+
+export interface PerfectPlannerInput {
+  productName: string;
+  customers: string[];
+  strengths: string[];
+  offers: string[];
+  mode: PlannerMode;
 }
 
 export interface PerfectPlannerResult {
   completedAt: string;
-  input: {
-    productName: string;
-    coreTarget: string;
-    usp: string;
-    strongOffer: string;
-  };
+  input: PerfectPlannerInput;
   output: {
-    landingPage: LandingPagePlan;
-    liveCommerce: LiveCommerceScript;
-    salesLogic: string;
+    detailPage: DetailPagePlan;
+    liveScript: LiveScript;
   };
 }
 
 // ─── ROAS Simulator (6교시) 타입 ───
+// mockup 확정안: 시뮬레이터 → 자가 진단기
+// 학생이 직접 광고비/매출 입력 → ROAS 계산은 클라이언트(수식)
+// AI는 한 줄 처방 + 오늘 할 일 1개만 (가벼운 호출)
 
-export interface ROASSimulationInput {
-  productName: string;
-  productPrice: number;
-  adBudget: number;
-  adChannel: 'instagram' | 'naver' | 'kakao' | 'youtube';
-  targetAge: string;
-  duration: 7 | 14 | 30;
+export type ROASStatus = 'loss' | 'breakeven' | 'profit';
+
+export type ROASChannel = 'instagram' | 'naver' | 'kakao' | 'youtube';
+
+export interface ROASInput {
+  adSpend: number;
+  revenue: number;
+  adChannel: ROASChannel;
 }
 
-export interface ROASSimulationOutput {
-  estimatedImpressions: number;
-  estimatedClicks: number;
-  estimatedCTR: number;
-  estimatedConversions: number;
-  estimatedCVR: number;
-  estimatedRevenue: number;
-  estimatedROAS: number;
-  costPerClick: number;
-  costPerConversion: number;
-  roasGrade: 'excellent' | 'good' | 'average' | 'poor';
-  advice: string[];
-  channelTip: string;
-  analysisReport?: string;
+export interface ROASOutput {
+  roas: number;       // 매출 ÷ 광고비, 소수점 1자리
+  profit: number;     // 매출 - 광고비
+  status: ROASStatus; // <1.5 loss, 1.5~2.5 breakeven, >2.5 profit
+  prescription: string; // 큰 한 줄 처방 (\n 1개 허용)
+  todoOne: string;    // 오늘 할 일 1개
 }
 
 /** 시뮬레이션 (6교시 ROAS) 결과 */
 export interface SimulationResult {
   completedAt: string;
-  input?: ROASSimulationInput;
-  output?: ROASSimulationOutput;
-  roas?: number;
-  budget?: number;
-  revenue?: number;
+  input: ROASInput;
+  output: ROASOutput;
 }
 
 /** 학생의 학교 전체 진행도 (localStorage에 저장) */

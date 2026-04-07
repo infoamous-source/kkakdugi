@@ -13,6 +13,7 @@ export interface ProfileRow {
   gender: 'male' | 'female' | 'other' | null;
   learning_purpose: string;
   gemini_api_key: string | null;
+  marketing_persona: string | null; // 1교시 적성검사 결과 (PersonaId)
   created_at: string;
   updated_at: string;
 }

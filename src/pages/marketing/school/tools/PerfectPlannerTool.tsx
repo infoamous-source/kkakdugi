@@ -1,17 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import {
-  ArrowLeft, CalendarCheck, Loader2, Sparkles, Copy, Check,
-  RefreshCw, ChevronDown, ChevronUp, FileText, Mic, Gem, Key,
-} from 'lucide-react';
+import { ArrowLeft, Loader2, Key } from 'lucide-react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useSchoolProgress } from '../../../../hooks/useSchoolProgress';
 import { generateSalesPlan } from '../../../../services/gemini/perfectPlannerService';
 import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
-import type { PerfectPlannerResult, PlannerMode } from '../../../../types/school';
+import type {
+  PerfectPlannerResult,
+  PerfectPlannerInput,
+  PlannerMode,
+  DetailPagePlan,
+  LiveScript,
+} from '../../../../types/school';
 import { getMyTeam, addTeamIdea } from '../../../../services/teamService';
-import { SimpleMarkdown } from '@/components/common/SimpleMarkdown';
+import { PlusListInput } from './common/PlusListInput';
+import { SaveToGemBoxButton } from './common/SaveToGemBoxButton';
 
 type Phase = 'input' | 'loading' | 'result';
 
@@ -20,229 +24,174 @@ export default function PerfectPlannerTool() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const {
-    hasStamp, autoStamp,
+    hasStamp,
+    autoStamp,
     edgeMakerResult: savedEdgeResult,
     perfectPlannerResult: savedPlannerResult,
     savePerfectPlannerResult,
   } = useSchoolProgress();
   const completed = hasStamp('perfect-planner');
+  const aiEnabled = isGeminiEnabled();
 
   // Phase
   const [phase, setPhase] = useState<Phase>('input');
 
   // Input
   const [productName, setProductName] = useState('');
-  const [coreTarget, setCoreTarget] = useState('');
-  const [usp, setUsp] = useState('');
-  const [strongOffer, setStrongOffer] = useState('');
-  const [showFormula, setShowFormula] = useState(false);
-  const [edgeDataLoaded, setEdgeDataLoaded] = useState(false);
-
-  // Loading
-  const [loadingStep, setLoadingStep] = useState(0);
+  const [customers, setCustomers] = useState<string[]>(['']);
+  const [strengths, setStrengths] = useState<string[]>(['']);
+  const [offers, setOffers] = useState<string[]>(['']);
+  const [mode, setMode] = useState<PlannerMode>('detail');
+  const [autoLoadedStrengths, setAutoLoadedStrengths] = useState(false);
+  const [autoLoadedProduct, setAutoLoadedProduct] = useState(false);
 
   // Result
   const [result, setResult] = useState<PerfectPlannerResult['output'] | null>(null);
   const [isMock, setIsMock] = useState(false);
-  const [activeMode, setActiveMode] = useState<PlannerMode>('landing');
-  const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-  const [expandedTip, setExpandedTip] = useState<string | null>(null);
   const [myTeamId, setMyTeamId] = useState<string | null>(null);
-  const [savedToTeamBox, setSavedToTeamBox] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
-  const aiEnabled = isGeminiEnabled();
+  const [savedToGemBox, setSavedToGemBox] = useState(false);
 
-  // Load team info
+  // Load team
   useEffect(() => {
     if (!user) return;
-    getMyTeam(user.id).then(info => {
+    getMyTeam(user.id).then((info) => {
       if (info) setMyTeamId(info.team.id);
     });
   }, [user]);
 
-  // Load previous result or Edge Maker data
+  // Restore previous result
   useEffect(() => {
     if (!user) return;
-
     if (savedPlannerResult) {
       setResult(savedPlannerResult.output);
       setProductName(savedPlannerResult.input.productName);
-      setCoreTarget(savedPlannerResult.input.coreTarget);
-      setUsp(savedPlannerResult.input.usp);
-      setStrongOffer(savedPlannerResult.input.strongOffer);
+      setCustomers(
+        savedPlannerResult.input.customers.length > 0 ? savedPlannerResult.input.customers : [''],
+      );
+      setStrengths(
+        savedPlannerResult.input.strengths.length > 0 ? savedPlannerResult.input.strengths : [''],
+      );
+      setOffers(savedPlannerResult.input.offers.length > 0 ? savedPlannerResult.input.offers : ['']);
+      setMode(savedPlannerResult.input.mode);
       setPhase('result');
+    }
+  }, [user, savedPlannerResult]);
+
+  // 3교시 엣지메이커 데이터 수동 불러오기
+  const handleLoadEdgeData = () => {
+    if (!savedEdgeResult) {
+      alert('3교시 엣지메이커 결과가 없어요. 먼저 3교시를 완료해주세요.');
       return;
     }
-
-    if (savedEdgeResult) {
-      const brandName = savedEdgeResult.output.brandNames?.[0]?.name || '';
-      if (brandName) setProductName(brandName);
-      if (savedEdgeResult.output.usp) setUsp(savedEdgeResult.output.usp);
-      setEdgeDataLoaded(true);
+    const brandName = savedEdgeResult.output.brandNames?.[0]?.name || '';
+    if (brandName) {
+      setProductName(brandName);
+      setAutoLoadedProduct(true);
     }
-  }, [user, savedPlannerResult, savedEdgeResult]);
-
-  // Copy helper
-  const copyToClipboard = async (text: string, field: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedField(field);
-      setTimeout(() => setCopiedField(null), 2000);
-    } catch { /* noop */ }
+    const usp = savedEdgeResult.output.usp || '';
+    if (usp) {
+      // USP를 쉼표나 / 로 분리해서 strengths에 넣기
+      const parts = usp
+        .split(/[,/·]|그리고|·/)
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 5);
+      setStrengths(parts.length > 0 ? parts : [usp]);
+      setAutoLoadedStrengths(true);
+    }
   };
 
-  // Generate
   const handleGenerate = async () => {
-    if (!productName.trim() || !coreTarget.trim()) return;
+    const cleanCustomers = customers.filter((s) => s.trim());
+    const cleanStrengths = strengths.filter((s) => s.trim());
+    const cleanOffers = offers.filter((s) => s.trim());
+    if (!productName.trim() || cleanStrengths.length === 0) return;
 
     setPhase('loading');
-    setLoadingStep(0);
-    setAiError(null);
-
-    const steps = [
-      { delay: 0 },
-      { delay: 1200 },
-      { delay: 2400 },
-    ];
-    steps.forEach(({ delay }, i) => {
-      if (i > 0) setTimeout(() => setLoadingStep(i), delay);
-    });
-
     try {
-      const { result: planResult, isMock: mock } = await generateSalesPlan(
-        productName.trim(),
-        coreTarget.trim(),
-        usp.trim(),
-        strongOffer.trim(),
-      );
-
-      await new Promise((r) => setTimeout(r, 3500));
-
+      const input: PerfectPlannerInput = {
+        productName: productName.trim(),
+        customers: cleanCustomers,
+        strengths: cleanStrengths,
+        offers: cleanOffers,
+        mode,
+      };
+      const { result: planResult, isMock: mock } = await generateSalesPlan(input);
       setResult(planResult);
       setIsMock(mock);
       setPhase('result');
-      setCheckedItems({});
-
-      if (mock && aiEnabled) {
-        setAiError('AI 응답을 처리하지 못했어요. 예시 데이터를 보여드릴게요.');
-      }
 
       if (user) {
-        savePerfectPlannerResult({
+        await savePerfectPlannerResult({
           completedAt: new Date().toISOString(),
-          input: { productName: productName.trim(), coreTarget: coreTarget.trim(), usp: usp.trim(), strongOffer: strongOffer.trim() },
+          input,
           output: planResult,
         });
         autoStamp('perfect-planner');
       }
     } catch (err) {
-      console.error('[PerfectPlanner] Generation failed:', err);
+      console.error('[PerfectPlanner] Failed:', err);
       setPhase('input');
-      setAiError('판매 기획서 생성에 실패했어요. 다시 시도해주세요.');
     }
   };
 
-  // Copy all for current mode
-  const handleCopyAll = () => {
-    if (!result) return;
-
-    if (activeMode === 'landing') {
-      const lp = result.landingPage;
-      const text = [
-        `=== ${t('school.perfectPlanner.landing.title')} ===`,
-        '',
-        `[${t('school.perfectPlanner.landing.headline')}]`,
-        lp.headline,
-        lp.subheadline,
-        '',
-        `[${t('school.perfectPlanner.landing.problem')}]`,
-        lp.problemSection.title,
-        ...lp.problemSection.painPoints.map((p, i) => `${i + 1}. ${p}`),
-        '',
-        `[${t('school.perfectPlanner.landing.features')}]`,
-        ...lp.features.map((f, i) => `${i + 1}. ${f.title}: ${f.description} → ${f.benefit}`),
-        '',
-        `[${t('school.perfectPlanner.landing.trust')}]`,
-        ...lp.trustSignals.map((ts) => `- ${ts.content}`),
-        '',
-        `[${t('school.perfectPlanner.landing.cta')}]`,
-        lp.closingCTA.mainCopy,
-        `${t('school.perfectPlanner.landing.button')}: ${lp.closingCTA.buttonText}`,
-        lp.closingCTA.urgency,
-      ].join('\n');
-      copyToClipboard(text, 'all');
-    } else {
-      const lc = result.liveCommerce;
-      const text = [
-        `=== ${t('school.perfectPlanner.live.title')} ===`,
-        '',
-        `[${t('school.perfectPlanner.live.opening')}]`,
-        lc.opening.greeting,
-        lc.opening.hook,
-        lc.opening.todaysOffer,
-        '',
-        `[${t('school.perfectPlanner.live.demo')}]`,
-        ...lc.demoPoints.map((d) => `[${d.timestamp}] ${d.action} - "${d.talkingPoint}"`),
-        '',
-        `[${t('school.perfectPlanner.live.qna')}]`,
-        ...lc.qnaHandling.map((q) => `Q: ${q.commonQuestion}\nA: ${q.answer}`),
-        '',
-        `[${t('school.perfectPlanner.live.closing')}]`,
-        lc.closing.finalOffer,
-        lc.closing.urgencyTactic,
-        lc.closing.farewell,
-      ].join('\n');
-      copyToClipboard(text, 'all');
-    }
-  };
-
-  const handleSaveToTeamBox = async () => {
+  const handleSaveToGemBox = async () => {
     if (!user || !result || !myTeamId) return;
-    const title = `📋 ${productName}`;
+    const dp = result.detailPage;
+    const title = `📋 ${productName} · ${mode === 'detail' ? '상세페이지' : '라이브 방송'}`;
     const content = [
-      `헤드라인: ${result.landingPage.headline}`,
-      `서브: ${result.landingPage.subheadline}`,
-      `CTA: ${result.landingPage.closingCTA.mainCopy}`,
+      `헤드라인: ${dp.headline.replace(/\n/g, ' ')}`,
+      `가격: ${dp.originalPrice.toLocaleString()}원 → ${dp.salePrice.toLocaleString()}원 (-${dp.discountPercent}%)`,
+      `Pain: ${dp.painPoints.map((p) => p.text.replace(/\n/g, ' ')).join(' / ')}`,
+      `특징: ${dp.features.map((f) => f.title).join(' · ')}`,
     ].join('\n');
     await addTeamIdea(myTeamId, user.id, user.name, '📋', 'perfect-planner', title, content);
-    setSavedToTeamBox(true);
-    setTimeout(() => setSavedToTeamBox(false), 2000);
+    setSavedToGemBox(true);
   };
 
-  const isInputValid = productName.trim().length > 0 && coreTarget.trim().length > 0;
-
-  const loadingSteps = [
-    t('school.perfectPlanner.loading.step1'),
-    t('school.perfectPlanner.loading.step2'),
-    t('school.perfectPlanner.loading.step3'),
-  ];
+  const isInputValid =
+    productName.trim().length > 0 && strengths.some((s) => s.trim().length > 0);
 
   return (
     <div className="min-h-screen bg-kk-bg">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
-          <button onClick={() => navigate(-1)} aria-label="뒤로 가기" className="p-1.5 hover:bg-gray-100 rounded-lg">
+          <button
+            onClick={() => navigate(-1)}
+            aria-label="뒤로 가기"
+            className="p-1.5 hover:bg-gray-100 rounded-lg"
+          >
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-kk-brown bg-kk-cream px-2 py-0.5 rounded">5{t('school.curriculum.period')}</span>
-            <h1 className="font-bold text-kk-brown">{t('school.periods.perfectPlanner.name')}</h1>
+            <span className="text-xs font-bold text-kk-red bg-kk-cream px-2 py-0.5 rounded">
+              5{t('school.curriculum.period', '교시')}
+            </span>
+            <h1 className="font-bold text-kk-brown">상세페이지 만들기 📐</h1>
           </div>
         </div>
       </header>
 
       <main className="max-w-lg mx-auto px-4 py-6 space-y-4">
-        {/* ─── AI 미연결 안내 ─── */}
-        {!aiEnabled && phase !== 'loading' && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+        <div className="text-xs text-gray-500">📍 5/6 · 마케팅 학과</div>
+
+        {/* AI 미연결 */}
+        {!aiEnabled && phase === 'input' && (
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
             <div className="flex items-start gap-3">
               <Key className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
               <div className="flex-1">
-                <h3 className="font-semibold text-amber-800 text-sm mb-1">AI 비서가 연결되지 않았어요</h3>
-                <p className="text-xs text-amber-700 mb-3">API 키를 연결하면 AI가 나만의 판매 기획서를 만들어줘요. 지금은 예시 데이터로 체험할 수 있어요.</p>
-                <button onClick={() => navigate('/ai-welcome')} className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-bold hover:bg-amber-700 transition-colors">
+                <h3 className="font-semibold text-amber-800 text-sm mb-1">
+                  AI 비서가 연결되지 않았어요
+                </h3>
+                <p className="text-xs text-amber-700 mb-3">
+                  지금은 예시 데이터로 상세페이지를 볼 수 있어요.
+                </p>
+                <button
+                  onClick={() => navigate('/ai-welcome')}
+                  className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-bold hover:bg-amber-700"
+                >
                   <Key className="w-3.5 h-3.5" /> API 키 연결하기
                 </button>
               </div>
@@ -252,436 +201,488 @@ export default function PerfectPlannerTool() {
 
         {/* ══════ INPUT PHASE ══════ */}
         {phase === 'input' && (
-          <>
-            {/* Hero */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5 text-center">
-              <div className="w-14 h-14 mx-auto mb-3 bg-kk-cream rounded-2xl flex items-center justify-center">
-                <CalendarCheck className="w-7 h-7 text-kk-red" />
-              </div>
-              <h2 className="text-lg font-bold text-kk-brown mb-1">{t('school.perfectPlanner.title')}</h2>
-              <p className="text-sm text-gray-500">{t('school.perfectPlanner.subtitle')}</p>
+          <div className="bg-white rounded-2xl border border-gray-200 p-5">
+            {/* 데이터 불러오기 버튼 */}
+            <button
+              onClick={handleLoadEdgeData}
+              className="w-full mb-3 py-2 bg-gray-50 text-gray-500 border border-dashed border-gray-300 rounded-lg text-xs hover:bg-gray-100"
+            >
+              📥 3교시 엣지메이커 데이터 불러오기
+            </button>
+
+            {/* 상품 이름 */}
+            <div className="mb-3">
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                상품 이름
+                {autoLoadedProduct && (
+                  <span className="ml-1.5 inline-block bg-blue-100 text-blue-800 text-[9px] px-1.5 py-0.5 rounded font-semibold">
+                    ✅ 가져옴
+                  </span>
+                )}
+              </label>
+              <input
+                type="text"
+                value={productName}
+                onChange={(e) => setProductName(e.target.value.slice(0, 30))}
+                placeholder="예: DripQ 캡슐"
+                className={`w-full px-3 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kk-red ${
+                  autoLoadedProduct ? 'border-blue-200 bg-blue-50' : 'border-gray-200'
+                }`}
+              />
             </div>
 
-            {/* Formula Education */}
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-              <button
-                onClick={() => setShowFormula(!showFormula)}
-                className="w-full px-5 py-3 flex items-center justify-between text-left"
-              >
-                <span className="text-sm font-semibold text-kk-brown">{t('school.perfectPlanner.formulaTitle')}</span>
-                {showFormula ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
-              </button>
-              {showFormula && (
-                <div className="px-5 pb-4 space-y-4">
-                  {/* AIDA */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <FileText className="w-4 h-4 text-kk-red" />
-                      <span className="text-sm font-bold text-gray-700">{t('school.perfectPlanner.formula.aidaTitle')}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      {['A', 'I', 'D', 'A'].map((letter, i) => (
-                        <span key={i} className="flex items-center gap-1">
-                          <span className="bg-kk-cream text-kk-red font-bold px-1.5 py-0.5 rounded">{letter}</span>
-                          {i < 3 && <span className="text-gray-300">&rarr;</span>}
-                        </span>
-                      ))}
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">{t('school.perfectPlanner.formula.aidaDesc')}</p>
-                  </div>
-                  {/* Live */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Mic className="w-4 h-4 text-kk-red" />
-                      <span className="text-sm font-bold text-gray-700">{t('school.perfectPlanner.formula.liveTitle')}</span>
-                    </div>
-                    <p className="text-xs text-gray-500">{t('school.perfectPlanner.formula.liveDesc')}</p>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* 주요 고객 */}
+            <PlusListInput
+              label="주요 고객"
+              items={customers}
+              onChange={setCustomers}
+              placeholder="예: 30대 직장인 여성"
+              max={5}
+              addButtonText="➕ 고객 추가하기"
+            />
 
-            {/* Edge Maker Badge */}
-            {edgeDataLoaded && (
-              <div className="bg-kk-cream border border-kk-warm rounded-xl px-4 py-2 text-xs text-kk-brown font-medium">
-                {t('school.perfectPlanner.edgeDataLoaded')}
-              </div>
-            )}
+            {/* 다른 곳에 없는 장점 */}
+            <PlusListInput
+              label="다른 곳에 없는 장점"
+              items={strengths}
+              onChange={setStrengths}
+              placeholder="예: 3분 만에 카페 수준"
+              max={5}
+              autoLoadedBadge={autoLoadedStrengths}
+              addButtonText="➕ 장점 추가하기"
+            />
 
-            {/* Input Form */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('school.perfectPlanner.input.productName')}</label>
-                <input
-                  type="text"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value.slice(0, 30))}
-                  placeholder={t('school.perfectPlanner.input.productNamePlaceholder')}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kk-red"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('school.perfectPlanner.input.coreTarget')}</label>
-                <input
-                  type="text"
-                  value={coreTarget}
-                  onChange={(e) => setCoreTarget(e.target.value.slice(0, 80))}
-                  placeholder={t('school.perfectPlanner.input.coreTargetPlaceholder')}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kk-red"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('school.perfectPlanner.input.usp')}</label>
-                <input
-                  type="text"
-                  value={usp}
-                  onChange={(e) => setUsp(e.target.value.slice(0, 100))}
-                  placeholder={t('school.perfectPlanner.input.uspPlaceholder')}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kk-red"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('school.perfectPlanner.input.strongOffer')}</label>
-                <input
-                  type="text"
-                  value={strongOffer}
-                  onChange={(e) => setStrongOffer(e.target.value.slice(0, 100))}
-                  placeholder={t('school.perfectPlanner.input.strongOfferPlaceholder')}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kk-red"
-                />
+            {/* 오늘의 특별 혜택 */}
+            <PlusListInput
+              label="오늘의 특별 혜택"
+              items={offers}
+              onChange={setOffers}
+              placeholder="예: 오늘만 30% 할인"
+              max={5}
+              addButtonText="➕ 혜택 추가하기"
+            />
+
+            {/* 만들기 종류 */}
+            <div className="mb-3">
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">만들기 종류</label>
+              <div className="flex gap-1.5">
+                <button
+                  onClick={() => setMode('detail')}
+                  className={`flex-1 p-2 rounded-lg text-xs text-center border-2 ${
+                    mode === 'detail'
+                      ? 'border-orange-500 bg-orange-50 text-orange-900'
+                      : 'border-gray-200 text-gray-700'
+                  }`}
+                >
+                  <div className="font-bold">🛒 상세페이지</div>
+                  <div className="text-[10px] mt-0.5 opacity-70">쇼핑몰 상품 페이지</div>
+                </button>
+                <button
+                  onClick={() => setMode('live')}
+                  className={`flex-1 p-2 rounded-lg text-xs text-center border-2 ${
+                    mode === 'live'
+                      ? 'border-orange-500 bg-orange-50 text-orange-900'
+                      : 'border-gray-200 text-gray-700'
+                  }`}
+                >
+                  <div className="font-bold">📺 라이브 방송 대본</div>
+                  <div className="text-[10px] mt-0.5 opacity-70">실시간 판매 큐시트</div>
+                </button>
               </div>
             </div>
 
-            {/* Generate Button */}
             <button
               onClick={handleGenerate}
               disabled={!isInputValid}
-              className="w-full py-3.5 bg-kk-red hover:bg-kk-red-deep text-white font-bold rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 bg-gray-900 hover:bg-black text-white font-bold rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Sparkles className="w-5 h-5" />
-              {t('school.perfectPlanner.generateButton')}
+              만들기 →
             </button>
-          </>
+          </div>
         )}
 
         {/* ══════ LOADING PHASE ══════ */}
         {phase === 'loading' && (
           <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-kk-cream rounded-full flex items-center justify-center">
-              <Loader2 className="w-8 h-8 text-kk-red animate-spin" />
-            </div>
-            <p className="text-sm font-medium text-gray-600">{loadingSteps[loadingStep]}</p>
-            <div className="flex justify-center gap-1.5 mt-4">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className={`w-2 h-2 rounded-full ${i <= loadingStep ? 'bg-kk-red' : 'bg-gray-200'}`} />
-              ))}
-            </div>
+            <Loader2 className="w-8 h-8 text-kk-red animate-spin mx-auto mb-4" />
+            <p className="text-sm font-medium text-gray-600">
+              {mode === 'detail' ? '상세페이지를' : '라이브 방송 대본을'} 만들고 있어요…
+            </p>
           </div>
         )}
 
         {/* ══════ RESULT PHASE ══════ */}
         {phase === 'result' && result && (
           <>
-            {/* AI/Mock Badge */}
-            <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-              isMock ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'
-            }`}>
-              <Sparkles className="w-3 h-3" />
-              {isMock ? t('school.perfectPlanner.mockBadge') : t('school.perfectPlanner.aiBadge')}
-            </div>
-
-            {/* AI 실패 안내 + 재시도 */}
-            {isMock && (
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-                <p className="text-xs text-amber-700 mb-2">
-                  {aiError || (aiEnabled ? 'AI 응답을 가져오지 못해서 예시 데이터를 보여드리고 있어요.' : 'API 키가 연결되지 않아 예시 데이터를 보여드리고 있어요.')}
-                </p>
-                <div className="flex gap-2">
-                  {aiEnabled ? (
-                    <button onClick={() => { setResult(null); setPhase('input'); setCheckedItems({}); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-bold hover:bg-amber-700 transition-colors">
-                      <RefreshCw className="w-3 h-3" /> AI로 다시 생성하기
-                    </button>
-                  ) : (
-                    <button onClick={() => navigate('/ai-welcome')} className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-bold hover:bg-amber-700 transition-colors">
-                      <Key className="w-3 h-3" /> API 키 연결하기
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Mode Tabs */}
-            <div className="flex gap-2">
+            {/* 모드 탭 */}
+            <div className="flex gap-1.5 bg-gray-100 p-1 rounded-xl">
               <button
-                onClick={() => setActiveMode('landing')}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all ${
-                  activeMode === 'landing'
-                    ? 'bg-kk-red text-white'
-                    : 'bg-kk-cream text-kk-brown hover:bg-kk-warm'
+                onClick={() => setMode('detail')}
+                className={`flex-1 py-2 text-xs font-bold rounded-lg ${
+                  mode === 'detail' ? 'bg-white text-gray-900 shadow' : 'text-gray-500'
                 }`}
               >
-                <FileText className="w-4 h-4" />
-                {t('school.perfectPlanner.landing.tab')}
+                🛒 상세페이지
               </button>
               <button
-                onClick={() => setActiveMode('liveCommerce')}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all ${
-                  activeMode === 'liveCommerce'
-                    ? 'bg-kk-navy text-white'
-                    : 'bg-kk-cream text-kk-brown hover:bg-kk-warm'
+                onClick={() => setMode('live')}
+                className={`flex-1 py-2 text-xs font-bold rounded-lg ${
+                  mode === 'live' ? 'bg-white text-gray-900 shadow' : 'text-gray-500'
                 }`}
               >
-                <Mic className="w-4 h-4" />
-                {t('school.perfectPlanner.live.tab')}
+                📺 라이브 방송 대본
               </button>
             </div>
 
-            {/* ─── Landing Page Mode ─── */}
-            {activeMode === 'landing' && (
-              <div className="space-y-3">
-                {/* Headline */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-bold text-gray-700">{t('school.perfectPlanner.landing.headline')}</span>
-                    <button onClick={() => copyToClipboard(`${result.landingPage.headline}\n${result.landingPage.subheadline}`, 'headline')} className="p-1 hover:bg-gray-100 rounded">
-                      {copiedField === 'headline' ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-gray-400" />}
-                    </button>
-                  </div>
-                  <p className="text-lg font-bold text-gray-800">{result.landingPage.headline}</p>
-                  <p className="text-sm text-gray-500 mt-1">{result.landingPage.subheadline}</p>
-                </div>
+            {mode === 'detail' && <DetailPagePreview plan={result.detailPage} />}
+            {mode === 'live' && <LiveScriptCueSheet script={result.liveScript} />}
 
-                {/* Problem */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-bold text-gray-700">{t('school.perfectPlanner.landing.problem')}</span>
-                    <button onClick={() => copyToClipboard(result.landingPage.problemSection.painPoints.join('\n'), 'problem')} className="p-1 hover:bg-gray-100 rounded">
-                      {copiedField === 'problem' ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-gray-400" />}
-                    </button>
-                  </div>
-                  <p className="text-sm font-medium text-kk-red mb-2">{result.landingPage.problemSection.title}</p>
-                  <div className="space-y-1.5">
-                    {result.landingPage.problemSection.painPoints.map((pain, i) => (
-                      <div key={pain} className="flex items-start gap-2 text-sm text-kk-red bg-kk-cream p-2 rounded-lg">
-                        <span className="text-kk-coral mt-0.5">!</span>
-                        <span>{pain}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Features */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-bold text-gray-700">{t('school.perfectPlanner.landing.features')}</span>
-                  </div>
-                  <div className="space-y-3">
-                    {result.landingPage.features.map((feat, i) => (
-                      <div key={feat.title} className="bg-gray-50 rounded-xl p-3">
-                        <p className="text-sm font-bold text-gray-800">{feat.title}</p>
-                        <p className="text-xs text-gray-500 mt-1">{feat.description}</p>
-                        <p className="text-xs text-kk-red font-medium mt-1">&rarr; {feat.benefit}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Trust Signals */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <span className="text-sm font-bold text-gray-700 block mb-3">{t('school.perfectPlanner.landing.trust')}</span>
-                  <div className="space-y-2">
-                    {result.landingPage.trustSignals.map((ts, i) => (
-                      <div key={ts.content} className="flex items-start gap-2 text-sm bg-kk-cream p-2.5 rounded-lg">
-                        <span className="text-kk-navy">
-                          {ts.type === 'review' ? '\u2B50' : ts.type === 'stats' ? '\uD83D\uDCCA' : '\uD83C\uDFC6'}
-                        </span>
-                        <span className="text-kk-navy">{ts.content}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* CTA */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-bold text-gray-700">{t('school.perfectPlanner.landing.cta')}</span>
-                    <button onClick={() => copyToClipboard(`${result.landingPage.closingCTA.mainCopy}\n${result.landingPage.closingCTA.buttonText}\n${result.landingPage.closingCTA.urgency}`, 'cta')} className="p-1 hover:bg-gray-100 rounded">
-                      {copiedField === 'cta' ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-gray-400" />}
-                    </button>
-                  </div>
-                  <div className="bg-kk-cream border border-kk-warm rounded-xl p-4 text-center">
-                    <p className="font-bold text-kk-brown">{result.landingPage.closingCTA.mainCopy}</p>
-                    <div className="mt-2 inline-block bg-kk-red text-white font-bold text-sm px-6 py-2 rounded-full">
-                      {result.landingPage.closingCTA.buttonText}
-                    </div>
-                    <p className="text-xs text-kk-red mt-2 font-medium">{result.landingPage.closingCTA.urgency}</p>
-                  </div>
-                </div>
-
-                {/* Checklist */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <span className="text-sm font-bold text-gray-700 block mb-3">{t('school.perfectPlanner.landing.checklist')}</span>
-                  <div className="space-y-2">
-                    {result.landingPage.checklist.map((item, i) => (
-                      <label key={item} className="flex items-start gap-2 text-sm cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={checkedItems[`l-${i}`] || false}
-                          onChange={(e) => setCheckedItems({ ...checkedItems, [`l-${i}`]: e.target.checked })}
-                          className="mt-0.5 rounded"
-                        />
-                        <span className={checkedItems[`l-${i}`] ? 'text-gray-400 line-through' : 'text-gray-600'}>{item}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            {/* AI 실패 안내 */}
+            {isMock && aiEnabled && (
+              <p className="text-[11px] text-amber-700 text-center">
+                ⚠️ AI 응답을 가져오지 못해 예시를 보여드리고 있어요
+              </p>
             )}
 
-            {/* ─── Live Commerce Mode ─── */}
-            {activeMode === 'liveCommerce' && (
-              <div className="space-y-3">
-                {/* Opening */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-bold text-gray-700">{t('school.perfectPlanner.live.opening')}</span>
-                    <button onClick={() => copyToClipboard(`${result.liveCommerce.opening.greeting}\n${result.liveCommerce.opening.hook}\n${result.liveCommerce.opening.todaysOffer}`, 'opening')} className="p-1 hover:bg-gray-100 rounded">
-                      {copiedField === 'opening' ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-gray-400" />}
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm text-gray-600">{result.liveCommerce.opening.greeting}</p>
-                    <p className="text-sm font-bold text-kk-red">{result.liveCommerce.opening.hook}</p>
-                    <p className="text-sm text-kk-brown bg-kk-cream p-2 rounded-lg">{result.liveCommerce.opening.todaysOffer}</p>
-                  </div>
-                </div>
-
-                {/* Demo Timeline */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <span className="text-sm font-bold text-gray-700 block mb-3">{t('school.perfectPlanner.live.demo')}</span>
-                  <div className="relative pl-6 space-y-4">
-                    <div className="absolute left-2 top-1 bottom-1 w-0.5 bg-kk-peach" />
-                    {result.liveCommerce.demoPoints.map((demo, i) => (
-                      <div key={demo.timestamp} className="relative">
-                        <div className="absolute -left-[18px] top-1 w-3 h-3 rounded-full bg-kk-red border-2 border-white" />
-                        <div className="bg-gray-50 rounded-xl p-3">
-                          <span className="text-[10px] font-bold text-kk-red bg-kk-cream px-2 py-0.5 rounded">{demo.timestamp}</span>
-                          <p className="text-xs font-medium text-gray-700 mt-1">{demo.action}</p>
-                          <p className="text-xs text-gray-500 mt-0.5 italic">"{demo.talkingPoint}"</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Q&A */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <span className="text-sm font-bold text-gray-700 block mb-3">{t('school.perfectPlanner.live.qna')}</span>
-                  <div className="space-y-2">
-                    {result.liveCommerce.qnaHandling.map((qa, i) => (
-                      <div key={qa.commonQuestion} className="bg-gray-50 rounded-xl overflow-hidden">
-                        <button
-                          onClick={() => setExpandedTip(expandedTip === `qa-${i}` ? null : `qa-${i}`)}
-                          className="w-full flex items-center justify-between p-3 text-left"
-                        >
-                          <span className="text-sm font-medium text-gray-700">Q: {qa.commonQuestion}</span>
-                          {expandedTip === `qa-${i}` ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" /> : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
-                        </button>
-                        {expandedTip === `qa-${i}` && (
-                          <div className="px-3 pb-3">
-                            <p className="text-sm text-kk-brown bg-kk-cream p-2 rounded-lg">A: {qa.answer}</p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Closing */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-bold text-gray-700">{t('school.perfectPlanner.live.closing')}</span>
-                    <button onClick={() => copyToClipboard(`${result.liveCommerce.closing.finalOffer}\n${result.liveCommerce.closing.urgencyTactic}\n${result.liveCommerce.closing.farewell}`, 'closing')} className="p-1 hover:bg-gray-100 rounded">
-                      {copiedField === 'closing' ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-gray-400" />}
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm font-bold text-kk-red">{result.liveCommerce.closing.finalOffer}</p>
-                    <p className="text-sm text-kk-red bg-kk-cream p-2 rounded-lg">{result.liveCommerce.closing.urgencyTactic}</p>
-                    <p className="text-sm text-gray-600">{result.liveCommerce.closing.farewell}</p>
-                  </div>
-                </div>
-
-                {/* Checklist */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                  <span className="text-sm font-bold text-gray-700 block mb-3">{t('school.perfectPlanner.live.checklist')}</span>
-                  <div className="space-y-2">
-                    {result.liveCommerce.checklist.map((item, i) => (
-                      <label key={item} className="flex items-start gap-2 text-sm cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={checkedItems[`c-${i}`] || false}
-                          onChange={(e) => setCheckedItems({ ...checkedItems, [`c-${i}`]: e.target.checked })}
-                          className="mt-0.5 rounded"
-                        />
-                        <span className={checkedItems[`c-${i}`] ? 'text-gray-400 line-through' : 'text-gray-600'}>{item}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Action Bar */}
-            <div className="flex gap-2">
+            {/* PDF 받기 - 작은 회색 텍스트 */}
+            <div className="text-center">
               <button
-                onClick={handleCopyAll}
-                className="flex-1 flex items-center justify-center gap-2 py-3 bg-kk-cream text-kk-brown font-bold rounded-xl hover:bg-kk-warm transition-colors"
+                onClick={() => window.print()}
+                className="text-[11px] text-gray-500 hover:text-gray-700 underline-offset-2 hover:underline"
               >
-                {copiedField === 'all' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                {copiedField === 'all' ? t('school.perfectPlanner.copied') : t('school.perfectPlanner.copyAll')}
+                📄 PDF로 받기
               </button>
+            </div>
+
+            {/* 보석함 저장 */}
+            {myTeamId && (
+              <SaveToGemBoxButton onSave={handleSaveToGemBox} saved={savedToGemBox} />
+            )}
+
+            {/* 다음 교시 CTA */}
+            <div className="bg-blue-50 border border-dashed border-blue-300 rounded-xl p-3 text-center">
+              <button
+                onClick={() => navigate('/marketing/school/tools/roas-simulator')}
+                className="text-blue-700 font-bold text-sm"
+              >
+                다음 · 6교시 ROAS시뮬레이터 → 광고비는 얼마나 들까? →
+              </button>
+            </div>
+
+            {completed && (
+              <div className="text-center text-xs text-emerald-600 font-semibold">
+                ✅ 5교시 도장 받았어요
+              </div>
+            )}
+
+            {/* 다시 만들기 */}
+            <div className="text-center">
               <button
                 onClick={() => {
                   setResult(null);
                   setPhase('input');
-                  setCheckedItems({});
                 }}
-                aria-label="다시 생성"
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                className="text-[11px] text-gray-500 hover:text-gray-700 underline-offset-2 hover:underline"
               >
-                <RefreshCw className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* 보석함에 넣기 */}
-            {myTeamId && (
-              <button
-                onClick={handleSaveToTeamBox}
-                className="w-full py-3 bg-kk-cream hover:bg-kk-warm text-kk-brown font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
-              >
-                <Gem className="w-4 h-4" />
-                {savedToTeamBox ? '보석함에 저장 완료!' : '💎 보석함에 넣기'}
-              </button>
-            )}
-
-            {/* Completion */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5">
-              {completed && (
-                <div className="py-3 bg-green-50 text-green-600 font-bold rounded-xl text-center">
-                  {t('school.tools.alreadyCompleted')}
-                </div>
-              )}
-              <button
-                onClick={() => navigate('/marketing/school/curriculum')}
-                className="w-full mt-2 py-2.5 text-sm text-gray-500 hover:text-gray-700 font-medium"
-              >
-                {t('school.tools.goToAttendance')}
+                🔁 다시 만들기
               </button>
             </div>
           </>
         )}
       </main>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DetailPagePreview — 모바일 쇼핑몰 톤 (340px 고정, 직각 모서리)
+// mockup: docs/mockups/perfect-planner.html AFTER 컬럼
+// ═══════════════════════════════════════════════════════════════
+
+function DetailPagePreview({ plan }: { plan: DetailPagePlan }) {
+  // headline에서 highlight 단어를 노란색으로
+  const renderHeadlineWithHighlight = () => {
+    const lines = plan.headline.split('\n');
+    return lines.map((line, i) => {
+      const hi = plan.headlineHighlight;
+      if (hi && line.includes(hi)) {
+        const [before, ...rest] = line.split(hi);
+        return (
+          <div key={i}>
+            {before}
+            <span style={{ color: '#fbbf24' }}>{hi}</span>
+            {rest.join(hi)}
+          </div>
+        );
+      }
+      return <div key={i}>{line}</div>;
+    });
+  };
+
+  const featureColors = {
+    amber: { bg: '#fffbeb', title: '#92400e', desc: '#78350f' },
+    green: { bg: '#f0fdf4', title: '#166534', desc: '#14532d' },
+    blue: { bg: '#eff6ff', title: '#1e40af', desc: '#1e3a8a' },
+  } as const;
+
+  return (
+    <div
+      className="relative mx-auto bg-white border border-gray-300"
+      style={{ maxWidth: 340, fontFamily: "'Pretendard','Noto Sans KR',sans-serif" }}
+    >
+      {/* 모바일 상단바 */}
+      <div className="bg-white border-b border-gray-100 px-3 py-2 flex justify-between items-center text-[11px] text-gray-500">
+        <span>← {plan.brandLine.replace(/\s*(공식|스토어)$/, '')}</span>
+        <span>🔍 🛒</span>
+      </div>
+
+      {/* 1. 큰 메인 이미지 (정사각형) - Pexels fallback */}
+      <div
+        className="w-full"
+        style={{
+          aspectRatio: '1',
+          background:
+            "url('https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?w=600') center/cover",
+        }}
+      />
+
+      {/* 2. 가격 영역 */}
+      <div className="px-4 py-3.5" style={{ borderBottom: '8px solid #f4f4f5' }}>
+        <div className="text-[11px] text-gray-500 mb-0.5">{plan.brandLine}</div>
+        <div className="text-[15px] font-semibold text-gray-900 leading-snug mb-2">
+          {plan.productTitle}
+        </div>
+        <div className="flex items-baseline gap-1.5">
+          <span className="bg-red-500 text-white text-[11px] px-1.5 py-0.5 font-bold">
+            {plan.discountPercent}%
+          </span>
+          <span className="text-[13px] text-gray-400 line-through">
+            {plan.originalPrice.toLocaleString()}원
+          </span>
+        </div>
+        <div className="text-[24px] font-black text-red-500 mt-0.5">
+          {plan.salePrice.toLocaleString()}원
+        </div>
+        <div className="flex items-center gap-1 mt-1.5 text-[11px]">
+          <span className="text-amber-400">★★★★★</span>
+          <span className="text-gray-900 font-semibold">{plan.rating}</span>
+          <span className="text-gray-500">· 리뷰 {plan.reviewCount.toLocaleString()}</span>
+        </div>
+        <div className="bg-amber-100 text-amber-800 px-2.5 py-1.5 text-[11px] font-semibold mt-2 flex items-center gap-1">
+          {plan.countdownLabel} <b className="ml-auto">{plan.countdownValue}</b>
+        </div>
+      </div>
+
+      {/* 3. 어그로 한 줄 */}
+      <div
+        className="px-4 py-3.5 text-center bg-amber-100"
+        style={{ borderBottom: '8px solid #f4f4f5' }}
+      >
+        <div
+          className="text-[14px] font-black leading-snug whitespace-pre-line"
+          style={{ color: '#7c2d12' }}
+        >
+          {plan.attentionLine.text}
+        </div>
+      </div>
+
+      {/* 4. 큰 헤드라인 */}
+      <div className="px-4 py-7 text-center bg-black text-white">
+        <div className="text-[11px] text-amber-400 font-bold mb-2">{plan.headlinePrefix}</div>
+        <div
+          className="font-black leading-[1.1]"
+          style={{ fontSize: 30, letterSpacing: -1 }}
+        >
+          {renderHeadlineWithHighlight()}
+        </div>
+      </div>
+
+      {/* 5. Pain points "~한 사람!" */}
+      <div className="bg-amber-100 px-4 py-6" style={{ borderBottom: '8px solid #f4f4f5' }}>
+        <div
+          className="text-[18px] font-black text-center mb-4 leading-tight whitespace-pre-line"
+          style={{ color: '#7c2d12' }}
+        >
+          {plan.painPointsTitle}
+        </div>
+        {plan.painPoints.map((p, i) => (
+          <div
+            key={i}
+            className="bg-white px-4 py-3.5 mb-2 text-[14px] font-bold text-gray-900 whitespace-pre-line"
+            style={{ borderLeft: '5px solid #f59e0b' }}
+          >
+            {p.emoji} {p.text}
+          </div>
+        ))}
+      </div>
+
+      {/* 6. 해결책 큰 이미지 */}
+      <div className="bg-black text-white">
+        <div className="px-4 pt-6 pb-4 text-center">
+          <div className="text-[11px] text-amber-400 font-bold mb-1.5">{plan.solutionPrefix}</div>
+          <div
+            className="text-[24px] font-black leading-[1.1] whitespace-pre-line"
+          >
+            {plan.solutionHeadline}
+          </div>
+        </div>
+        <div
+          className="w-full"
+          style={{
+            aspectRatio: '1',
+            background:
+              "url('https://images.pexels.com/photos/1695052/pexels-photo-1695052.jpeg?w=600') center/cover",
+          }}
+        />
+      </div>
+
+      {/* 7. 3가지 특징 */}
+      <div className="bg-white" style={{ borderBottom: '8px solid #f4f4f5' }}>
+        <div className="px-4 pt-6 pb-3.5 text-center text-[18px] font-black text-gray-900 whitespace-pre-line leading-tight">
+          {plan.featuresTitle}
+        </div>
+        <div className="px-4 pb-5">
+          {plan.features.map((f, i) => {
+            const c = featureColors[f.colorKey];
+            return (
+              <div
+                key={i}
+                className="flex gap-3.5 items-center p-3.5 mb-2"
+                style={{ background: c.bg }}
+              >
+                <div className="text-[36px]">{f.emoji}</div>
+                <div>
+                  <div className="text-[16px] font-black" style={{ color: c.title }}>
+                    {f.title}
+                  </div>
+                  <div
+                    className="text-[12px] mt-0.5 whitespace-pre-line"
+                    style={{ color: c.desc }}
+                  >
+                    {f.description}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 8. 리뷰 */}
+      <div className="px-4 py-5 bg-white" style={{ borderBottom: '8px solid #f4f4f5' }}>
+        <div className="flex justify-between items-baseline mb-3">
+          <div className="text-[15px] font-black text-gray-900">⭐ 진짜 후기</div>
+          <div className="text-[11px] text-gray-500">
+            {plan.reviewCount.toLocaleString()}개 모두 보기 ›
+          </div>
+        </div>
+        {plan.reviews.map((r, i) => (
+          <div
+            key={i}
+            className="bg-gray-50 p-3 mb-2"
+            style={{ borderLeft: '3px solid #fbbf24' }}
+          >
+            <div className="text-[11px] text-amber-400 mb-1">{r.stars}</div>
+            <div className="text-[13px] text-gray-900 font-semibold leading-snug">
+              {r.text}
+            </div>
+            <div className="text-[10px] text-gray-400 mt-1">{r.author}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* 9. 마지막 강조 */}
+      <div className="bg-red-500 text-white px-4 py-6 text-center">
+        <div className="text-[13px] mb-1.5">{plan.finalCtaDeadline}</div>
+        <div className="text-[26px] font-black leading-[1.1] whitespace-pre-line">
+          {plan.finalCtaHeadline}
+        </div>
+        <div className="text-[14px] mt-2">
+          지금 사면{' '}
+          <span className="bg-white text-red-500 px-2 py-0.5 font-black">
+            {plan.salePrice.toLocaleString()}원
+          </span>
+        </div>
+      </div>
+
+      {/* sticky CTA 높이 확보 */}
+      <div style={{ height: 56 }} />
+      <div
+        className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-3 py-2 flex gap-2 items-center"
+      >
+        <div className="w-10 h-10 bg-gray-100 flex items-center justify-center text-[18px] border border-gray-200">
+          ♡
+        </div>
+        <button className="flex-1 bg-black text-white py-3 text-[14px] font-black">
+          {plan.stickyCtaText}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LiveScriptCueSheet — 시간대별 큐시트 (진행자 멘트 / 액션 / 시청자)
+// ═══════════════════════════════════════════════════════════════
+
+const CUE_COLORS = {
+  orange: { border: '#FF6B35', bg: '#fff7ed', title: '#7c2d12', text: '#9a3412' },
+  amber: { border: '#f59e0b', bg: '#fffbeb', title: '#92400e', text: '#92400e' },
+  green: { border: '#10b981', bg: '#f0fdf4', title: '#166534', text: '#166534' },
+  blue: { border: '#3b82f6', bg: '#eff6ff', title: '#1e40af', text: '#1e40af' },
+  red: { border: '#ef4444', bg: '#fef2f2', title: '#991b1b', text: '#991b1b' },
+} as const;
+
+function LiveScriptCueSheet({ script }: { script: LiveScript }) {
+  return (
+    <div className="bg-white border border-gray-200 rounded-2xl p-4">
+      {/* 라이브 헤더 */}
+      <div className="bg-black text-white p-3.5 mb-3">
+        <div className="flex justify-between items-center mb-1.5">
+          <div className="bg-red-500 px-2 py-0.5 text-[10px] font-bold">🔴 LIVE</div>
+          <div className="text-[10px] text-gray-400">{script.expectedViewers}</div>
+        </div>
+        <div className="text-[14px] font-bold">{script.title}</div>
+      </div>
+
+      {/* 큐시트 항목 */}
+      {script.items.map((item, i) => {
+        const c = CUE_COLORS[item.colorKey];
+        return (
+          <div
+            key={i}
+            className="px-3 py-2.5 mb-2.5"
+            style={{ borderLeft: `3px solid ${c.border}`, background: c.bg }}
+          >
+            <div className="flex justify-between items-center mb-1.5">
+              <div className="text-[13px] font-black" style={{ color: c.title }}>
+                {item.emoji} {item.timeRange} · {item.title}
+              </div>
+              <div className="text-[10px]" style={{ color: c.text }}>
+                {item.duration}
+              </div>
+            </div>
+            <div className="bg-white px-2.5 py-2 text-[12px] text-gray-900 leading-relaxed mb-1.5 whitespace-pre-line">
+              <b>진행자:</b> {item.hostScript}
+            </div>
+            {item.action && (
+              <div className="text-[11px]" style={{ color: c.text }}>
+                {item.action}
+              </div>
+            )}
+            {item.audienceReaction && (
+              <div className="text-[11px]" style={{ color: c.text }}>
+                {item.audienceReaction}
+              </div>
+            )}
+            {item.extra && (
+              <div className="text-[11px]" style={{ color: c.text }}>
+                {item.extra}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Zap, Plus, X, Copy, Check, AlertCircle, Gem, Key, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Zap, Copy, Check, Key, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useSchoolProgress } from '../../../../hooks/useSchoolProgress';
 import { generateBrandingStrategy } from '../../../../services/gemini/marketCompassService';
@@ -9,6 +9,8 @@ import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
 import type { EdgeMakerResult, CompetitorInfo } from '../../../../types/school';
 import { getMyTeam, addTeamIdea } from '../../../../services/teamService';
 import { SimpleMarkdown } from '@/components/common/SimpleMarkdown';
+import { PlusListInput } from './common/PlusListInput';
+import { SaveToGemBoxButton } from './common/SaveToGemBoxButton';
 
 type Phase = 'input' | 'loading' | 'result';
 
@@ -27,13 +29,12 @@ export default function EdgeMakerTool() {
   const [phase, setPhase] = useState<Phase>('input');
   const [painPoints, setPainPoints] = useState<string[]>([]);
   const [competitors, setCompetitors] = useState<CompetitorInfo[]>([]);
-  const [strengths, setStrengths] = useState<string[]>([]);
-  const [strengthInput, setStrengthInput] = useState('');
+  const [strengths, setStrengths] = useState<string[]>(['']);
+  const [scannerLoaded, setScannerLoaded] = useState(false);
   const [result, setResult] = useState<EdgeMakerResult | null>(null);
   const [isMock, setIsMock] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [noScannerData, setNoScannerData] = useState(false);
   const [activeNameTab, setActiveNameTab] = useState(0);
   const [myTeamId, setMyTeamId] = useState<string | null>(null);
   const [savedToTeamBox, setSavedToTeamBox] = useState(false);
@@ -48,45 +49,30 @@ export default function EdgeMakerTool() {
     });
   }, [user]);
 
-  // 마운트 시 MarketScanner 결과 로드
+  // mockup 확정안: 자동 로드 → 수동 로드 버튼
+  // 기존 EdgeMaker 결과가 있으면 그것만 복원
   useEffect(() => {
     if (!user || isLoading) return;
-
-    // 시장 탐색기가 Edge Maker 이후에 재실행됐으면 이전 결과 무시 (새 입력 필요)
-    const scannerIsNewer = savedScannerResult?.completedAt && savedEdgeResult?.completedAt
-      && savedScannerResult.completedAt > savedEdgeResult.completedAt;
-
-    // 이전 EdgeMaker 결과가 있고, 시장 탐색기가 재실행되지 않았으면 바로 표시
-    if (savedEdgeResult && !scannerIsNewer) {
+    if (savedEdgeResult) {
       setResult(savedEdgeResult);
       setPainPoints(savedEdgeResult.input.painPoints);
-      setStrengths(savedEdgeResult.input.myStrengths);
+      setStrengths(
+        savedEdgeResult.input.myStrengths.length > 0 ? savedEdgeResult.input.myStrengths : [''],
+      );
       setCompetitors(savedEdgeResult.input.competitors || []);
       setPhase('result');
-      setNoScannerData(false);
+    }
+  }, [user, isLoading, savedEdgeResult]);
+
+  // 2교시 마켓스캐너 데이터 수동 불러오기
+  const handleLoadScannerData = () => {
+    if (!savedScannerResult) {
+      alert('2교시 마켓스캐너 결과가 없어요. 먼저 2교시를 완료해주세요.');
       return;
     }
-
-    // MarketScanner 결과에서 painPoints + competitors 로드
-    if (savedScannerResult) {
-      setPainPoints(savedScannerResult.output.painPoints);
-      setCompetitors(savedScannerResult.output.competitors || []);
-      setNoScannerData(false);
-    } else {
-      setNoScannerData(true);
-    }
-  }, [user, isLoading, savedEdgeResult, savedScannerResult]);
-
-  const addStrength = () => {
-    const trimmed = strengthInput.trim();
-    if (trimmed && strengths.length < 5 && !strengths.includes(trimmed)) {
-      setStrengths([...strengths, trimmed]);
-      setStrengthInput('');
-    }
-  };
-
-  const removeStrength = (index: number) => {
-    setStrengths(strengths.filter((_, i) => i !== index));
+    setPainPoints(savedScannerResult.output.painPoints);
+    setCompetitors(savedScannerResult.output.competitors || []);
+    setScannerLoaded(true);
   };
 
   const handleGenerate = async () => {
@@ -97,14 +83,16 @@ export default function EdgeMakerTool() {
     const timer1 = setTimeout(() => setLoadingStep(1), 1200);
     const timer2 = setTimeout(() => setLoadingStep(2), 2400);
 
+    const cleanStrengths = strengths.filter((s) => s.trim());
+
     try {
-      const { result: output, isMock: mock } = await generateBrandingStrategy(painPoints, strengths, competitors);
+      const { result: output, isMock: mock } = await generateBrandingStrategy(painPoints, cleanStrengths, competitors);
 
       await new Promise((resolve) => setTimeout(resolve, 3500));
 
       const edgeResult: EdgeMakerResult = {
         completedAt: new Date().toISOString(),
-        input: { painPoints, myStrengths: strengths, competitors },
+        input: { painPoints, myStrengths: cleanStrengths, competitors },
         output,
       };
 
@@ -211,22 +199,6 @@ export default function EdgeMakerTool() {
           </div>
         </div>
 
-        {/* ─── NO SCANNER DATA ─── */}
-        {noScannerData && (
-          <div className="bg-kk-cream border border-kk-warm rounded-2xl p-6 text-center">
-            <AlertCircle className="w-10 h-10 text-kk-gold mx-auto mb-3" />
-            <p className="text-sm text-kk-brown font-medium mb-3">
-              {t('school.marketCompass.edgeMaker.noScannerData')}
-            </p>
-            <button
-              onClick={() => navigate('/marketing/school/tools/market-scanner')}
-              className="px-6 py-2.5 bg-kk-navy text-white rounded-xl font-medium text-sm hover:bg-kk-navy-deep transition-colors"
-            >
-              {t('school.marketCompass.edgeMaker.goToScanner')}
-            </button>
-          </div>
-        )}
-
         {/* ─── AI 미연결 안내 ─── */}
         {!aiEnabled && phase !== 'loading' && (
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
@@ -253,8 +225,18 @@ export default function EdgeMakerTool() {
         )}
 
         {/* ─── INPUT PHASE ─── */}
-        {phase === 'input' && !noScannerData && (
+        {phase === 'input' && (
           <div className="space-y-4">
+            {/* 2교시 데이터 불러오기 버튼 (mockup 확정안) */}
+            {!scannerLoaded && painPoints.length === 0 && (
+              <button
+                onClick={handleLoadScannerData}
+                className="w-full py-2.5 bg-gray-50 text-gray-500 border border-dashed border-gray-300 rounded-xl text-sm hover:bg-gray-100"
+              >
+                📥 2교시 마켓스캐너 데이터 불러오기
+              </button>
+            )}
+
             {/* 경쟁사 요약 카드 */}
             {competitors.length > 0 && (
               <div className="bg-white rounded-2xl border border-gray-200 p-5">
@@ -296,61 +278,26 @@ export default function EdgeMakerTool() {
               </div>
             </div>
 
-            {/* 나의 강점 입력 */}
+            {/* 나의 강점 입력 (+버튼 리스트) */}
             <div className="bg-white rounded-2xl border border-gray-200 p-5">
-              <h3 className="font-semibold text-kk-brown mb-1">
-                {t('school.marketCompass.edgeMaker.strengthsTitle')}
-              </h3>
-              <p className="text-xs text-gray-400 mb-3">
-                {t('school.marketCompass.edgeMaker.strengthsHint')}
-              </p>
-
-              {/* 입력 필드 */}
-              <div className="flex gap-2 mb-3">
-                <input
-                  type="text"
-                  value={strengthInput}
-                  onChange={(e) => setStrengthInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && addStrength()}
-                  placeholder={t('school.marketCompass.edgeMaker.strengthsPlaceholder')}
-                  className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kk-red focus:border-transparent"
-                  maxLength={30}
-                  disabled={strengths.length >= 5}
-                />
-                <button
-                  onClick={addStrength}
-                  disabled={!strengthInput.trim() || strengths.length >= 5}
-                  className="px-4 py-2.5 bg-kk-red text-white rounded-xl font-medium text-sm hover:bg-kk-red-deep transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* 강점 태그 목록 */}
-              {strengths.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {strengths.map((s, i) => (
-                    <div
-                      key={s}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-kk-cream text-kk-brown rounded-full text-sm"
-                    >
-                      <span>🏷 {s}</span>
-                      <button onClick={() => removeStrength(i)} className="hover:text-red-500 transition-colors">
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <PlusListInput
+                label="나의 강점"
+                items={strengths}
+                onChange={setStrengths}
+                placeholder="예: 3분 추출"
+                max={5}
+                addButtonText="➕ 강점 추가하기 (5개까지)"
+              />
             </div>
 
             {/* 생성 버튼 */}
             <button
               onClick={handleGenerate}
-              className="w-full py-3.5 bg-kk-red hover:bg-kk-red-deep text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+              disabled={strengths.filter((s) => s.trim()).length === 0}
+              className="w-full py-3.5 bg-gray-900 hover:bg-black text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Zap className="w-5 h-5" />
-              {t('school.marketCompass.edgeMaker.generateButton')}
+              생성하기 →
             </button>
           </div>
         )}
@@ -566,16 +513,20 @@ export default function EdgeMakerTool() {
               </div>
             )}
 
-            {/* 보석함에 넣기 */}
+            {/* 결과를 아이디어보석함에 저장하기 */}
             {myTeamId && (
-              <button
-                onClick={handleSaveToTeamBox}
-                className="w-full py-3 bg-kk-cream hover:bg-kk-warm text-kk-brown font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
-              >
-                <Gem className="w-4 h-4" />
-                {savedToTeamBox ? '보석함에 저장 완료!' : '💎 보석함에 넣기'}
-              </button>
+              <SaveToGemBoxButton onSave={handleSaveToTeamBox} saved={savedToTeamBox} />
             )}
+
+            {/* 다음 교시 CTA */}
+            <div className="bg-blue-50 border border-dashed border-blue-300 rounded-xl p-3 text-center">
+              <button
+                onClick={() => navigate('/marketing/school/tools/viral-card-maker')}
+                className="text-blue-700 font-bold text-sm"
+              >
+                다음 · 4교시 바이럴카드 → 이 USP로 바이럴 포스트 만들기 →
+              </button>
+            </div>
 
             {/* 완료 섹션 */}
             <div className="bg-kk-cream rounded-2xl border border-kk-warm p-5">
