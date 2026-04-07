@@ -54,7 +54,7 @@ export default function AppCard({ app, isInstalled, onToggleInstalled }: AppCard
         {/* Installed Toggle */}
         <button
           onClick={onToggleInstalled}
-          className={`shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all btn-bounce ${
+          className={`shrink-0 flex items-center gap-1.5 px-3 py-2 min-w-[44px] min-h-[44px] rounded-xl text-xs font-bold transition-all btn-bounce ${
             isInstalled
               ? 'bg-duo-100 text-duo-600 border-2 border-duo-300 hover:bg-duo-200'
               : 'bg-sand-100 text-sand-300 border-2 border-sand-200 hover:bg-sand-200 hover:text-warm-500'
@@ -62,11 +62,11 @@ export default function AppCard({ app, isInstalled, onToggleInstalled }: AppCard
           title={tc('installed.markInstalled')}
         >
           {isInstalled ? (
-            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
             </svg>
           ) : (
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
           )}

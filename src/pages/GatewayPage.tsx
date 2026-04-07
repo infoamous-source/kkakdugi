@@ -11,6 +11,7 @@ import PendingEnrollmentBanner from '../components/enrollment/PendingEnrollmentB
 import KkakdugiCharacter from '../components/brand/KkakdugiCharacter';
 import KkakdugiMascot from '../components/brand/KkakdugiMascot';
 import { SchoolPatternBg, PencilIcon, StarIcon } from '../components/brand/SchoolIllustrations';
+import { useSEO } from '../hooks/useSEO';
 
 const languages = [
   { code: 'ko', label: '한국어', flag: '🇰🇷' },
@@ -34,6 +35,7 @@ export default function GatewayPage() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { isTrackVisible } = useVisibility();
+  useSEO({ path: '/' });
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
   const currentLang = languages.find((l) => l.code === i18n.language) || languages[0];
@@ -70,42 +72,42 @@ export default function GatewayPage() {
           </div>
 
           {/* 내 학생증 / 로그인 버튼 + 언어 선택기 */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
           {isAuthenticated ? (
             <button
               onClick={() => navigate('/profile')}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-kk-cream/60 transition-colors text-sm font-medium text-kk-brown"
+              className="flex items-center gap-1.5 px-3 py-2.5 min-h-[44px] rounded-lg hover:bg-kk-cream/60 transition-colors text-sm font-medium text-kk-brown"
             >
-              <UserCircle className="w-4 h-4" />
+              <UserCircle className="w-5 h-5" />
               <span className="hidden sm:inline">{user?.role === 'instructor' ? '내 교원증' : t('sidebar.profile', '내 학생증')}</span>
             </button>
           ) : (
             <button
               onClick={() => navigate('/login')}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-kk-red hover:bg-kk-red-deep text-white text-sm font-semibold transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-xl bg-kk-red hover:bg-kk-red-deep text-white text-sm font-semibold transition-colors shadow-sm"
             >
-              <LogIn className="w-4 h-4" />
+              <LogIn className="w-5 h-5" />
               <span>{t('header.login', '로그인')}</span>
             </button>
           )}
           <div ref={langRef} className="relative">
             <button
               onClick={() => setLangOpen(!langOpen)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-kk-cream/60 transition-colors text-sm font-medium text-kk-brown"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 min-h-[44px] rounded-lg hover:bg-kk-cream/60 transition-colors text-sm font-medium text-kk-brown"
             >
-              <Globe className="w-4 h-4" />
+              <Globe className="w-5 h-5" />
               <span>{currentLang.flag}</span>
               <span className="hidden sm:inline">{currentLang.label}</span>
               <ChevronDown className={`w-4 h-4 transition-transform ${langOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {langOpen && (
-              <div className="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-kk-warm py-2 min-w-[180px] max-h-[400px] overflow-y-auto z-50">
+              <div className="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-kk-warm py-2 min-w-[180px] max-h-[60vh] overflow-y-auto z-50">
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
                     onClick={() => { i18n.changeLanguage(lang.code); setLangOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-kk-cream/50 transition-colors ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-kk-cream/50 transition-colors ${
                       lang.code === i18n.language ? 'text-kk-red-deep font-semibold bg-kk-cream/40' : 'text-kk-brown'
                     }`}
                   >
@@ -132,11 +134,11 @@ export default function GatewayPage() {
           </div>
 
           {/* 캐릭터 + 환영 말풍선 */}
-          <div className="mb-4 relative inline-block">
+          <div className="mb-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 sm:relative sm:inline-block">
             <KkakdugiCharacter size="half" animated />
             {isAuthenticated && user && (
-              <div className="absolute -right-4 top-0 translate-x-full bg-white border-2 border-kk-warm rounded-2xl rounded-bl-none px-3 py-2 shadow-md max-w-[200px] sm:max-w-[260px]">
-                <p className="text-xs sm:text-sm font-semibold text-kk-brown break-words leading-snug">
+              <div className="sm:absolute sm:-right-4 sm:top-0 sm:translate-x-full bg-white border-2 border-kk-warm rounded-2xl sm:rounded-bl-none px-4 py-2.5 shadow-md max-w-[260px]">
+                <p className="text-sm font-semibold text-kk-brown break-words leading-snug">
                   {user.role === 'instructor' ? `${user.name}선생님 환영해요!` : `${user.name}님 환영해요!`}
                 </p>
               </div>
@@ -163,7 +165,7 @@ export default function GatewayPage() {
         <div className="max-w-6xl mx-auto">
           <button
             onClick={() => navigate('/about')}
-            className="btn-chalkboard w-full py-4 px-6 rounded-2xl flex items-center justify-between group"
+            className="btn-chalkboard w-full py-5 px-6 rounded-2xl flex items-center justify-between group min-h-[56px]"
           >
             <div className="flex items-center gap-3">
               <span className="text-xl">📋</span>
@@ -208,7 +210,7 @@ export default function GatewayPage() {
           {!isAuthenticated && (
             <button
               onClick={() => navigate('/login?role=instructor')}
-              className="text-xs text-kk-brown/30 hover:text-kk-red transition-colors underline underline-offset-2"
+              className="text-xs text-kk-brown/30 hover:text-kk-red transition-colors underline underline-offset-2 py-2 px-4 min-h-[44px]"
             >
               선생님 로그인
             </button>

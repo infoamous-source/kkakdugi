@@ -1,18 +1,169 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" prefix="og: https://ogp.me/ns#">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="한국 생활에 필요한 모든 것을 배우는 곳" />
-    <meta name="theme-color" content="#3B82F6" />
+
+    <!-- ===== 기본 SEO ===== -->
+    <title>깍두기학교 | 이주민·유학생을 위한 AI 한국어 생활 교육 플랫폼</title>
+    <meta name="description" content="깍두기학교는 이주민·유학생이 한국 생활에 필요한 디지털·마케팅·커리어 역량을 AI 기반으로 배우는 무료 교육 플랫폼입니다. 키오스크, 한국 앱, 취업 준비까지 한 번에." />
+    <meta name="keywords" content="이주민 교육, 유학생 한국어, 한국 생활, 깍두기학교, 외국인 교육, 한국 적응, 디지털 교육, 마케팅 교육, 커리어 교육, AI 한국어 학습" />
+    <meta name="author" content="amousedu" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#E63946" />
+    <link rel="canonical" href="https://kkakdugischool.com" />
+
+    <!-- ===== 검색엔진 인증 ===== -->
+    <!-- Google Search Console: 등록 후 content 값 교체 -->
+    <meta name="google-site-verification" content="GOOGLE_VERIFICATION_CODE" />
+    <!-- 네이버 서치어드바이저: 등록 후 content 값 교체 -->
+    <meta name="naver-site-verification" content="NAVER_VERIFICATION_CODE" />
+    <meta name="NaverBot" content="All" />
+    <meta name="Yeti" content="All" />
+
+    <!-- ===== 다국어 (hreflang) ===== -->
+    <link rel="alternate" hreflang="ko" href="https://kkakdugischool.com" />
+    <link rel="alternate" hreflang="en" href="https://kkakdugischool.com" />
+    <link rel="alternate" hreflang="zh" href="https://kkakdugischool.com" />
+    <link rel="alternate" hreflang="ja" href="https://kkakdugischool.com" />
+    <link rel="alternate" hreflang="vi" href="https://kkakdugischool.com" />
+    <link rel="alternate" hreflang="x-default" href="https://kkakdugischool.com" />
+
+    <!-- ===== Open Graph (SNS 공유) ===== -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="깍두기학교" />
+    <meta property="og:title" content="깍두기학교 | 이주민·유학생을 위한 AI 한국 생활 교육" />
+    <meta property="og:description" content="한국에 온 이주민·유학생을 위한 무료 AI 교육 플랫폼. 디지털 생활, 마케팅, 커리어까지 — 누구도 혼자 남지 않도록." />
+    <meta property="og:url" content="https://kkakdugischool.com" />
+    <meta property="og:image" content="https://kkakdugischool.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="깍두기학교 - 이주민·유학생을 위한 AI 한국 생활 교육 플랫폼" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <!-- ===== Twitter Card ===== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@kkakdugischool" />
+    <meta name="twitter:title" content="깍두기학교 | 이주민·유학생을 위한 AI 한국 생활 교육" />
+    <meta name="twitter:description" content="한국에 온 이주민·유학생을 위한 무료 AI 교육 플랫폼. 디지털 생활, 마케팅, 커리어까지 — 누구도 혼자 남지 않도록." />
+    <meta name="twitter:image" content="https://kkakdugischool.com/og-image.png" />
+    <meta name="twitter:image:alt" content="깍두기학교 로고와 서비스 소개" />
+
+    <!-- ===== 아이콘 / PWA ===== -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="깍두기학교" />
-    <meta property="og:title" content="깍두기학교" />
-    <meta property="og:description" content="한국 생활에 필요한 모든 것을 배우는 곳" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://kkakdugischool.vercel.app" />
-    <title>깍두기학교</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- ===== JSON-LD 구조화 데이터 ===== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "EducationalOrganization",
+          "@id": "https://kkakdugischool.com/#organization",
+          "name": "깍두기학교",
+          "alternateName": ["Kkakdugi School", "깍두기 학교"],
+          "description": "이주민·유학생을 위한 AI 기반 한국 생활 교육 플랫폼. 디지털, 마케팅, 커리어 학과를 운영합니다.",
+          "url": "https://kkakdugischool.com",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://kkakdugischool.com/icons/icon-512x512.png",
+            "width": 512,
+            "height": 512
+          },
+          "sameAs": [],
+          "foundingOrganization": {
+            "@type": "Organization",
+            "name": "amousedu",
+            "description": "All Moments Of Unique Story"
+          },
+          "teaches": [
+            "한국 디지털 생활",
+            "한국어 마케팅",
+            "한국 취업 커리어",
+            "키오스크 사용법",
+            "한국 앱 활용"
+          ],
+          "educationalCredentialAwarded": "수료증",
+          "inLanguage": ["ko", "en", "zh", "ja", "vi", "th", "id", "mn", "uz", "ne", "tl", "my", "km", "ru"],
+          "audience": {
+            "@type": "EducationalAudience",
+            "educationalRole": "student",
+            "audienceType": "이주민, 유학생, 외국인 거주자"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW",
+            "availability": "https://schema.org/InStock",
+            "description": "무료 수강"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://kkakdugischool.com/#website",
+          "url": "https://kkakdugischool.com",
+          "name": "깍두기학교",
+          "description": "이주민·유학생을 위한 AI 기반 한국 생활 교육 플랫폼",
+          "publisher": {
+            "@id": "https://kkakdugischool.com/#organization"
+          },
+          "inLanguage": "ko",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://kkakdugischool.com/?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Course",
+          "name": "디지털 학과",
+          "description": "스마트폰 사용법, 한국 앱(카카오톡, 네이버) 활용, 키오스크 연습 등 한국 생활의 디지털 기초",
+          "provider": {
+            "@id": "https://kkakdugischool.com/#organization"
+          },
+          "url": "https://kkakdugischool.com/digital/hub",
+          "inLanguage": "ko",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+          },
+          "hasCourseInstance": {
+            "@type": "CourseInstance",
+            "courseMode": "online"
+          }
+        },
+        {
+          "@type": "Course",
+          "name": "마케팅 학과",
+          "description": "마케팅 기초 이론부터 AI 실습까지. 한국에서 비즈니스를 시작하거나 마케팅 역량을 키우고 싶은 분을 위한 학과",
+          "provider": {
+            "@id": "https://kkakdugischool.com/#organization"
+          },
+          "url": "https://kkakdugischool.com/marketing/hub",
+          "inLanguage": "ko",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+          },
+          "hasCourseInstance": {
+            "@type": "CourseInstance",
+            "courseMode": "online"
+          }
+        }
+      ]
+    }
+    </script>
+
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   </head>
   <body>

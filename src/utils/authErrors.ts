@@ -62,6 +62,15 @@ export function parseAuthError(error: unknown): AuthError {
       };
     }
 
+    // 소셜 로그인 실패
+    if (message.includes('oauth') || message.includes('OAuth') || message.includes('provider')) {
+      return {
+        title: '소셜 로그인 실패 (Social Login Failed)',
+        reason: '소셜 로그인에 실패했습니다 (Social login failed)',
+        solution: '다시 시도하거나 이메일로 로그인하세요 (Try again or use email login)',
+      };
+    }
+
     // 일반적인 등록 실패
     if (message.includes('register_failed')) {
       return {

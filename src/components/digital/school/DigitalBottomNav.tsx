@@ -20,7 +20,7 @@ export default function DigitalBottomNav() {
   const activeTab = tabs.find((tab) => location.pathname.startsWith(tab.path))?.id || 'attendance';
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-kk-bg border-t border-kk-warm z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-kk-bg border-t border-kk-warm z-50 safe-area-bottom">
       <div className="max-w-lg mx-auto flex">
         {tabs.map((tab) => {
           const SvgIcon = tab.svgIcon;
@@ -30,13 +30,13 @@ export default function DigitalBottomNav() {
             <button
               key={tab.id}
               onClick={() => navigate(tab.path)}
-              className={`flex-1 flex flex-col items-center gap-1 py-3 transition-colors ${
+              className={`flex-1 flex flex-col items-center gap-1.5 py-3.5 min-h-[56px] transition-colors ${
                 isActive
                   ? 'text-blue-600'
                   : 'text-kk-brown/40 hover:text-kk-brown/60'
               }`}
             >
-              <SvgIcon size={20} />
+              <SvgIcon size={24} />
               <span className={`text-xs ${isActive ? 'font-bold' : 'font-medium'}`}>
                 {t(tab.labelKey)}
               </span>

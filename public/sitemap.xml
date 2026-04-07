@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+>
+  <!-- 메인 페이지 (최우선) -->
+  <url>
+    <loc>https://kkakdugischool.com/</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://kkakdugischool.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kkakdugischool.com/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://kkakdugischool.com/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://kkakdugischool.com/" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://kkakdugischool.com/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kkakdugischool.com/" />
+  </url>
+
+  <!-- 학교 소개 -->
+  <url>
+    <loc>https://kkakdugischool.com/about</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 디지털 학과 허브 -->
+  <url>
+    <loc>https://kkakdugischool.com/digital/hub</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 디지털 학교 -->
+  <url>
+    <loc>https://kkakdugischool.com/digital/school/curriculum</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://kkakdugischool.com/digital/school/attendance</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://kkakdugischool.com/digital/school/lab</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- 마케팅 학과 허브 -->
+  <url>
+    <loc>https://kkakdugischool.com/marketing/hub</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 마케팅 학교 -->
+  <url>
+    <loc>https://kkakdugischool.com/marketing/school/curriculum</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://kkakdugischool.com/marketing/school/attendance</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://kkakdugischool.com/marketing/school/lab</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- 마케팅 프로 툴 -->
+  <url>
+    <loc>https://kkakdugischool.com/marketing/pro</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>

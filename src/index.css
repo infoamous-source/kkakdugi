@@ -563,6 +563,27 @@ body {
   transform: scale(0.97);
 }
 
+/* iOS safe area bottom padding (노치/홈바 대응) */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* 모바일 터치 타겟 최소 크기 보장 */
+@media (max-width: 640px) {
+  /* 모바일에서 입력 필드 최소 높이 */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  select,
+  textarea {
+    min-height: 48px;
+    font-size: 16px; /* iOS 줌 방지 */
+  }
+}
+
 /* ═══════════════════════════════════════════
    키오스크 시뮬레이터 모바일 반응형
    ═══════════════════════════════════════════ */

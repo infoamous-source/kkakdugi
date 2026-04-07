@@ -12,12 +12,18 @@ import { useDigitalSchoolProgress } from '../../hooks/useDigitalSchoolProgress';
 import KkakdugiCharacter from '../../components/brand/KkakdugiCharacter';
 import KkakdugiMascot from '../../components/brand/KkakdugiMascot';
 import { DigitalDeptIcon, ChalkboardIcon, SchoolPatternBg } from '../../components/brand/SchoolIllustrations';
+import { useSEO } from '../../hooks/useSEO';
 
 export default function DigitalHubPage() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isGraduated: graduated } = useDigitalSchoolProgress();
+  useSEO({
+    title: '디지털 학과',
+    description: '스마트폰, 카카오톡, 네이버, 키오스크 등 한국 디지털 생활의 기초를 배우는 무료 AI 교육 과정입니다.',
+    path: '/digital/hub',
+  });
 
   const handleSchoolClick = () => {
     navigate('/digital/school/attendance');
@@ -36,7 +42,7 @@ export default function DigitalHubPage() {
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-kk-brown/60 hover:text-kk-brown transition-colors mb-6"
+            className="flex items-center gap-2 text-kk-brown/60 hover:text-kk-brown transition-colors mb-6 py-2 -ml-2 pl-2 pr-4 min-h-[44px] rounded-lg"
           >
             <ArrowLeft className="w-5 h-5" />
             <KkakdugiMascot size={20} />

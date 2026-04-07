@@ -43,7 +43,7 @@ export default function CategoryNav({ categories }: CategoryNavProps) {
           <button
             key={cat.id}
             onClick={() => scrollTo(cat.id)}
-            className={`shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all btn-bounce ${
+            className={`shrink-0 px-4 py-3 min-h-[44px] rounded-xl text-sm font-bold transition-all btn-bounce ${
               activeId === cat.id
                 ? 'bg-duo-400 text-white shadow-sm border-b-[3px] border-duo-600'
                 : 'bg-white text-warm-500 border-2 border-sand-200 hover:border-duo-300 hover:text-duo-500'

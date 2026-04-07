@@ -9,6 +9,7 @@ import LoadingSkeleton from './components/common/LoadingSkeleton';
 import PageTransition from './components/common/PageTransition';
 import GatewayPage from './pages/GatewayPage';
 import LoginPage from './pages/LoginPage';
+import AuthCallbackPage from './pages/AuthCallbackPage';
 
 // Lazy-loaded pages
 const TrackPage = lazy(() => import('./pages/TrackPage'));
@@ -60,6 +61,7 @@ export default function App() {
 
           {/* 인증 페이지 */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/auth/callback" element={<AuthCallbackPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/congrats" element={<Navigate to="/login" replace />} />
           <Route path="/register-complete" element={<RegisterCompletePage />} />

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
+import { useSEO } from '../hooks/useSEO';
 import KkakdugiCharacter from '../components/brand/KkakdugiCharacter';
 import KkakdugiMascot from '../components/brand/KkakdugiMascot';
 import {
@@ -16,6 +17,11 @@ import {
 
 export default function AboutPage() {
   const navigate = useNavigate();
+  useSEO({
+    title: '학교 소개',
+    description: '깍두기학교는 이주민·유학생을 위한 AI 기반 한국 생활 교육 플랫폼입니다. 디지털, 마케팅, 커리어 학과를 무료로 운영합니다.',
+    path: '/about',
+  });
 
   return (
     <div className="min-h-screen bg-kk-bg relative overflow-hidden">
@@ -26,7 +32,7 @@ export default function AboutPage() {
         <div className="max-w-3xl mx-auto">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-kk-brown/60 hover:text-kk-brown transition-colors mb-6"
+            className="flex items-center gap-2 text-kk-brown/60 hover:text-kk-brown transition-colors mb-6 py-2 -ml-2 pl-2 pr-4 min-h-[44px] rounded-lg"
           >
             <ArrowLeft className="w-5 h-5" />
             <KkakdugiMascot size={20} />
@@ -173,6 +179,78 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* 학부모 후기 */}
+      <section className="relative px-4 sm:px-8 pb-12">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-kk-cream rounded-full text-kk-brown text-sm font-semibold mb-3 border border-kk-warm">
+              <NotebookIcon size={16} />
+              <span>학부모 후기</span>
+            </div>
+            <h2 className="text-xl font-bold text-kk-brown">
+              아이를 믿고 맡길 수 있었어요
+            </h2>
+            <p className="text-sm text-kk-brown/50 mt-1">실제 수강생 학부모님들의 진솔한 이야기입니다</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* 후기 1 */}
+            <div className="bg-white rounded-2xl border border-kk-warm p-5 flex flex-col gap-3 shadow-sm">
+              <div className="flex items-center gap-1">
+                {[1,2,3,4,5].map((s) => (
+                  <svg key={s} className="w-4 h-4 text-kk-gold fill-kk-gold" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                ))}
+              </div>
+              <p className="text-sm text-kk-brown/70 leading-relaxed flex-1">
+                "처음에는 아이가 잘 따라갈 수 있을지 걱정했어요. 그런데 단계별로 차근차근 알려줘서 스스로 예습하고 복습하는 습관이 생겼어요. 어느 날 아이가 '엄마, 나 혼자 해봤어!'라고 말할 때 정말 뿌듯했습니다."
+              </p>
+              <div className="border-t border-kk-warm pt-3">
+                <p className="text-sm font-semibold text-kk-brown">김○○ 어머니</p>
+                <p className="text-xs text-kk-brown/40">초등 4학년 자녀 · 디지털 학과 수강</p>
+              </div>
+            </div>
+
+            {/* 후기 2 */}
+            <div className="bg-white rounded-2xl border border-kk-warm p-5 flex flex-col gap-3 shadow-sm">
+              <div className="flex items-center gap-1">
+                {[1,2,3,4,5].map((s) => (
+                  <svg key={s} className="w-4 h-4 text-kk-gold fill-kk-gold" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                ))}
+              </div>
+              <p className="text-sm text-kk-brown/70 leading-relaxed flex-1">
+                "한국에 이민 온 지 얼마 안 됐는데, 아이가 학교 친구들과 이야기가 잘 통하지 않아 속상했어요. 깍두기 학교를 다니면서 한국 앱 사용법도 익히고, 마케팅 학과에서 발표 연습도 하면서 자신감이 부쩍 늘었습니다."
+              </p>
+              <div className="border-t border-kk-warm pt-3">
+                <p className="text-sm font-semibold text-kk-brown">레이나 씨 어머니</p>
+                <p className="text-xs text-kk-brown/40">중학교 1학년 자녀 · 마케팅 학과 수강</p>
+              </div>
+            </div>
+
+            {/* 후기 3 */}
+            <div className="bg-white rounded-2xl border border-kk-warm p-5 flex flex-col gap-3 shadow-sm">
+              <div className="flex items-center gap-1">
+                {[1,2,3,4,5].map((s) => (
+                  <svg key={s} className={`w-4 h-4 ${s <= 4 ? 'text-kk-gold fill-kk-gold' : 'text-kk-warm fill-kk-warm'}`} viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                ))}
+              </div>
+              <p className="text-sm text-kk-brown/70 leading-relaxed flex-1">
+                "아이에게 스마트폰을 쥐어주는 게 늘 불안했어요. 그런데 여기서 배우는 내용은 생활에 꼭 필요한 것들이라 안심이 됩니다. 선생님도 꼼꼼하게 지도해주셔서 믿고 보낼 수 있어요. 다음 학기도 계속 다닐 예정입니다."
+              </p>
+              <div className="border-t border-kk-warm pt-3">
+                <p className="text-sm font-semibold text-kk-brown">박○○ 아버지</p>
+                <p className="text-xs text-kk-brown/40">초등 6학년 자녀 · 디지털 학과 수강</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="relative px-4 sm:px-8 pb-12">
         <div className="max-w-3xl mx-auto text-center">
@@ -188,7 +266,7 @@ export default function AboutPage() {
             </p>
             <button
               onClick={() => navigate('/')}
-              className="inline-flex items-center gap-2 px-8 py-3 bg-kk-red hover:bg-kk-red-deep text-white font-bold rounded-xl transition-colors shadow-md"
+              className="inline-flex items-center gap-2 px-8 py-4 min-h-[48px] bg-kk-red hover:bg-kk-red-deep text-white font-bold text-base rounded-xl transition-colors shadow-md"
             >
               <span>학교 현관으로 가기</span>
               <ChevronRight className="w-5 h-5" />

@@ -7,9 +7,13 @@ import { updateProfile, validateInstructorCode } from '../services/profileServic
 import { getStoredApiKey, restoreGeminiConnection, clearGeminiConnection } from '../services/gemini/geminiClient';
 import { createEnrollment } from '../services/enrollmentService';
 import { getOrgProgramTypes } from '../services/organizationService';
+import { redirectToNaverLogin } from '../lib/naverOAuth';
+
+export type SocialProvider = 'kakao' | 'google' | 'naver';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string, rememberMe?: boolean) => Promise<boolean>;
+  loginWithSocial: (provider: SocialProvider) => Promise<void>;
   logout: () => void;
   register: (data: RegisterData, rememberMe?: boolean) => Promise<boolean>;
   refreshUser: () => Promise<void>;
@@ -148,6 +152,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const loginWithSocial = useCallback(async (provider: SocialProvider) => {
+    if (!isSupabaseConfigured) {
+      console.warn('[Auth] Supabase 미설정 — 소셜 로그인 불가');
+      return;
+    }
+
+    // 네이버는 Supabase 네이티브 미지원 → 수동 OAuth 플로우
+    if (provider === 'naver') {
+      redirectToNaverLogin();
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: provider === 'kakao' ? { prompt: 'login' } : {},
+      },
+    });
+    if (error) {
+      console.error(`Social login error (${provider}):`, error.message);
+      throw error;
+    }
+    // 브라우저가 OAuth 페이지로 리다이렉트되므로, 이후 처리는 /auth/callback에서 수행
+  }, []);
+
   const logout = useCallback(async () => {
     clearGeminiConnection();
     await supabase.auth.signOut();
@@ -253,7 +283,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={useMemo(() => ({ ...state, login, logout, register, refreshUser, setUser }), [state, login, logout, register, refreshUser, setUser])}>
+    <AuthContext.Provider value={useMemo(() => ({ ...state, login, loginWithSocial, logout, register, refreshUser, setUser }), [state, login, loginWithSocial, logout, register, refreshUser, setUser])}>
       {children}
     </AuthContext.Provider>
   );

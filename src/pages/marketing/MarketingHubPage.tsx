@@ -14,13 +14,18 @@ import CountdownBadge from '../../components/school/CountdownBadge';
 import KkakdugiCharacter from '../../components/brand/KkakdugiCharacter';
 import KkakdugiMascot from '../../components/brand/KkakdugiMascot';
 import { MarketingDeptIcon, ChalkboardIcon, DiplomaIcon, SchoolPatternBg } from '../../components/brand/SchoolIllustrations';
+import { useSEO } from '../../hooks/useSEO';
 
 export default function MarketingHubPage() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user } = useAuth();
-
   const { isGraduated: graduated, isProAccessValid: proValid, proRemainingDays: remainingDays } = useSchoolProgress();
+  useSEO({
+    title: '마케팅 학과',
+    description: '마케팅 기초 이론부터 AI 실습까지. 한국에서 비즈니스를 시작하거나 마케팅 역량을 키우고 싶은 분을 위한 무료 교육 과정입니다.',
+    path: '/marketing/hub',
+  });
 
   const handleSchoolClick = () => {
     // AI 연결 여부와 무관하게 바로 학교로 이동 (AI는 선택 사항)
@@ -48,7 +53,7 @@ export default function MarketingHubPage() {
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-kk-brown/60 hover:text-kk-brown transition-colors mb-6"
+            className="flex items-center gap-2 text-kk-brown/60 hover:text-kk-brown transition-colors mb-6 py-2 -ml-2 pl-2 pr-4 min-h-[44px] rounded-lg"
           >
             <ArrowLeft className="w-5 h-5" />
             <KkakdugiMascot size={20} />

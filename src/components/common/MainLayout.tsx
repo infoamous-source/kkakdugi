@@ -16,7 +16,7 @@ export default function MainLayout() {
       <div className="ml-0 md:ml-64 transition-all duration-300">
         <TopHeader />
 
-        <main className="p-3 sm:p-4 md:p-6 pb-20 md:pb-6">
+        <main className="p-3 sm:p-4 md:p-6 pb-24 md:pb-6">
           <PageTransition>
             <Outlet />
           </PageTransition>

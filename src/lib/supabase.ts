@@ -19,4 +19,11 @@ if (!isSupabaseConfigured) {
 export const supabase = createClient(
   supabaseUrl || 'http://localhost:0',
   supabaseAnonKey || 'placeholder-anon-key',
+  {
+    auth: {
+      flowType: 'pkce',
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  },
 );

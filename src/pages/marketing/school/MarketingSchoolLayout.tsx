@@ -38,13 +38,13 @@ export default function MarketingSchoolLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-kk-bg pb-20">
+    <div className="min-h-screen bg-kk-bg pb-24">
       {/* 상단 헤더 */}
       <header className="bg-kk-bg border-b border-kk-warm sticky top-0 z-40">
         <div className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={() => navigate('/marketing/hub')}
-            className="p-1.5 hover:bg-kk-cream rounded-lg transition-colors"
+            className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-kk-cream rounded-lg transition-colors -ml-1"
           >
             <ArrowLeft className="w-5 h-5 text-kk-brown/60" />
           </button>

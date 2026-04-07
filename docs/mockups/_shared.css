@@ -1,0 +1,60 @@
+/* shared mockup styles */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Pretendard',sans-serif;background:#f5f5f7;color:#1d1d1f;padding:32px 20px;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.top h1{font-size:24px}
+.top .back{color:#0066cc;text-decoration:none;font-size:14px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.col{background:#fff;border-radius:16px;border:1px solid #e5e5ea;overflow:hidden}
+.col header{padding:14px 20px;font-weight:700;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.col.before header{background:#f1f5f9;color:#475569;border-bottom:1px solid #e2e8f0}
+.col.after header{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.col .body{padding:20px}
+.tool-card{background:#fafaf9;border:1px solid #e7e5e4;border-radius:12px;padding:16px;margin-bottom:14px}
+.tool-card h3{font-size:15px;margin-bottom:10px;color:#1c1917}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:12px;color:#666;margin-bottom:4px;font-weight:600}
+.field label .req{color:#dc2626}
+.field input,.field select,.field textarea{width:100%;padding:8px 10px;border:1px solid #d4d4d8;border-radius:8px;font-size:13px;background:#fff}
+.field .ph{color:#a1a1aa;font-style:italic}
+.field .help{font-size:11px;color:#71717a;margin-top:3px}
+.btn{display:inline-block;padding:9px 16px;border-radius:9px;background:#0a0a0a;color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer}
+.btn.orange{background:#0a0a0a}
+.btn.full{display:block;width:100%;text-align:center}
+.result{background:#fff;border:1px solid #e5e5ea;border-radius:10px;padding:14px;margin-top:10px}
+.result h4{font-size:13px;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:.3px}
+.tag{display:inline-block;padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:6px;font-size:11px;margin:2px;font-weight:500}
+.tag.blue{background:#dbeafe;color:#1e40af}
+.tag.green{background:#d1fae5;color:#065f46}
+.lang{display:inline-flex;background:#f3f4f6;border-radius:8px;padding:3px;font-size:12px;font-weight:600}
+.lang span{padding:4px 10px;border-radius:6px;color:#6b7280}
+.lang span.on{background:#fff;color:#0a0a0a;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.learn{margin-top:14px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:10px;padding:14px}
+.learn .badge{display:inline-block;padding:3px 8px;background:#92400e;color:#fff;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.5px;margin-bottom:6px}
+.learn h5{font-size:13px;color:#78350f;margin-bottom:4px}
+.learn p{font-size:12px;color:#92400e;line-height:1.5}
+.next-cta{margin-top:14px;background:#eff6ff;border:1px dashed #3b82f6;border-radius:10px;padding:12px;text-align:center}
+.next-cta a{color:#1d4ed8;font-weight:600;font-size:13px;text-decoration:none}
+.changes{margin-top:32px;background:#fff;border-radius:14px;padding:24px;border:1px solid #e5e5ea}
+.changes h2{font-size:18px;margin-bottom:14px;color:#0a0a0a}
+.changes ol{padding-left:22px;font-size:14px;color:#374151;line-height:1.8}
+.changes ol li b{color:#059669}
+.muted{color:#9ca3af;font-size:11px;margin-top:6px}
+.placeholder{color:#a1a1aa;font-style:italic;font-size:12px}
+.k-label{font-size:12px;color:#dc2626;font-weight:600;background:#fee2e2;padding:2px 6px;border-radius:4px;display:inline-block;margin:2px}
+.persona{display:flex;align-items:center;gap:10px;padding:8px;background:#fff;border-radius:8px;margin-bottom:6px;border:1px solid #f3f4f6}
+.persona .bar{flex:1;height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden}
+.persona .bar i{display:block;height:100%;background:linear-gradient(90deg,#FF6B35,#F7931E)}
+.persona .pct{font-size:12px;font-weight:700;color:#FF6B35;width:36px;text-align:right}
+.swot{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.swot div{padding:6px 8px;border-radius:6px;font-size:11px}
+.swot .s{background:#d1fae5;color:#065f46}
+.swot .w{background:#fee2e2;color:#991b1b}
+.metric{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.metric div{background:#f9fafb;border-radius:8px;padding:8px;text-align:center}
+.metric .v{font-size:16px;font-weight:700;color:#0a0a0a}
+.metric .l{font-size:10px;color:#6b7280;margin-top:2px}
+.color-row{display:flex;gap:6px;margin-top:6px}
+.swatch{width:30px;height:30px;border-radius:6px;border:1px solid #e5e7eb}
+@media(max-width:900px){.compare{grid-template-columns:1fr}}

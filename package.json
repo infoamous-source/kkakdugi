@@ -29,6 +29,7 @@
     "recharts": "^3.7.0"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.1.18",
     "@types/canvas-confetti": "^1.9.0",
     "@types/react": "^19.2.10",

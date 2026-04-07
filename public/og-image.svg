@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF8F0"/>
+      <stop offset="100%" style="stop-color:#FFF0E0"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#E63946"/>
+      <stop offset="100%" style="stop-color:#FF6B6B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- 상단 악센트 바 -->
+  <rect width="1200" height="6" fill="url(#accent)"/>
+
+  <!-- 왼쪽 장식 원 -->
+  <circle cx="120" cy="315" r="200" fill="#E63946" opacity="0.06"/>
+  <circle cx="1080" cy="315" r="160" fill="#E63946" opacity="0.04"/>
+
+  <!-- 깍두기 이모지 (중앙 상단) -->
+  <text x="600" y="220" text-anchor="middle" font-size="100" font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji">🥒</text>
+
+  <!-- 메인 타이틀 -->
+  <text x="600" y="330" text-anchor="middle" font-size="72" font-weight="800" font-family="Pretendard, -apple-system, sans-serif" fill="#3D2B1F">깍두기학교</text>
+
+  <!-- 서브 타이틀 -->
+  <text x="600" y="395" text-anchor="middle" font-size="28" font-weight="500" font-family="Pretendard, -apple-system, sans-serif" fill="#6B5B4F">이주민 · 유학생을 위한 AI 한국 생활 교육 플랫폼</text>
+
+  <!-- 키워드 태그들 -->
+  <g transform="translate(600, 460)" text-anchor="middle">
+    <!-- 디지털 -->
+    <rect x="-280" y="-18" width="100" height="36" rx="18" fill="#E63946" opacity="0.1"/>
+    <text x="-230" y="7" font-size="16" font-weight="600" font-family="Pretendard, sans-serif" fill="#E63946">디지털</text>
+    <!-- 마케팅 -->
+    <rect x="-140" y="-18" width="100" height="36" rx="18" fill="#E63946" opacity="0.1"/>
+    <text x="-90" y="7" font-size="16" font-weight="600" font-family="Pretendard, sans-serif" fill="#E63946">마케팅</text>
+    <!-- 커리어 -->
+    <rect x="0" y="-18" width="100" height="36" rx="18" fill="#E63946" opacity="0.1"/>
+    <text x="50" y="7" font-size="16" font-weight="600" font-family="Pretendard, sans-serif" fill="#E63946">커리어</text>
+    <!-- 무료 -->
+    <rect x="140" y="-18" width="100" height="36" rx="18" fill="#2D9CDB" opacity="0.1"/>
+    <text x="190" y="7" font-size="16" font-weight="600" font-family="Pretendard, sans-serif" fill="#2D9CDB">무료</text>
+  </g>
+
+  <!-- 하단 URL -->
+  <text x="600" y="560" text-anchor="middle" font-size="22" font-weight="400" font-family="Pretendard, -apple-system, sans-serif" fill="#9B8B7F" letter-spacing="2">kkakdugischool.com</text>
+
+  <!-- 하단 라인 -->
+  <rect y="624" width="1200" height="6" fill="url(#accent)"/>
+</svg>

@@ -85,8 +85,8 @@ export default function MobileTabBar() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-kk-bg border-t border-kk-warm md:hidden">
-      <div className="flex items-center justify-around h-14">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-kk-bg border-t border-kk-warm md:hidden safe-area-bottom">
+      <div className="flex items-center justify-around h-16">
         {tabs.map((tab) => {
           const active = isActive(tab);
           const SvgIcon = tab.svgIcon;
@@ -95,16 +95,16 @@ export default function MobileTabBar() {
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab)}
-              className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+              className={`flex flex-col items-center justify-center flex-1 h-full min-w-[48px] min-h-[48px] transition-colors ${
                 active ? 'text-kk-red-deep' : 'text-kk-brown/40'
               }`}
             >
               {SvgIcon ? (
-                <SvgIcon size={20} />
+                <SvgIcon size={24} />
               ) : LucideIcon ? (
-                <LucideIcon className="w-5 h-5" />
+                <LucideIcon className="w-6 h-6" />
               ) : null}
-              <span className="text-[11px] mt-0.5 font-medium leading-tight">
+              <span className="text-[11px] mt-1 font-medium leading-tight">
                 {t(tab.labelKey)}
               </span>
             </button>
