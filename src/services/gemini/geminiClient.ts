@@ -76,9 +76,8 @@ export function clearGeminiConnection(): void {
 
 export function isGeminiEnabled(): boolean {
   try {
-    const enabled = localStorage.getItem(CONNECTED_STORAGE) === 'true' && !!getStoredApiKey();
-    console.debug('[Gemini] isGeminiEnabled =', enabled);
-    return enabled;
+    // P0-7: console.debug 제거 — 디버그 로그에서 키 상태가 노출될 수 있음
+    return localStorage.getItem(CONNECTED_STORAGE) === 'true' && !!getStoredApiKey();
   } catch {
     return false;
   }
@@ -108,20 +107,44 @@ export function getGeminiModel(modelName: string = 'gemini-2.5-flash') {
 
 /**
  * Gemini API로 텍스트 생성
- * 실패 시 null 반환 (호출부에서 Mock 폴백 처리)
+ * P0-6: timeout 30초 + 지수 백오프 재시도 2회
+ * 모든 재시도 실패 시 null 반환 (호출부에서 Mock 폴백 처리)
  */
-export async function generateText(prompt: string): Promise<string | null> {
-  const model = getGeminiModel();
-  if (!model) {
-    return null;
-  }
+const GENERATE_TIMEOUT_MS = 30_000;
+const MAX_RETRIES = 2;
 
-  try {
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
-    return text;
-  } catch (err) {
-    console.error('[Gemini] Text generation FAILED:', err);
-    return null;
+async function generateTextOnce(prompt: string, timeoutMs: number): Promise<string | null> {
+  const model = getGeminiModel();
+  if (!model) return null;
+
+  return await Promise.race<string | null>([
+    (async () => {
+      const result = await model.generateContent(prompt);
+      return result.response.text();
+    })(),
+    new Promise<null>((_, reject) =>
+      setTimeout(() => reject(new Error('gemini_timeout')), timeoutMs),
+    ),
+  ]);
+}
+
+export async function generateText(prompt: string): Promise<string | null> {
+  if (!getStoredApiKey()) return null;
+
+  let lastErr: unknown = null;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const text = await generateTextOnce(prompt, GENERATE_TIMEOUT_MS);
+      if (text) return text;
+    } catch (err) {
+      lastErr = err;
+      // 재시도 사이 지수 백오프 (0ms, 500ms, 1500ms)
+      if (attempt < MAX_RETRIES) {
+        const backoff = 500 * Math.pow(3, attempt) - 500;
+        await new Promise((r) => setTimeout(r, backoff));
+      }
+    }
   }
+  console.error('[Gemini] Text generation failed after retries:', lastErr);
+  return null;
 }

@@ -42,6 +42,8 @@ const DigitalChecklistTool = lazy(() => import('./pages/digital/school/tools/Dig
 const AIWelcomePage = lazy(() => import('./pages/AIWelcomePage'));
 const RegisterCompletePage = lazy(() => import('./pages/RegisterCompletePage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const TermsPage = lazy(() => import('./pages/legal/TermsPage'));
+const PrivacyPage = lazy(() => import('./pages/legal/PrivacyPage'));
 
 export default function App() {
   return (
@@ -58,6 +60,10 @@ export default function App() {
 
           {/* 깍두기 학교란? 상세 페이지 */}
           <Route path="/about" element={<AboutPage />} />
+
+          {/* 법적 페이지 (P0-3) */}
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
 
           {/* 인증 페이지 */}
           <Route path="/login" element={<LoginPage />} />

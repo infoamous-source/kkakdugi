@@ -73,7 +73,7 @@ function syncGeminiKey(profile: ProfileRow | null): void {
   if (!profile?.gemini_api_key) return;
   if (getStoredApiKey()) return; // 이미 로컬에 있으면 skip
   restoreGeminiConnection(profile.gemini_api_key);
-  console.debug('[Auth] Gemini API key restored from Supabase');
+  // P0-7: 민감 정보 디버그 로그 제거
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -184,6 +184,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ user: null, isAuthenticated: false, isLoading: false });
   }, []);
 
+  // P0-5: 15분 무활동 자동 로그아웃 (공용 기기 안전 장치)
+  const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
+  useEffect(() => {
+    if (!state.isAuthenticated) return;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const reset = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        logout();
+      }, IDLE_TIMEOUT_MS);
+    };
+
+    const events: (keyof WindowEventMap)[] = [
+      'mousemove',
+      'mousedown',
+      'keydown',
+      'touchstart',
+      'scroll',
+    ];
+    events.forEach((ev) => window.addEventListener(ev, reset, { passive: true }));
+    reset();
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      events.forEach((ev) => window.removeEventListener(ev, reset));
+    };
+  }, [state.isAuthenticated, logout]);
+
   const refreshUser = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
@@ -211,8 +240,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role = 'instructor';
     }
 
-    // 0) 선생님코드 유효성 검증 (학생 역할일 때만)
-    if (role === 'student' && data.instructorCode) {
+    // 0) 선생님코드 유효성 검증 (학생 역할이고 입력했을 때만 — 선택사항)
+    if (role === 'student' && data.instructorCode && data.instructorCode.trim().length > 0) {
       const result = await validateInstructorCode(data.instructorCode);
       if (!result.valid) {
         throw new Error('invalid_instructor_code');
@@ -243,8 +272,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('register_failed');
     }
 
-    // 2) 트리거가 profiles 행을 자동 생성하도록 대기
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // 2) P0-2: 트리거가 profiles 행을 생성했는지 폴링으로 확인
+    // (기존 500ms 고정 대기 → 30명 동시 가입 시 트리거 지연에 안전)
+    const userId = authData.user.id;
+    let profileReady = false;
+    for (let attempt = 0; attempt < 10; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, 200 * (attempt + 1)));
+      const { data: profileRow } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', userId)
+        .maybeSingle();
+      if (profileRow) {
+        profileReady = true;
+        break;
+      }
+    }
+    if (!profileReady) {
+      console.error('[register] profile row not created by trigger within polling window');
+      throw new Error('profile_creation_timeout');
+    }
 
     // 3) 자동 로그인 (세션 생성)
     const { error: loginError } = await supabase.auth.signInWithPassword({

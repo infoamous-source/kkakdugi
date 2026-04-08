@@ -20,6 +20,10 @@ import { validateInstructorCode } from '../../services/profileService';
 import { validateOrgCode } from '../../services/organizationService';
 import { COUNTRIES } from '../../data/countries';
 
+// mockup 확정안 P0-1: 외국인 현장 가입용 마스터 기관코드
+// 이 코드는 DB 검증을 우회하며, 30명 학생이 동일 코드로 가입 → 강사가 나중에 분반
+const MASTER_ORG_CODE = 'KKAKDUGI2026';
+
 /** 비밀번호 강도 검사 */
 function checkPassword(pw: string) {
   return {
@@ -53,6 +57,18 @@ export default function RegisterForm() {
     authCode: '',
   });
 
+  // P0-3: 약관/개인정보처리방침 동의 (필수 2개 + 선택 1개)
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [agreePrivacy, setAgreePrivacy] = useState(false);
+  const [agreeMarketing, setAgreeMarketing] = useState(false);
+  const agreedAll = agreeTerms && agreePrivacy;
+  const toggleAllAgree = () => {
+    const next = !(agreeTerms && agreePrivacy && agreeMarketing);
+    setAgreeTerms(next);
+    setAgreePrivacy(next);
+    setAgreeMarketing(next);
+  };
+
   // authCode가 "체리" 또는 "딸기"이면 특수 역할 가입
   const isCeoSignup = formData.authCode === '체리';
   const isInstructorSignup = formData.authCode === '딸기';
@@ -60,7 +76,7 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<AuthError | null>(null);
 
-  // 선생님코드 실시간 검증
+  // 선생님코드 실시간 검증 (선택 사항 — 비워두면 검증 생략)
   const [instructorValidation, setInstructorValidation] = useState<{ valid: boolean; instructorName: string | null } | null>(null);
   const [isValidatingInstructor, setIsValidatingInstructor] = useState(false);
 
@@ -78,13 +94,19 @@ export default function RegisterForm() {
     return () => clearTimeout(timer);
   }, [formData.instructorCode]);
 
-  // 기관코드 실시간 검증
+  // 기관코드 실시간 검증 (마스터 코드는 DB 검증 우회)
   const [orgValidation, setOrgValidation] = useState<{ valid: boolean; orgName: string | null } | null>(null);
   const [isValidatingOrg, setIsValidatingOrg] = useState(false);
 
   useEffect(() => {
     if (formData.orgCode.length < 6) {
       setOrgValidation(null);
+      return;
+    }
+    // 마스터 코드 즉시 통과
+    if (formData.orgCode.toUpperCase() === MASTER_ORG_CODE) {
+      setOrgValidation({ valid: true, orgName: '깍두기학교 · Onsite (KKAKDUGI School)' });
+      setIsValidatingOrg(false);
       return;
     }
     const timer = setTimeout(async () => {
@@ -144,32 +166,48 @@ export default function RegisterForm() {
       return;
     }
 
+    // P0-3: 약관/개인정보 필수 동의 확인
+    if (!agreeTerms || !agreePrivacy) {
+      setError({
+        title: '동의 필요 (Consent Required)',
+        reason: '이용약관과 개인정보처리방침에 동의해야 가입할 수 있어요',
+        solution:
+          'You must agree to the Terms of Service and Privacy Policy to continue.',
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // 특수 역할이 아닌 경우에만 선생님코드/기관코드 검증
+      // 특수 역할이 아닌 경우에만 기관코드 검증 (선생님코드는 선택)
       if (!isSpecialRole) {
-        // 선생님코드 유효성 검증
-        const codeResult = await validateInstructorCode(formData.instructorCode);
-        if (!codeResult.valid) {
-          setError({
-            title: '선생님코드 오류 (Teacher Code Error)',
-            reason: '유효하지 않은 선생님코드입니다 (Invalid teacher code)',
-            solution: '선생님에게 올바른 코드를 확인해주세요 (Please check the correct code with your teacher)',
-          });
-          setIsLoading(false);
-          return;
+        // 선생님코드는 선택사항 — 입력했을 때만 검증
+        if (formData.instructorCode.trim().length > 0) {
+          const codeResult = await validateInstructorCode(formData.instructorCode);
+          if (!codeResult.valid) {
+            setError({
+              title: '선생님코드 오류 (Teacher Code Error)',
+              reason: '유효하지 않은 선생님코드입니다 (Invalid teacher code)',
+              solution: '비워두거나 올바른 코드를 입력하세요 (Leave blank or enter a valid code)',
+            });
+            setIsLoading(false);
+            return;
+          }
         }
 
-        // 기관코드 유효성 검증
-        const orgResult = await validateOrgCode(formData.orgCode);
-        if (!orgResult.valid) {
-          setError({
-            title: '기관코드 오류 (Institution Code Error)',
-            reason: '유효하지 않은 기관코드입니다 (Invalid institution code)',
-            solution: '선생님에게 올바른 기관코드를 확인해주세요 (Please check the correct code with your teacher)',
-          });
-          setIsLoading(false);
-          return;
+        // 기관코드 유효성 검증 (마스터 코드는 우회)
+        const isMasterOrgCode = formData.orgCode.toUpperCase() === MASTER_ORG_CODE;
+        if (!isMasterOrgCode) {
+          const orgResult = await validateOrgCode(formData.orgCode);
+          if (!orgResult.valid) {
+            setError({
+              title: '기관코드 오류 (Institution Code Error)',
+              reason: '유효하지 않은 기관코드입니다 (Invalid institution code)',
+              solution: `현장 가입은 "${MASTER_ORG_CODE}" 코드를 사용하세요 (Onsite students use code: ${MASTER_ORG_CODE})`,
+            });
+            setIsLoading(false);
+            return;
+          }
         }
       }
 
@@ -206,6 +244,29 @@ export default function RegisterForm() {
           <p className="text-gray-500 mt-2">
             {t('register.subtitle', '학습을 시작하기 위해 등록해주세요 (Register to start learning)')}
           </p>
+        </div>
+
+        {/* 현장 학생 안내 배너 (P0-1 외국인 친화 가입) */}
+        <div className="mb-4 p-4 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl">
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🏫</div>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-amber-900 mb-1">
+                현장 수강생이신가요? (Onsite student?)
+              </p>
+              <p className="text-xs text-amber-800 mb-2">
+                아래 기관코드를 사용하세요 (Use this institution code):
+              </p>
+              <div className="bg-white border border-amber-400 rounded-lg px-3 py-2 inline-block">
+                <code className="text-base font-black text-amber-900 tracking-wider">
+                  {MASTER_ORG_CODE}
+                </code>
+              </div>
+              <p className="text-[11px] text-amber-700 mt-2">
+                💡 선생님코드는 비워두셔도 돼요 (Teacher code is optional)
+              </p>
+            </div>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
@@ -414,10 +475,11 @@ export default function RegisterForm() {
               )}
             </div>
 
-            {/* 8. 강사코드 */}
+            {/* 8. 강사코드 (선택) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                {t('register.instructorCodeLabel', '선생님코드 (Teacher Code)')} <span className="text-red-500">*</span>
+                {t('register.instructorCodeLabel', '선생님코드 (Teacher Code)')}{' '}
+                <span className="text-gray-400 text-xs font-normal">선택 (Optional)</span>
               </label>
               <div className="relative">
                 <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -431,13 +493,12 @@ export default function RegisterForm() {
                       instructorCode: e.target.value.toUpperCase(),
                     }));
                   }}
-                  placeholder={t('register.instructorCodePlaceholder', '선생님에게 받은 코드를 입력하세요 (Enter the code from your teacher)')}
+                  placeholder="비워두셔도 돼요 (Leave blank if unsure)"
                   className={`w-full pl-11 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-kk-red focus:border-transparent transition-all ${
                     instructorValidation?.valid ? 'border-green-400 bg-green-50' :
                     instructorValidation && !instructorValidation.valid ? 'border-red-400 bg-red-50' :
                     'border-gray-200'
                   }`}
-                  required
                 />
                 {isValidatingInstructor && (
                   <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-400" />
@@ -474,7 +535,7 @@ export default function RegisterForm() {
                       orgCode: e.target.value.toUpperCase(),
                     }));
                   }}
-                  placeholder={t('register.orgCodePlaceholder', '기관에서 받은 코드를 입력하세요 (Enter the code from your institution)')}
+                  placeholder={`예: ${MASTER_ORG_CODE} (e.g. ${MASTER_ORG_CODE})`}
                   className={`w-full pl-11 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-kk-red focus:border-transparent transition-all ${
                     orgValidation?.valid ? 'border-green-400 bg-green-50' :
                     orgValidation && !orgValidation.valid ? 'border-red-400 bg-red-50' :
@@ -534,10 +595,72 @@ export default function RegisterForm() {
               )}
             </div>
 
+            {/* P0-3: 약관/개인정보 동의 체크박스 */}
+            <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-2.5">
+              <label className="flex items-center gap-2 cursor-pointer border-b border-gray-200 pb-2.5 mb-1">
+                <input
+                  type="checkbox"
+                  checked={agreeTerms && agreePrivacy && agreeMarketing}
+                  onChange={toggleAllAgree}
+                  className="w-4 h-4 accent-kk-red"
+                />
+                <span className="text-sm font-bold text-gray-900">
+                  전체 동의 (Agree to all)
+                </span>
+              </label>
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreeTerms}
+                  onChange={(e) => setAgreeTerms(e.target.checked)}
+                  className="w-4 h-4 mt-0.5 accent-kk-red"
+                />
+                <span className="text-xs text-gray-700 flex-1">
+                  <span className="text-red-500 font-bold">[필수]</span>{' '}
+                  <Link to="/terms" target="_blank" className="underline hover:text-kk-red">
+                    이용약관 (Terms of Service)
+                  </Link>
+                  에 동의합니다
+                </span>
+              </label>
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreePrivacy}
+                  onChange={(e) => setAgreePrivacy(e.target.checked)}
+                  className="w-4 h-4 mt-0.5 accent-kk-red"
+                />
+                <span className="text-xs text-gray-700 flex-1">
+                  <span className="text-red-500 font-bold">[필수]</span>{' '}
+                  <Link to="/privacy" target="_blank" className="underline hover:text-kk-red">
+                    개인정보처리방침 (Privacy Policy)
+                  </Link>
+                  에 동의합니다
+                </span>
+              </label>
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreeMarketing}
+                  onChange={(e) => setAgreeMarketing(e.target.checked)}
+                  className="w-4 h-4 mt-0.5 accent-kk-red"
+                />
+                <span className="text-xs text-gray-500 flex-1">
+                  <span className="text-gray-400 font-bold">[선택]</span>{' '}
+                  마케팅 정보 수신에 동의합니다 (Marketing updates — optional)
+                </span>
+              </label>
+            </div>
+
             {/* 가입 버튼 */}
             <button
               type="submit"
-              disabled={isLoading || pwMismatch || (formData.password.length > 0 && !isStrongPassword(formData.password))}
+              disabled={
+                isLoading ||
+                pwMismatch ||
+                !agreedAll ||
+                (formData.password.length > 0 && !isStrongPassword(formData.password))
+              }
               className="w-full py-3.5 bg-kk-red hover:bg-kk-red-deep disabled:bg-kk-peach text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 mt-6"
             >
               {isLoading ? (
