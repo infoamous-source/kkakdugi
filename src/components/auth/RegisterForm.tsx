@@ -252,7 +252,7 @@ export default function RegisterForm() {
           setError({
             title: '기관코드 오류 (Institution Code Error)',
             reason: '유효하지 않은 기관코드입니다 (Invalid institution code)',
-            solution: `현장 가입은 "${MASTER_ORG_CODE}" 코드를 사용하세요 (Onsite students use code: ${MASTER_ORG_CODE})`,
+            solution: '선생님에게 기관코드를 확인해주세요 (Please check the code with your teacher)',
           });
           setIsLoading(false);
           return;
@@ -295,26 +295,6 @@ export default function RegisterForm() {
           <p className="text-gray-500 mt-2">
             {t('register.subtitle', '학습을 시작하기 위해 등록해주세요 (Register to start learning)')}
           </p>
-        </div>
-
-        {/* 현장 학생 안내 배너 */}
-        <div className="mb-4 p-4 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl">
-          <div className="flex items-start gap-3">
-            <div className="text-2xl">🏫</div>
-            <div className="flex-1">
-              <p className="text-sm font-bold text-amber-900 mb-1">
-                현장 수강생이신가요? (Onsite student?)
-              </p>
-              <p className="text-xs text-amber-800 mb-2">
-                아래 기관코드를 사용하세요 (Use this institution code):
-              </p>
-              <div className="bg-white border border-amber-400 rounded-lg px-3 py-2 inline-block">
-                <code className="text-base font-black text-amber-900 tracking-wider">
-                  {MASTER_ORG_CODE}
-                </code>
-              </div>
-            </div>
-          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
@@ -540,7 +520,7 @@ export default function RegisterForm() {
                       orgCode: e.target.value.toUpperCase(),
                     }));
                   }}
-                  placeholder={`예: ${MASTER_ORG_CODE} (e.g. ${MASTER_ORG_CODE})`}
+                  placeholder="기관에서 받은 코드 (Code from your institution)"
                   className={`w-full pl-11 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-kk-red focus:border-transparent transition-all ${
                     orgValidation?.valid ? 'border-green-400 bg-green-50' :
                     orgValidation && !orgValidation.valid ? 'border-red-400 bg-red-50' :
