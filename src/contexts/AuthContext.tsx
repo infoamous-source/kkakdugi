@@ -7,7 +7,14 @@ import { updateProfile } from '../services/profileService';
 import { getStoredApiKey, restoreGeminiConnection, clearGeminiConnection } from '../services/gemini/geminiClient';
 import { createEnrollment } from '../services/enrollmentService';
 import { getOrgProgramTypes } from '../services/organizationService';
+import { addClassroomMember } from '../services/teamService';
 import { redirectToNaverLogin } from '../lib/naverOAuth';
+
+// 자율 가입 허용 기관 — 별도 교실 배정 없이 자동 기본반 배정
+// (key: 대문자 org_code, value: classroom_group id)
+const AUTO_CLASSROOM_ASSIGN: Record<string, string> = {
+  HUC454: '5efa716c-b723-43e6-9778-86cfcee9f0ec', // 서울글로벌센터 · 자율반
+};
 
 export type SocialProvider = 'kakao' | 'google' | 'naver';
 
@@ -322,6 +329,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createEnrollment(authData.user!.id, schoolId, data.instructorId ?? null, true),
       ),
     );
+
+    // 5-b) 자율 가입 기관(HUC454 등)은 기본 교실에 자동 배정
+    //      — 선생님의 별도 배정 작업 없이 바로 학과 진입 가능
+    const upperOrgCode = (data.orgCode || '').toUpperCase();
+    const autoClassroomId = AUTO_CLASSROOM_ASSIGN[upperOrgCode];
+    if (autoClassroomId) {
+      try {
+        await addClassroomMember(autoClassroomId, authData.user.id, data.name);
+      } catch (err) {
+        console.error('[register] auto classroom assignment failed:', err);
+        // 배정 실패해도 가입 자체는 성공 — 나중에 관리자가 수동 배정 가능
+      }
+    }
 
     // 6) user 상태가 onAuthStateChange로 자동 업데이트됨
     return true;
