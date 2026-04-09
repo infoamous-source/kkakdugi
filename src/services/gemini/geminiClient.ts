@@ -94,7 +94,7 @@ export function getGeminiClient(): GoogleGenerativeAI | null {
   }
 }
 
-export function getGeminiModel(modelName: string = 'gemini-2.5-flash') {
+export function getGeminiModel(modelName: string = 'gemini-1.5-flash') {
   const client = getGeminiClient();
   if (!client) return null;
 
