@@ -3,23 +3,15 @@ import Sidebar from './Sidebar';
 import TopHeader from './TopHeader';
 import MobileTabBar from './MobileTabBar';
 import PageTransition from './PageTransition';
-import ProfileGapModal, { computeProfileGap } from '../auth/ProfileGapModal';
-import { useAuth } from '../../contexts/AuthContext';
 import type { TrackId } from '../../types/track';
 
 export default function MainLayout() {
   const { trackId } = useParams<{ trackId: string }>();
-  const { user } = useAuth();
 
-  // 가입 폼 v6: 기존 사용자 프로필 누락 강제 보강
-  // 학생 전용 (CEO/강사는 admin 패널에서 생성되므로 제외)
-  const gap = user && user.role === 'student'
-    ? computeProfileGap({
-        korean_level: user.koreanLevel,
-        years_in_korea: user.yearsInKorea,
-        visa_type: user.visaType,
-      })
-    : { hasGap: false, missing: { koreanLevel: false, yearsInKorea: false, visaType: false } };
+  // 2026-04-09 D-Day: 추가 정보 입력 강제 모달 비활성화
+  // (가입 폼 v6의 korean_level/years_in_korea/visa_type 보강 모달)
+  // 학생이 학과 입장 시마다 뜨는 게 부담된다는 피드백으로 제거.
+  // 관련 코드는 ProfileGapModal.tsx에 남아있음 — 나중에 재활성화 가능.
 
   return (
     <div className="min-h-screen bg-kk-bg">
@@ -38,9 +30,6 @@ export default function MainLayout() {
 
       {/* 모바일 하단 탭 바 */}
       <MobileTabBar />
-
-      {/* 가입 폼 v6: 기존 사용자 강제 보강 모달 (PRD: docs/prd-signup-form-v5.md) */}
-      {gap.hasGap && <ProfileGapModal missing={gap.missing} />}
     </div>
   );
 }
