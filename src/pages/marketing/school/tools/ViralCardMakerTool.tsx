@@ -71,6 +71,7 @@ export default function ViralCardMakerTool() {
   const [imageLoading, setImageLoading] = useState(false);
   const [myTeamId, setMyTeamId] = useState<string | null>(null);
   const [savedToGemBox, setSavedToGemBox] = useState(false);
+  const [zoomedCard, setZoomedCard] = useState<number | null>(null);
 
   // Load team
   useEffect(() => {
@@ -423,7 +424,12 @@ export default function ViralCardMakerTool() {
 
             <div className="grid grid-cols-2 gap-2.5">
               {slides.map((slide, i) => (
-                <div key={i} id={`viral-slide-${i}`} className="relative">
+                <div
+                  key={i}
+                  id={`viral-slide-${i}`}
+                  className="relative cursor-zoom-in"
+                  onClick={() => setZoomedCard(i)}
+                >
                   <ViralCardTemplate
                     slide={slide}
                     index={i}
@@ -431,12 +437,6 @@ export default function ViralCardMakerTool() {
                     imageUrl={slide.imageUrl || null}
                     fallbackGradient={FALLBACK_GRADIENTS[i]}
                   />
-                  <button
-                    onClick={() => handleDownloadCardPng(i)}
-                    className="absolute bottom-1 right-1 bg-black/60 hover:bg-black/80 text-white text-[10px] px-2 py-1 rounded"
-                  >
-                    📥 PNG
-                  </button>
                 </div>
               ))}
             </div>
@@ -490,6 +490,61 @@ export default function ViralCardMakerTool() {
           </div>
         )}
       </main>
+
+      {/* 카드 확대 팝업 */}
+      {zoomedCard !== null && slides && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setZoomedCard(null)}
+        >
+          <button
+            onClick={(e) => { e.stopPropagation(); setZoomedCard(null); }}
+            className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white text-2xl flex items-center justify-center transition-colors"
+            aria-label="닫기"
+          >
+            ✕
+          </button>
+          <div
+            className="relative max-w-lg w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ViralCardTemplate
+              slide={slides[zoomedCard]}
+              index={zoomedCard}
+              productName={productName}
+              imageUrl={slides[zoomedCard].imageUrl || null}
+              fallbackGradient={FALLBACK_GRADIENTS[zoomedCard]}
+            />
+            <div className="flex gap-3 justify-center mt-4">
+              <button
+                onClick={() => handleDownloadCardPng(zoomedCard)}
+                className="px-5 py-2.5 bg-white text-black font-bold rounded-xl hover:bg-gray-100 transition-colors flex items-center gap-2"
+              >
+                📥 PNG 다운로드
+              </button>
+              {zoomedCard > 0 && (
+                <button
+                  onClick={() => setZoomedCard(zoomedCard - 1)}
+                  className="px-4 py-2.5 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
+                >
+                  ← 이전
+                </button>
+              )}
+              {zoomedCard < slides.length - 1 && (
+                <button
+                  onClick={() => setZoomedCard(zoomedCard + 1)}
+                  className="px-4 py-2.5 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
+                >
+                  다음 →
+                </button>
+              )}
+            </div>
+            <p className="text-white/60 text-xs text-center mt-3">
+              카드 {zoomedCard + 1} / {slides.length} · 클릭/ESC로 닫기
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
