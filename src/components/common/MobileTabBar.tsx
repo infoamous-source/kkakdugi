@@ -58,27 +58,15 @@ export default function MobileTabBar() {
     career: 'career',
   };
 
-  const handleTabClick = async (tab: TabDef) => {
+  const handleTabClick = (tab: TabDef) => {
     const trackId = trackTabIds[tab.id];
     if (trackId) {
       if (!isAuthenticated || !user) {
         navigate('/login', { state: { redirectTo: '/' } });
         return;
       }
-      if (isInstructor) {
-        navigate(tab.path);
-        return;
-      }
-      try {
-        const assigned = await isStudentAssignedToTrack(user.id, trackId);
-        if (assigned) {
-          navigate(tab.path);
-        } else {
-          showToast('학과 배정 대기중이에요! 선생님에게 문의하세요');
-        }
-      } catch {
-        navigate(tab.path);
-      }
+      // 로그인된 누구든 학과 진입 허용 (교실 배정 무관)
+      navigate(tab.path);
       return;
     }
     navigate(tab.path);

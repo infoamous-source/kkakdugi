@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight } from 'lucide-react';
 import type { Track } from '../../types/track';
 import { useActivityLog } from '../../hooks/useActivityLog';
 import { useAuth } from '../../contexts/AuthContext';
-import { isStudentAssignedToTrack } from '../../services/teamService';
 import { DigitalDeptIcon, MarketingDeptIcon, CareerDeptIcon } from '../brand/SchoolIllustrations';
 
 const deptIconMap: Record<string, React.FC<{ size?: number; className?: string }>> = {
@@ -32,21 +30,8 @@ export default function TrackCard({ track, delay = 0 }: TrackCardProps) {
   const { user, isAuthenticated } = useAuth();
   const { logActivity } = useActivityLog();
   const DeptIcon = deptIconMap[track.id] || DigitalDeptIcon;
-  const [checking, setChecking] = useState(false);
 
-  const showToast = (message: string) => {
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-6 left-1/2 -translate-x-1/2 bg-kk-brown text-kk-cream px-6 py-3 rounded-xl shadow-lg z-[9999] text-sm font-medium';
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transition = 'opacity 0.3s';
-      setTimeout(() => toast.remove(), 300);
-    }, 2500);
-  };
-
-  const handleClick = async () => {
+  const handleClick = () => {
     logActivity('click', track.id, undefined, { source: 'gateway' });
 
     // 미로그인 → 학생 로그인 페이지로 이동
@@ -55,29 +40,8 @@ export default function TrackCard({ track, delay = 0 }: TrackCardProps) {
       return;
     }
 
-    // 강사: 모든 학과 자유 입장
-    if (user.role === 'instructor') {
-      navigate(trackHubPath[track.id] || `/track/${track.id}`);
-      return;
-    }
-
-    // 학생: 교실 배정 확인 (모든 학과 동일)
-    if (checking) return;
-    setChecking(true);
-
-    try {
-      const assigned = await isStudentAssignedToTrack(user.id, track.id);
-      if (assigned) {
-        navigate(trackHubPath[track.id] || `/track/${track.id}`);
-      } else {
-        showToast('학과 배정 대기중이에요! 선생님에게 문의하세요');
-      }
-    } catch (err) {
-      console.error('Track assignment check failed:', err);
-      showToast('네트워크 오류가 발생했어요. 다시 시도해주세요.');
-    } finally {
-      setChecking(false);
-    }
+    // 로그인된 누구든 학과 진입 허용 (교실 배정 무관)
+    navigate(trackHubPath[track.id] || `/track/${track.id}`);
   };
 
   const colorThemes: Record<string, {
@@ -111,12 +75,11 @@ export default function TrackCard({ track, delay = 0 }: TrackCardProps) {
   return (
     <button
       onClick={handleClick}
-      disabled={checking}
       className={`
         group relative w-full rounded-2xl border-2 bg-white overflow-hidden
         transition-all duration-300 ease-out text-left
         hover:-translate-y-2 hover:shadow-xl
-        animate-card-enter ${checking ? 'opacity-70 cursor-wait' : 'cursor-pointer'}
+        animate-card-enter cursor-pointer
         ${theme.border}
       `}
       style={{ animationDelay: `${delay}ms` }}
@@ -145,13 +108,6 @@ export default function TrackCard({ track, delay = 0 }: TrackCardProps) {
 
       {/* 호버 그라데이션 오버레이 */}
       <div className={`absolute inset-0 bg-gradient-to-br from-transparent to-transparent ${theme.hoverBg} transition-all duration-300 pointer-events-none`} />
-
-      {/* 로딩 스피너 */}
-      {checking && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10">
-          <div className="w-6 h-6 border-2 border-kk-brown/20 border-t-kk-brown rounded-full animate-spin" />
-        </div>
-      )}
     </button>
   );
 }

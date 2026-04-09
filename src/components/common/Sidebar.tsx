@@ -129,48 +129,21 @@ export default function Sidebar({ currentTrack }: SidebarProps) {
     navigate(item.path);
   };
 
-  const handleTrackNavClick = async (item: NavItem) => {
+  const handleTrackNavClick = (item: NavItem) => {
     if (!isAuthenticated || !user) {
       navigate('/login', { state: { redirectTo: '/' } });
       return;
     }
-    // 강사는 모든 학과 자유 입장
-    if (isInstructor) {
-      navigate(item.path);
-      return;
-    }
-    // 학생: 배정 확인
-    try {
-      const assigned = await isStudentAssignedToTrack(user.id, item.trackId!);
-      if (assigned) {
-        navigate(item.path);
-      } else {
-        showToast('학과 배정 대기중이에요! 선생님에게 문의하세요');
-      }
-    } catch {
-      navigate(item.path);
-    }
+    // 로그인된 누구든 학과 진입 허용 (교실 배정 무관)
+    navigate(item.path);
   };
 
-  const handleMarketingSchoolClick = async () => {
+  const handleMarketingSchoolClick = () => {
     if (!isAuthenticated || !user) {
       navigate('/login', { state: { redirectTo: '/' } });
       return;
     }
-    if (isInstructor) {
-      navigate('/marketing/hub');
-      return;
-    }
-    try {
-      const assigned = await isStudentAssignedToTrack(user.id, 'marketing');
-      if (assigned) {
-        navigate('/marketing/hub');
-      } else {
-        showToast('학과 배정 대기중이에요! 선생님에게 문의하세요');
-      }
-    } catch {
-      navigate('/marketing/hub');
-    }
+    navigate('/marketing/hub');
   };
 
   const handleMarketingProClick = () => {
