@@ -223,37 +223,93 @@
       "basics": {
         "title": "What is Marketing?",
         "description": "Learn basic marketing concepts and 2026 trends in simple terms",
-        "oneLine": "Marketing basics + Latest trends"
+        "oneLine": "Marketing basics + Latest trends",
+        "learning": {
+          "whatIsMarketing": "What is marketing?",
+          "whatIsMarketingDesc": "Learn the difference between selling and marketing, and the 4Ps of marketing",
+          "trend2026": "2026 Marketing Trends",
+          "trend2026Desc": "Nano-society, short-form, authenticity — this year's must-know trends",
+          "marketerJobs": "What marketers do",
+          "marketerJobsDesc": "Learn what marketers do in Korean companies"
+        }
       },
       "research": {
         "title": "Who buys my product?",
         "description": "Learn how to research markets and analyze target customers",
-        "oneLine": "Market research + Target analysis"
+        "oneLine": "Market research + Target analysis",
+        "learning": {
+          "howToResearch": "How to do market research",
+          "howToResearchDesc": "How to research the market using Naver Trends and SNS",
+          "findTarget": "Finding your target customer",
+          "findTargetDesc": "How to decide who will buy your product",
+          "competitor": "Competitor analysis",
+          "competitorDesc": "How to analyze others selling similar products"
+        }
       },
       "concept": {
         "title": "Create a Unique Concept",
         "description": "Find your unique selling point (USP) and create a brand concept",
-        "oneLine": "USP + Brand concept planning"
+        "oneLine": "USP + Brand concept planning",
+        "learning": {
+          "usp": "Finding your USP",
+          "uspDesc": "How to find your unique advantage",
+          "brandStory": "Brand story",
+          "brandStoryDesc": "Creating stories that move people",
+          "slogan": "Making a slogan",
+          "sloganDesc": "Making a memorable one-line introduction"
+        }
       },
       "branding": {
         "title": "Design & Copywriting",
         "description": "Design brand colors, logos, and product pages",
-        "oneLine": "Branding design + Copywriting"
+        "oneLine": "Branding design + Copywriting",
+        "learning": {
+          "brandColor": "Brand colors",
+          "brandColorDesc": "Choose colors that match the feeling of your brand",
+          "logoFont": "Logo and fonts",
+          "logoFontDesc": "How to make a logo with free tools and choose fonts",
+          "detailPage": "Product detail page",
+          "detailPageDesc": "How to structure a detail page that makes people want to buy"
+        }
       },
       "content": {
         "title": "Content Marketing",
         "description": "Create content for Instagram, YouTube and more",
-        "oneLine": "SNS content creation"
+        "oneLine": "SNS content creation",
+        "learning": {
+          "channels": "Understanding SNS channels",
+          "channelsDesc": "Features and usage of Instagram, YouTube, TikTok",
+          "cardNews": "Making card news",
+          "cardNewsDesc": "Eye-catching card news design and writing",
+          "hashtag": "Hashtag strategy",
+          "hashtagDesc": "How to use hashtags to reach more people"
+        }
       },
       "performance": {
         "title": "Paid Advertising",
         "description": "Learn how to spend ad budget to reach more people",
-        "oneLine": "Performance marketing basics"
+        "oneLine": "Performance marketing basics",
+        "learning": {
+          "whatIs": "What is performance marketing?",
+          "whatIsDesc": "Why spending money on ads is necessary",
+          "adTypes": "Types of ads",
+          "adTypesDesc": "Difference between Naver, Instagram, and Google ads",
+          "readData": "Reading data",
+          "readDataDesc": "How to read and understand numbers like ROAS and CPC"
+        }
       },
       "aiPractice": {
         "title": "Marketing with AI",
         "description": "Create ad copy and images using AI tools",
-        "oneLine": "Gemini AI hands-on practice"
+        "oneLine": "Gemini AI hands-on practice",
+        "learning": {
+          "aiWorkflow": "AI marketing workflow",
+          "aiWorkflowDesc": "Learn the full flow of using AI in marketing",
+          "promptEngineering": "How to write prompts",
+          "promptEngineeringDesc": "How to talk to AI to get good results",
+          "practiceAd": "Practice making real ads",
+          "practiceAdDesc": "Write copy and create images with AI to make a complete ad"
+        }
       }
     },
     "tools": {
@@ -507,7 +563,15 @@
     "travelActivities": "Travel & Activities",
     "travelActivitiesDesc": "Korea travel info and bookings",
     "safetyUtility": "Safety & Utility",
-    "safetyUtilityDesc": "Emergency alerts and useful tools"
+    "safetyUtilityDesc": "Emergency alerts and useful tools",
+    "essential": "Essential Apps",
+    "essentialDesc": "Must-have apps for life in Korea",
+    "government": "Government Services",
+    "governmentDesc": "Public services and document issuance",
+    "ai": "AI Tools",
+    "aiDesc": "Translate and ask questions with AI",
+    "communication": "Communication",
+    "communicationDesc": "Messengers and SNS"
   },
   "profile": {
     "loginRequired": "Please log in to view your profile.",
@@ -579,7 +643,8 @@
       "delete": "Delete",
       "empty": "No ideas saved yet.\nUse marketing tools and save your results!",
       "noResults": "No results found."
-    }
+    },
+    "goToClassroom": "Go to Classroom"
   },
   "school": {
     "comingSoon": "Coming soon! Stay tuned 🚀",
@@ -626,13 +691,74 @@
       "readyToGraduate": "All requirements met! You're ready to graduate.",
       "graduateButton": "Graduate",
       "notReady": "Graduation requirements not yet met.",
-      "notReadyHint": "Collect all 6 stamps and complete the graduation project (simulation)."
+      "notReadyHint": "Collect all 6 stamps and complete the graduation project (simulation).",
+      "viewStudentCard": "View my student ID"
     },
     "curriculum": {
       "title": "Schedule",
       "subtitle": "Complete the 6-period curriculum in order",
       "period": "Period",
-      "completed": "Completed"
+      "completed": "Completed",
+      "periods": {
+        "1": {
+          "title": "Building the Basics",
+          "items": [
+            "What is marketing? & 2026 trends",
+            "Role of a marketer",
+            "Marketer DNA Test"
+          ],
+          "toolLabel": "Marketer DNA Test"
+        },
+        "2": {
+          "title": "Market Research",
+          "items": [
+            "Competitor research",
+            "Defining target customers",
+            "Market Scanner"
+          ],
+          "toolLabel": "Market Scanner AI"
+        },
+        "3": {
+          "title": "Brand Planning",
+          "items": [
+            "Finding your USP",
+            "Planning framework",
+            "Brand Builder"
+          ],
+          "toolLabel": "Brand Builder AI"
+        },
+        "4": {
+          "title": "Making Ads",
+          "items": [
+            "Grabbing attention",
+            "Winning formula",
+            "Content Maker"
+          ],
+          "toolLabel": "Content Maker AI"
+        },
+        "5": {
+          "title": "Art of Persuasion",
+          "items": [
+            "Psychology of buying",
+            "Detail page structure",
+            "Sales Writer"
+          ],
+          "toolLabel": "Sales Writer AI"
+        },
+        "6": {
+          "title": "Measuring Performance",
+          "items": [
+            "Ad spend and profit",
+            "Budgeting",
+            "ROAS Forecaster"
+          ],
+          "toolLabel": "ROAS Forecast AI"
+        }
+      },
+      "aiToolPractice": "Practice with AI tools",
+      "graduationProject": "Graduation project",
+      "graduationCeremony": "Graduation ceremony",
+      "testLabel": "Learn"
     },
     "lab": {
       "title": "AI Lab",
@@ -1378,6 +1504,152 @@
       "tip4": "Speak with confidence during your presentation",
       "notReady": "Graduation requirements not yet met",
       "completeAll": "Complete all periods 1-6 first"
+    },
+    "sections": {
+      "entrance": {
+        "title": "Welcome Ceremony",
+        "subtitle": "Pre-School",
+        "step1": {
+          "title": "Welcome Orientation",
+          "desc": "School introduction and full course overview"
+        },
+        "step2": {
+          "title": "Marketer's Oath",
+          "desc": "Commitments and mindset for becoming a good marketer"
+        },
+        "step3": {
+          "title": "Student ID Issuance",
+          "desc": "System access and profile setup"
+        }
+      },
+      "period1": {
+        "title": "Building the Basics",
+        "subtitle": "Period 1",
+        "step1": {
+          "title": "What is Marketing? & 2026 Trends",
+          "desc": "Learn how to solve customer problems + grasp the latest marketing trends"
+        },
+        "step2": {
+          "title": "Role of a Marketer",
+          "desc": "Understand various roles: planning, analysis, design"
+        },
+        "step3": {
+          "title": "[Practice] Marketer DNA Test",
+          "desc": "Analyze your marketing DNA (Find My Role)"
+        }
+      },
+      "period2": {
+        "title": "Market Research",
+        "subtitle": "Period 2",
+        "step1": {
+          "title": "Competitor Research",
+          "desc": "Compare strengths and weaknesses of other companies' products"
+        },
+        "step2": {
+          "title": "Defining Target Customers",
+          "desc": "Concretely picture who will buy your product"
+        },
+        "step3": {
+          "title": "[Practice] Market Scanner AI",
+          "desc": "Competitor and target analysis (Market Analysis)"
+        }
+      },
+      "period3": {
+        "title": "Brand Planning",
+        "subtitle": "Period 3",
+        "step1": {
+          "title": "Finding Your USP",
+          "desc": "Decide the single reason \"Why us?\""
+        },
+        "step2": {
+          "title": "Planning Framework",
+          "desc": "Learn a 6-step logical marketing plan"
+        },
+        "step3": {
+          "title": "[Practice] Brand Builder AI",
+          "desc": "Brand strategy and slogan (Brand Strategy)"
+        }
+      },
+      "period4": {
+        "title": "Making Ads",
+        "subtitle": "Period 4",
+        "step1": {
+          "title": "Grabbing Attention",
+          "desc": "Write strong headlines that capture interest"
+        },
+        "step2": {
+          "title": "Winning Formula",
+          "desc": "Learn the 4-step structure (Hook-Empathy-Solution-Action)"
+        },
+        "step3": {
+          "title": "[Practice] Content Maker AI",
+          "desc": "Create SNS ads"
+        }
+      },
+      "period5": {
+        "title": "Art of Persuasion",
+        "subtitle": "Period 5",
+        "step1": {
+          "title": "Psychology of Opening Wallets",
+          "desc": "Persuasion techniques that lead customers to buy"
+        },
+        "step2": {
+          "title": "Detail Page Structure",
+          "desc": "Learn web page layouts that reduce bounce and boost sales"
+        },
+        "step3": {
+          "title": "[Practice] Sales Writer AI",
+          "desc": "Persuasive copy and detail pages (Copywriting)"
+        }
+      },
+      "period6": {
+        "title": "Measuring Performance",
+        "subtitle": "Period 6",
+        "step1": {
+          "title": "Ad Spend and Profit",
+          "desc": "Read your marketing report card (ROAS, CPC, etc.)"
+        },
+        "step2": {
+          "title": "Budgeting",
+          "desc": "Plan where to spend limited money efficiently"
+        },
+        "step3": {
+          "title": "[Practice] ROAS Forecast AI",
+          "desc": "Ad ROI and performance simulation (ROAS Forecast)"
+        }
+      },
+      "finalProject": {
+        "title": "Graduation Project: Team Project",
+        "subtitle": "Final Step",
+        "step1": {
+          "title": "Item Selection & Ideation",
+          "desc": "Decide a real marketing item with your team"
+        },
+        "step2": {
+          "title": "Complete Proposal",
+          "desc": "Combine data from Periods 1–6 into one proposal"
+        },
+        "step3": {
+          "title": "Final Presentation",
+          "desc": "Present the brand you planned to the audience"
+        }
+      },
+      "graduation": {
+        "title": "Graduation: Marketer Debut",
+        "subtitle": "After-School",
+        "step1": {
+          "title": "Diploma Award",
+          "desc": "Official completion certificate"
+        },
+        "step2": {
+          "title": "Unlock Special Benefits",
+          "desc": "Pro Marketing Classroom access OPEN"
+        },
+        "step3": {
+          "title": "Farewell",
+          "desc": "Say goodbye to teachers and fellow marketers"
+        }
+      }
     }
   },
   "apps": {
@@ -1450,6 +1722,36 @@
       "name": "XE Currency",
       "description": "Real-time exchange rates. Useful global currency app for converting to Korean Won.",
       "tagline": "Real-time exchange rates"
+    },
+    "naver": {
+      "name": "Naver",
+      "description": "Korea's top portal. Create an account and use email.",
+      "tagline": "Start of Korean life"
+    },
+    "gov24": {
+      "name": "Gov24",
+      "description": "Official government services. Issue docs like foreign resident certificates.",
+      "tagline": "Government one-stop"
+    },
+    "googleTranslate": {
+      "name": "Google Translate",
+      "description": "Supports 100 languages. Nepali, Sinhala, Urdu, Khmer and more.",
+      "tagline": "Translate any language"
+    },
+    "chatgpt": {
+      "name": "ChatGPT",
+      "description": "Translate and ask questions with AI. Prescriptions, contracts, notices.",
+      "tagline": "AI translate & ask"
+    },
+    "kakaotalk": {
+      "name": "KakaoTalk",
+      "description": "Korea's top messenger. Certificates, KakaoPay, GPT integration.",
+      "tagline": "Essential Korean messenger"
+    },
+    "kkakdugiPractice": {
+      "name": "Kiosk Practice",
+      "description": "Practice ordering at kiosks. From menu selection to payment.",
+      "tagline": "Kiosk master"
     }
   },
   "enrollment": {
@@ -1857,14 +2159,38 @@
   },
   "kkakdugi": {
     "types": {
-      "cafe": { "name": "Cafe", "description": "Order drinks at a cafe" },
-      "fastfood": { "name": "Fast Food", "description": "Order a burger set" },
-      "hospital": { "name": "Hospital", "description": "Register at a hospital" },
-      "bank": { "name": "Bank", "description": "Use a bank ATM" },
-      "government": { "name": "Gov Office", "description": "Get documents issued" },
-      "cinema": { "name": "Cinema", "description": "Book movie tickets" },
-      "convenience": { "name": "Conv. Store", "description": "Self-checkout at a store" },
-      "airport": { "name": "Airport", "description": "Self check-in" }
+      "cafe": {
+        "name": "Cafe",
+        "description": "Order drinks at a cafe"
+      },
+      "fastfood": {
+        "name": "Fast Food",
+        "description": "Order a burger set"
+      },
+      "hospital": {
+        "name": "Hospital",
+        "description": "Register at a hospital"
+      },
+      "bank": {
+        "name": "Bank",
+        "description": "Use a bank ATM"
+      },
+      "government": {
+        "name": "Gov Office",
+        "description": "Get documents issued"
+      },
+      "cinema": {
+        "name": "Cinema",
+        "description": "Book movie tickets"
+      },
+      "convenience": {
+        "name": "Conv. Store",
+        "description": "Self-checkout at a store"
+      },
+      "airport": {
+        "name": "Airport",
+        "description": "Self check-in"
+      }
     },
     "title": "Kiosk Practice",
     "subtitle": "Order drinks at a cafe",
@@ -2008,7 +2334,11 @@
         "message": "You can now confidently order at a real cafe!",
         "done": "Finish Practice"
       }
-    }
+    },
+    "learn1": "Look at the menu and select the drink you want",
+    "learn2": "Add options (shots, syrup, etc.)",
+    "learn3": "Choose dine-in or takeout",
+    "learn4": "Pay with a card"
   },
   "digitalSchool": {
     "hub": {
@@ -2312,5 +2642,49 @@
   "footer": {
     "madeWith": "Growing together at Kkakdugi School",
     "disclaimer": "© 2024 Kkakdugi School. Education school for migrants and international students"
+  },
+  "register": {
+    "title": "Student Registration",
+    "subtitle": "Register to start learning",
+    "nameLabel": "Name",
+    "nameHint": "Enter your name as shown on your passport",
+    "countryLabel": "Country",
+    "countryPlaceholder": "Select your country",
+    "genderLabel": "Gender",
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "birthYearLabel": "Year of Birth",
+    "birthYearPlaceholder": "e.g. 1995",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "passwordHint": "Letters + numbers + special characters, 8+ chars",
+    "passwordConfirmLabel": "Confirm Password",
+    "passwordMismatch": "Passwords do not match",
+    "orgCodeLabel": "Institution Code",
+    "orgCodePlaceholder": "Enter the code from your institution",
+    "koreanLevelLabel": "How well do you speak Korean?",
+    "yearsInKoreaLabel": "How long have you been in Korea?",
+    "visaTypeLabel": "What visa do you have?",
+    "submitButton": "Sign Up",
+    "loginLink": "Already have an account? Log in"
+  },
+  "registerComplete": {
+    "title": "Registration Complete!",
+    "titleEn": "Registration Complete!",
+    "subtitle": "Connect your AI assistant for a smarter learning experience",
+    "subtitleEn": "Connect your AI assistant for a smarter learning experience",
+    "ctaButton": "Connect My AI Assistant",
+    "skipLink": "Do it later"
+  },
+  "congrats": {
+    "title": "Congratulations on Your Enrollment!",
+    "subtitle": "Welcome to the {{courseName}} program",
+    "goToSchool": "Go to Classroom",
+    "loginButton": "Log in",
+    "registerLink": "Don't have an account? Register as a student",
+    "hint": "Complete student registration to access all learning content"
+  },
+  "common": {
+    "close": "Close"
   }
 }

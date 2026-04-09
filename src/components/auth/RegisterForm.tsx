@@ -7,22 +7,65 @@ import {
   Lock,
   Globe,
   Calendar,
-  GraduationCap,
   Tag,
   UserPlus,
   Loader2,
   CheckCircle2,
   XCircle,
+  Languages,
+  Clock,
+  CreditCard,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { parseAuthError, type AuthError } from '../../utils/authErrors';
-import { validateInstructorCode } from '../../services/profileService';
 import { validateOrgCode } from '../../services/organizationService';
 import { COUNTRIES } from '../../data/countries';
 
-// mockup 확정안 P0-1: 외국인 현장 가입용 마스터 기관코드
-// 이 코드는 DB 검증을 우회하며, 30명 학생이 동일 코드로 가입 → 강사가 나중에 분반
+// 가입 폼 v6 (PRD: docs/prd-signup-form-v5.md)
+// - 인증코드/선생님코드 완전 제거 (마케팅 AI 도구 사이트의 잘못된 복붙 잔재였음)
+// - 강사 자동 매칭: 기관코드 입력 → 강사 자동 연결
+// - 신규 필드 3개: koreanLevel / yearsInKorea / visaType
+// - 비자는 칩(chip) UI로 선택
+// - 학과별 추가 폼 폐지: 가입 = 1단계로 끝
+
+// 외국인 현장 가입용 마스터 기관코드 (기존 P0-1 정책 유지)
 const MASTER_ORG_CODE = 'KKAKDUGI2026';
+
+// ─── 옵션 정의 (TOPIK 3-4 친화 한국어 + 영어 병기) ─────────────────────
+
+const KOREAN_LEVEL_OPTIONS = [
+  { value: 'topik0', ko: 'TOPIK 0 (모름)', en: 'No Korean' },
+  { value: 'topik1', ko: 'TOPIK 1', en: 'TOPIK 1' },
+  { value: 'topik2', ko: 'TOPIK 2', en: 'TOPIK 2' },
+  { value: 'topik3', ko: 'TOPIK 3', en: 'TOPIK 3' },
+  { value: 'topik4', ko: 'TOPIK 4', en: 'TOPIK 4' },
+  { value: 'topik5', ko: 'TOPIK 5', en: 'TOPIK 5' },
+  { value: 'topik6', ko: 'TOPIK 6 (잘함)', en: 'Fluent' },
+] as const;
+
+const YEARS_IN_KOREA_OPTIONS = [
+  { value: 'under6m', ko: '6개월 안 됐어요', en: 'Less than 6 months' },
+  { value: '6m_1y',   ko: '6개월 ~ 1년',     en: '6 months ~ 1 year' },
+  { value: '1y_3y',   ko: '1년 ~ 3년',       en: '1 ~ 3 years' },
+  { value: '3y_5y',   ko: '3년 ~ 5년',       en: '3 ~ 5 years' },
+  { value: '5y_10y',  ko: '5년 ~ 10년',      en: '5 ~ 10 years' },
+  { value: 'over10y', ko: '10년 넘었어요',   en: 'Over 10 years' },
+] as const;
+
+// 비자 옵션 (칩 UI). 사용자 결정: 다 포함, 칩으로 선택
+const VISA_OPTIONS = [
+  { value: 'E7',    ko: 'E-7',  desc: '전문직 / Professional' },
+  { value: 'E9',    ko: 'E-9',  desc: '일반 취업 / Non-pro' },
+  { value: 'F2',    ko: 'F-2',  desc: '거주 / Residence' },
+  { value: 'F4',    ko: 'F-4',  desc: '재외동포 / Overseas KR' },
+  { value: 'F5',    ko: 'F-5',  desc: '영주 / Permanent' },
+  { value: 'F6',    ko: 'F-6',  desc: '결혼 / Marriage' },
+  { value: 'D2',    ko: 'D-2',  desc: '유학 / Study' },
+  { value: 'D4',    ko: 'D-4',  desc: '어학연수 / Language' },
+  { value: 'H2',    ko: 'H-2',  desc: '방문취업 / Working Visit' },
+  { value: 'other', ko: '기타', desc: 'Other' },
+  { value: 'none',  ko: '없음', desc: 'No visa / Don\'t know' },
+] as const;
 
 /** 비밀번호 강도 검사 */
 function checkPassword(pw: string) {
@@ -52,12 +95,14 @@ export default function RegisterForm() {
     email: '',
     password: '',
     passwordConfirm: '',
-    instructorCode: '',
     orgCode: '',
-    authCode: '',
+    // v6 신규 필드
+    koreanLevel: '',
+    yearsInKorea: '',
+    visaType: '',
   });
 
-  // P0-3: 약관/개인정보처리방침 동의 (필수 2개 + 선택 1개)
+  // 약관 동의
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [agreeMarketing, setAgreeMarketing] = useState(false);
@@ -69,33 +114,16 @@ export default function RegisterForm() {
     setAgreeMarketing(next);
   };
 
-  // authCode가 "체리" 또는 "딸기"이면 특수 역할 가입
-  const isCeoSignup = formData.authCode === '체리';
-  const isInstructorSignup = formData.authCode === '딸기';
-  const isSpecialRole = isCeoSignup || isInstructorSignup;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<AuthError | null>(null);
 
-  // 선생님코드 실시간 검증 (선택 사항 — 비워두면 검증 생략)
-  const [instructorValidation, setInstructorValidation] = useState<{ valid: boolean; instructorName: string | null } | null>(null);
-  const [isValidatingInstructor, setIsValidatingInstructor] = useState(false);
-
-  useEffect(() => {
-    if (formData.instructorCode.length < 2) {
-      setInstructorValidation(null);
-      return;
-    }
-    const timer = setTimeout(async () => {
-      setIsValidatingInstructor(true);
-      const result = await validateInstructorCode(formData.instructorCode);
-      setInstructorValidation(result);
-      setIsValidatingInstructor(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [formData.instructorCode]);
-
-  // 기관코드 실시간 검증 (마스터 코드는 DB 검증 우회)
-  const [orgValidation, setOrgValidation] = useState<{ valid: boolean; orgName: string | null } | null>(null);
+  // 기관코드 실시간 검증 + 강사 자동 매칭 표시
+  const [orgValidation, setOrgValidation] = useState<{
+    valid: boolean;
+    orgName: string | null;
+    instructorId: string | null;
+    instructorName: string | null;
+  } | null>(null);
   const [isValidatingOrg, setIsValidatingOrg] = useState(false);
 
   useEffect(() => {
@@ -103,16 +131,26 @@ export default function RegisterForm() {
       setOrgValidation(null);
       return;
     }
-    // 마스터 코드 즉시 통과
+    // 마스터 코드 즉시 통과 (강사 미지정)
     if (formData.orgCode.toUpperCase() === MASTER_ORG_CODE) {
-      setOrgValidation({ valid: true, orgName: '깍두기학교 · Onsite (KKAKDUGI School)' });
+      setOrgValidation({
+        valid: true,
+        orgName: '깍두기학교 · Onsite (KKAKDUGI School)',
+        instructorId: null,
+        instructorName: null,
+      });
       setIsValidatingOrg(false);
       return;
     }
     const timer = setTimeout(async () => {
       setIsValidatingOrg(true);
       const result = await validateOrgCode(formData.orgCode);
-      setOrgValidation(result);
+      setOrgValidation({
+        valid: result.valid,
+        orgName: result.orgName,
+        instructorId: result.instructorId,
+        instructorName: result.instructorName,
+      });
       setIsValidatingOrg(false);
     }, 500);
     return () => clearTimeout(timer);
@@ -166,7 +204,32 @@ export default function RegisterForm() {
       return;
     }
 
-    // P0-3: 약관/개인정보 필수 동의 확인
+    // v6 신규 필수 필드 검증
+    if (!formData.koreanLevel) {
+      setError({
+        title: '입력 오류 (Input Error)',
+        reason: '한국어 수준을 선택해주세요 (Please select your Korean level)',
+        solution: 'TOPIK 0~6 중 하나를 선택하세요',
+      });
+      return;
+    }
+    if (!formData.yearsInKorea) {
+      setError({
+        title: '입력 오류 (Input Error)',
+        reason: '한국에 온 지 얼마나 됐는지 알려주세요 (Please tell us how long you have been in Korea)',
+        solution: '체류 기간을 선택하세요',
+      });
+      return;
+    }
+    if (!formData.visaType) {
+      setError({
+        title: '입력 오류 (Input Error)',
+        reason: '비자 종류를 선택해주세요 (Please select your visa)',
+        solution: '비자 카드 중 하나를 선택하세요',
+      });
+      return;
+    }
+
     if (!agreeTerms || !agreePrivacy) {
       setError({
         title: '동의 필요 (Consent Required)',
@@ -179,50 +242,38 @@ export default function RegisterForm() {
 
     setIsLoading(true);
     try {
-      // 특수 역할이 아닌 경우에만 기관코드 검증 (선생님코드는 선택)
-      if (!isSpecialRole) {
-        // 선생님코드는 선택사항 — 입력했을 때만 검증
-        if (formData.instructorCode.trim().length > 0) {
-          const codeResult = await validateInstructorCode(formData.instructorCode);
-          if (!codeResult.valid) {
-            setError({
-              title: '선생님코드 오류 (Teacher Code Error)',
-              reason: '유효하지 않은 선생님코드입니다 (Invalid teacher code)',
-              solution: '비워두거나 올바른 코드를 입력하세요 (Leave blank or enter a valid code)',
-            });
-            setIsLoading(false);
-            return;
-          }
-        }
+      // 기관코드 유효성 검증 (마스터 코드는 우회) + 강사 자동 매칭
+      const isMasterOrgCode = formData.orgCode.toUpperCase() === MASTER_ORG_CODE;
+      let instructorId: string | null = null;
 
-        // 기관코드 유효성 검증 (마스터 코드는 우회)
-        const isMasterOrgCode = formData.orgCode.toUpperCase() === MASTER_ORG_CODE;
-        if (!isMasterOrgCode) {
-          const orgResult = await validateOrgCode(formData.orgCode);
-          if (!orgResult.valid) {
-            setError({
-              title: '기관코드 오류 (Institution Code Error)',
-              reason: '유효하지 않은 기관코드입니다 (Invalid institution code)',
-              solution: `현장 가입은 "${MASTER_ORG_CODE}" 코드를 사용하세요 (Onsite students use code: ${MASTER_ORG_CODE})`,
-            });
-            setIsLoading(false);
-            return;
-          }
+      if (!isMasterOrgCode) {
+        const orgResult = await validateOrgCode(formData.orgCode);
+        if (!orgResult.valid) {
+          setError({
+            title: '기관코드 오류 (Institution Code Error)',
+            reason: '유효하지 않은 기관코드입니다 (Invalid institution code)',
+            solution: `현장 가입은 "${MASTER_ORG_CODE}" 코드를 사용하세요 (Onsite students use code: ${MASTER_ORG_CODE})`,
+          });
+          setIsLoading(false);
+          return;
         }
+        instructorId = orgResult.instructorId;
       }
 
       await register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        instructorCode: formData.instructorCode,
         orgCode: formData.orgCode,
         country: formData.country,
         gender: formData.gender as 'male' | 'female',
         birthYear: parseInt(formData.birthYear, 10),
-        authCode: formData.authCode || undefined,
+        koreanLevel: formData.koreanLevel,
+        yearsInKorea: formData.yearsInKorea,
+        visaType: formData.visaType,
+        instructorId,
       });
-      navigate(isCeoSignup ? '/ceo' : isInstructorSignup ? '/admin' : '/register-complete');
+      navigate('/register-complete');
     } catch (err) {
       setError(parseAuthError(err));
     } finally {
@@ -246,7 +297,7 @@ export default function RegisterForm() {
           </p>
         </div>
 
-        {/* 현장 학생 안내 배너 (P0-1 외국인 친화 가입) */}
+        {/* 현장 학생 안내 배너 */}
         <div className="mb-4 p-4 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl">
           <div className="flex items-start gap-3">
             <div className="text-2xl">🏫</div>
@@ -262,9 +313,6 @@ export default function RegisterForm() {
                   {MASTER_ORG_CODE}
                 </code>
               </div>
-              <p className="text-[11px] text-amber-700 mt-2">
-                💡 선생님코드는 비워두셔도 돼요 (Teacher code is optional)
-              </p>
             </div>
           </div>
         </div>
@@ -475,50 +523,7 @@ export default function RegisterForm() {
               )}
             </div>
 
-            {/* 8. 강사코드 (선택) */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                {t('register.instructorCodeLabel', '선생님코드 (Teacher Code)')}{' '}
-                <span className="text-gray-400 text-xs font-normal">선택 (Optional)</span>
-              </label>
-              <div className="relative">
-                <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  name="instructorCode"
-                  value={formData.instructorCode}
-                  onChange={(e) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      instructorCode: e.target.value.toUpperCase(),
-                    }));
-                  }}
-                  placeholder="비워두셔도 돼요 (Leave blank if unsure)"
-                  className={`w-full pl-11 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-kk-red focus:border-transparent transition-all ${
-                    instructorValidation?.valid ? 'border-green-400 bg-green-50' :
-                    instructorValidation && !instructorValidation.valid ? 'border-red-400 bg-red-50' :
-                    'border-gray-200'
-                  }`}
-                />
-                {isValidatingInstructor && (
-                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-400" />
-                )}
-              </div>
-              {instructorValidation?.valid && (
-                <p className="text-xs text-green-600 mt-1 ml-1 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  {instructorValidation.instructorName}
-                </p>
-              )}
-              {instructorValidation && !instructorValidation.valid && formData.instructorCode.length >= 2 && (
-                <p className="text-xs text-red-500 mt-1 ml-1 flex items-center gap-1">
-                  <XCircle className="w-3 h-3" />
-                  {t('register.invalidInstructorCode', '유효하지 않은 선생님코드 (Invalid teacher code)')}
-                </p>
-              )}
-            </div>
-
-            {/* 9. 기관코드 */}
+            {/* 8. 기관코드 (강사 자동 매칭) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 {t('register.orgCodeLabel', '기관코드 (Institution Code)')} <span className="text-red-500">*</span>
@@ -548,10 +553,17 @@ export default function RegisterForm() {
                 )}
               </div>
               {orgValidation?.valid && (
-                <p className="text-xs text-green-600 mt-1 ml-1 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  {orgValidation.orgName}
-                </p>
+                <div className="text-xs text-green-600 mt-1 ml-1 space-y-0.5">
+                  <p className="flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    {orgValidation.orgName}
+                  </p>
+                  {orgValidation.instructorName && (
+                    <p className="ml-4 text-gray-500">
+                      👤 담당 강사: {orgValidation.instructorName}
+                    </p>
+                  )}
+                </div>
               )}
               {orgValidation && !orgValidation.valid && formData.orgCode.length >= 6 && (
                 <p className="text-xs text-red-500 mt-1 ml-1 flex items-center gap-1">
@@ -561,41 +573,90 @@ export default function RegisterForm() {
               )}
             </div>
 
-            {/* 10. 인증코드 (선택) */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                인증코드 (Auth Code) <span className="text-gray-400 text-xs">선택사항</span>
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  name="authCode"
-                  value={formData.authCode}
-                  onChange={handleChange}
-                  placeholder="특수 인증코드 (선택)"
-                  className={`w-full pl-11 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-kk-red focus:border-transparent transition-all ${
-                    isCeoSignup ? 'border-purple-400 bg-purple-50' :
-                    isInstructorSignup ? 'border-green-400 bg-green-50' :
-                    'border-gray-200'
-                  }`}
-                />
-              </div>
-              {isCeoSignup && (
-                <p className="text-xs text-purple-600 mt-1 ml-1 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  CEO 계정으로 가입합니다
-                </p>
-              )}
-              {isInstructorSignup && (
-                <p className="text-xs text-green-600 mt-1 ml-1 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  강사 계정으로 가입합니다
-                </p>
-              )}
+            {/* ─── v6 신규: 한국 생활 정보 ─────────────────────── */}
+            <div className="pt-2 border-t border-gray-100">
+              <p className="text-xs font-bold text-gray-500 mb-3 mt-2">
+                🇰🇷 한국 생활 정보 (Life in Korea)
+              </p>
             </div>
 
-            {/* P0-3: 약관/개인정보 동의 체크박스 */}
+            {/* 9. 한국어 수준 (TOPIK) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                {t('register.koreanLevelLabel', '한국어 어느 정도 할 수 있어요? (How well do you speak Korean?)')} <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Languages className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <select
+                  name="koreanLevel"
+                  value={formData.koreanLevel}
+                  onChange={handleChange}
+                  className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-kk-red focus:border-transparent transition-all appearance-none bg-white"
+                  required
+                >
+                  <option value="">선택해주세요 (Please select)</option>
+                  {KOREAN_LEVEL_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.ko} ({opt.en})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* 10. 한국에 온 지 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                {t('register.yearsInKoreaLabel', '한국에 온 지 얼마나 됐어요? (How long have you been in Korea?)')} <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <select
+                  name="yearsInKorea"
+                  value={formData.yearsInKorea}
+                  onChange={handleChange}
+                  className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-kk-red focus:border-transparent transition-all appearance-none bg-white"
+                  required
+                >
+                  <option value="">선택해주세요 (Please select)</option>
+                  {YEARS_IN_KOREA_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.ko} ({opt.en})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* 11. 비자 종류 (칩 UI) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <CreditCard className="w-4 h-4 inline mr-1 -mt-0.5 text-gray-400" />
+                {t('register.visaTypeLabel', '어떤 비자가 있어요? (What visa do you have?)')} <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {VISA_OPTIONS.map((opt) => {
+                  const selected = formData.visaType === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, visaType: opt.value }))}
+                      className={`px-2 py-2.5 rounded-xl border-2 text-center transition-all ${
+                        selected
+                          ? 'border-kk-red bg-red-50 text-kk-red'
+                          : 'border-gray-200 hover:border-gray-300 text-gray-600 bg-white'
+                      }`}
+                    >
+                      <div className="font-bold text-sm">{opt.ko}</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5 leading-tight">{opt.desc}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 약관/개인정보 동의 */}
             <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-2.5">
               <label className="flex items-center gap-2 cursor-pointer border-b border-gray-200 pb-2.5 mb-1">
                 <input

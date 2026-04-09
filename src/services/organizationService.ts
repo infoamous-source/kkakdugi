@@ -87,24 +87,48 @@ export async function deleteOrganization(orgId: string): Promise<boolean> {
   return true;
 }
 
-/** 기관코드 검증 (가입 시 사용) */
-export async function validateOrgCode(code: string): Promise<{ valid: boolean; orgName: string | null; programTypes: SchoolId[] | null }> {
+/** 기관코드 검증 (가입 시 사용) — 강사 자동 매칭 포함
+ *
+ * 가입 폼 v6: 학생이 기관코드만 입력하면 강사가 자동으로 연결됨.
+ * 별도의 선생님코드 입력 불필요.
+ */
+export async function validateOrgCode(code: string): Promise<{
+  valid: boolean;
+  orgName: string | null;
+  programTypes: SchoolId[] | null;
+  instructorId: string | null;
+  instructorName: string | null;
+}> {
   const { data, error } = await supabase
     .from('organizations')
-    .select('name, program_types')
+    .select('name, program_types, instructor_id')
     .eq('code', code.toUpperCase())
     .limit(1);
 
   if (error) {
     console.error('Validate org code error:', error.message);
-    return { valid: false, orgName: null, programTypes: null };
+    return { valid: false, orgName: null, programTypes: null, instructorId: null, instructorName: null };
   }
 
   if (data && data.length > 0) {
-    const programTypes = (data[0].program_types as SchoolId[] | null) || null;
-    return { valid: true, orgName: data[0].name, programTypes };
+    const row = data[0];
+    const programTypes = (row.program_types as SchoolId[] | null) || null;
+    const instructorId = (row.instructor_id as string | null) || null;
+
+    // 강사 이름 조회 (자동 매칭)
+    let instructorName: string | null = null;
+    if (instructorId) {
+      const { data: instructorProfile } = await supabase
+        .from('profiles')
+        .select('name')
+        .eq('id', instructorId)
+        .maybeSingle();
+      instructorName = instructorProfile?.name || null;
+    }
+
+    return { valid: true, orgName: row.name, programTypes, instructorId, instructorName };
   }
-  return { valid: false, orgName: null, programTypes: null };
+  return { valid: false, orgName: null, programTypes: null, instructorId: null, instructorName: null };
 }
 
 /** 기관코드로 program_types 조회 */

@@ -75,6 +75,23 @@ function ModuleCard({ module, trackId, trackColor, completionRate = 0 }: ModuleC
       navigate(`/track/digital-basics/module/${module.id}`);
       return;
     }
+
+    // 커리어학과 — 모듈별 도구 라우팅
+    if (trackId === 'career') {
+      // cr-01: 이력서 (자소서 빌더 + K-이력서)
+      if (module.id === 'cr-01') {
+        navigate('/career/resume-builder');
+        return;
+      }
+      // cr-02: 면접 (면접 시뮬레이터)
+      if (module.id === 'cr-02') {
+        navigate('/career/interview');
+        return;
+      }
+      // cr-03, cr-04: 아직 구현 안 됨
+      alert('이 수업은 곧 준비될 거예요! 지금은 이력서·면접 수업을 눌러보세요.');
+      return;
+    }
   };
 
   return (

@@ -1,5 +1,10 @@
 // ─── Supabase DB row types ───
 
+// 가입 폼 v6 신규 필드 타입 (PRD: docs/prd-signup-form-v5.md)
+export type KoreanLevel = 'topik0' | 'topik1' | 'topik2' | 'topik3' | 'topik4' | 'topik5' | 'topik6';
+export type YearsInKorea = 'under6m' | '6m_1y' | '1y_3y' | '3y_5y' | '5y_10y' | 'over10y';
+export type VisaType = 'E7' | 'E9' | 'F2' | 'F4' | 'F5' | 'F6' | 'D2' | 'D4' | 'H2' | 'other' | 'none';
+
 export interface ProfileRow {
   id: string;
   name: string;
@@ -14,6 +19,10 @@ export interface ProfileRow {
   learning_purpose: string;
   gemini_api_key: string | null;
   marketing_persona: string | null; // 1교시 적성검사 결과 (PersonaId)
+  // 가입 폼 v6 신규 필드
+  korean_level: KoreanLevel | null;
+  years_in_korea: YearsInKorea | null;
+  visa_type: VisaType | null;
   created_at: string;
   updated_at: string;
 }

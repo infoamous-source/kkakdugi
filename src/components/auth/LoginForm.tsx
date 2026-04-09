@@ -30,7 +30,8 @@ export default function LoginForm() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(true);
+  // P0-5: 공용 기기 환경 기본값 — 학생은 자동 로그인 OFF, 선생님만 ON
+  const [rememberMe, setRememberMe] = useState(isInstructorMode);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -222,19 +223,21 @@ export default function LoginForm() {
               </div>
             </div>
 
-            {/* 자동 로그인 체크박스 */}
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="rememberMe"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-5 h-5 text-kk-red border-gray-300 rounded focus:ring-kk-red cursor-pointer"
-              />
-              <label htmlFor="rememberMe" className="text-sm text-gray-600 cursor-pointer select-none">
-                {t('auth.rememberMe')}
-              </label>
-            </div>
+            {/* 자동 로그인 체크박스 — P0-5: 공용 기기 환경이라 학생 모드에서는 숨김 */}
+            {isInstructorMode && (
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-5 h-5 text-kk-red border-gray-300 rounded focus:ring-kk-red cursor-pointer"
+                />
+                <label htmlFor="rememberMe" className="text-sm text-gray-600 cursor-pointer select-none">
+                  {t('auth.rememberMe')}
+                </label>
+              </div>
+            )}
 
             {/* 로그인 버튼 */}
             <button

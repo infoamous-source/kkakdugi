@@ -148,10 +148,11 @@
     "passwordHint": "영문 + 숫자 + 특수문자 혼합, 8자 이상 (Letters + numbers + special characters, 8+ chars)",
     "passwordConfirmLabel": "비밀번호 확인 (Confirm Password)",
     "passwordMismatch": "비밀번호가 일치하지 않습니다 (Passwords do not match)",
-    "instructorCodeLabel": "선생님코드 (Instructor Code)",
-    "instructorCodePlaceholder": "선생님에게 받은 코드를 입력하세요 (Enter the code from your instructor)",
     "orgCodeLabel": "기관코드 (Institution Code)",
     "orgCodePlaceholder": "기관에서 받은 코드를 입력하세요 (Enter the code from your institution)",
+    "koreanLevelLabel": "한국어 어느 정도 할 수 있어요? (How well do you speak Korean?)",
+    "yearsInKoreaLabel": "한국에 온 지 얼마나 됐어요? (How long have you been in Korea?)",
+    "visaTypeLabel": "어떤 비자가 있어요? (What visa do you have?)",
     "submitButton": "가입하기 (Sign Up)",
     "loginLink": "이미 계정이 있으신가요? 로그인 (Already have an account? Log in)"
   },

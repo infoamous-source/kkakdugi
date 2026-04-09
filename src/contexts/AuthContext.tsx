@@ -3,7 +3,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 import type { User, AuthState } from '../types/auth';
 import type { ProfileRow } from '../types/database';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { updateProfile, validateInstructorCode } from '../services/profileService';
+import { updateProfile } from '../services/profileService';
 import { getStoredApiKey, restoreGeminiConnection, clearGeminiConnection } from '../services/gemini/geminiClient';
 import { createEnrollment } from '../services/enrollmentService';
 import { getOrgProgramTypes } from '../services/organizationService';
@@ -24,12 +24,16 @@ export interface RegisterData {
   name: string;
   email: string;
   password: string;
-  instructorCode: string;
   orgCode: string;
   country: string;
   gender: 'male' | 'female';
   birthYear: number;
-  authCode?: string; // 특수 인증 코드: "딸기" = instructor, "체리" = ceo
+  // 가입 폼 v6 신규 필드 (모두 필수)
+  koreanLevel: string;   // topik0~topik6
+  yearsInKorea: string;  // under6m, 6m_1y, 1y_3y, 3y_5y, 5y_10y, over10y
+  visaType: string;      // E7, E9, F2, F4, F5, F6, D2, D4, H2, other, none
+  // 강사 자동 매칭 (validateOrgCode 결과)
+  instructorId?: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -49,6 +53,10 @@ function profileToUser(p: ProfileRow): User {
     age: p.age ?? undefined,
     gender: p.gender ?? undefined,
     country: p.country ?? undefined,
+    // 가입 폼 v6 신규 필드
+    koreanLevel: p.korean_level ?? null,
+    yearsInKorea: p.years_in_korea ?? null,
+    visaType: p.visa_type ?? null,
   };
 }
 
@@ -232,21 +240,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('supabase_not_configured');
     }
 
-    // 역할 결정: authCode로 특수 역할 확인
-    let role: 'student' | 'instructor' | 'ceo' = 'student';
-    if (data.authCode === '체리') {
-      role = 'ceo';
-    } else if (data.authCode === '딸기') {
-      role = 'instructor';
-    }
-
-    // 0) 선생님코드 유효성 검증 (학생 역할이고 입력했을 때만 — 선택사항)
-    if (role === 'student' && data.instructorCode && data.instructorCode.trim().length > 0) {
-      const result = await validateInstructorCode(data.instructorCode);
-      if (!result.valid) {
-        throw new Error('invalid_instructor_code');
-      }
-    }
+    // 가입 폼 v6: 학생 역할만 가입 가능. CEO/강사는 admin 패널에서 별도 생성.
+    const role: 'student' = 'student';
 
     // 1) Supabase Auth 계정 생성 (트리거가 profiles 자동 생성)
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -256,7 +251,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: {
           name: data.name,
           role,
-          instructor_code: data.instructorCode || '',
           org_code: data.orgCode || '',
         },
       },
@@ -304,26 +298,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(loginError.message);
     }
 
-    // 4) 추가 프로필 정보 저장 (country, gender, age, instructor_code, org_code, role)
+    // 4) 추가 프로필 정보 저장 (가입 폼 v6 신규 필드 포함)
     const currentYear = new Date().getFullYear();
     await updateProfile(authData.user.id, {
       country: data.country,
       gender: data.gender,
       age: currentYear - data.birthYear,
-      instructor_code: data.instructorCode || '',
       org_code: data.orgCode || '',
       role,
+      // v6 신규 필드
+      korean_level: data.koreanLevel as never,
+      years_in_korea: data.yearsInKorea as never,
+      visa_type: data.visaType as never,
     });
 
-    // 5) 기관의 program_types에 따라 enrollment 자동 생성 (즉시 active) - 학생만
-    if (role === 'student') {
-      const programTypes = data.orgCode
-        ? await getOrgProgramTypes(data.orgCode)
-        : ['marketing' as const];
-      await Promise.all(
-        programTypes.map(schoolId => createEnrollment(authData.user!.id, schoolId, null, true)),
-      );
-    }
+    // 5) 기관의 program_types에 따라 enrollment 자동 생성 (즉시 active)
+    //    강사 ID는 validateOrgCode 결과에서 자동 매칭됨
+    const programTypes = data.orgCode
+      ? await getOrgProgramTypes(data.orgCode)
+      : ['marketing' as const];
+    await Promise.all(
+      programTypes.map(schoolId =>
+        createEnrollment(authData.user!.id, schoolId, data.instructorId ?? null, true),
+      ),
+    );
 
     // 6) user 상태가 onAuthStateChange로 자동 업데이트됨
     return true;

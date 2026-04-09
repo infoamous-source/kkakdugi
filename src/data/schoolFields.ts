@@ -1,7 +1,25 @@
 import type { SchoolField } from '../types/enrollment';
 
-/** 학교별 추가 입학 정보 필드 정의 */
+/**
+ * @deprecated 가입 폼 v6 (2026-04-08) 이후 폐지됨.
+ * PRD: docs/prd-signup-form-v5.md
+ *
+ * 학과별 추가 정보 입력 폼은 사용자 경험 문제로 폐지되었다.
+ * - 공통 정보(한국어 수준, 체류 기간, 비자)는 가입 폼(profiles)에서 수집
+ * - 도구별 특수 정보(마케팅 SNS, 디지털 기기 등)는 그냥 폐지
+ * - 학과 등록 = 1클릭으로 단순화
+ *
+ * 이 상수는 기존 코드 참조 호환성을 위해 빈 배열로 유지된다.
+ * 향후 도구 온보딩에서 재활용할 경우 참고용 이력으로 남겨둠 (주석 처리).
+ */
 export const SCHOOL_ADDITIONAL_FIELDS: Record<string, SchoolField[]> = {
+  'digital-basics': [],
+  'marketing': [],
+  'career': [],
+};
+
+/* 이전 필드 정의 (참고용 보존, 사용 금지)
+const _LEGACY_SCHOOL_ADDITIONAL_FIELDS: Record<string, SchoolField[]> = {
   'digital-basics': [
     {
       id: 'computer_experience',
@@ -124,3 +142,4 @@ export const SCHOOL_ADDITIONAL_FIELDS: Record<string, SchoolField[]> = {
     },
   ],
 };
+*/

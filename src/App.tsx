@@ -41,6 +41,9 @@ const DigitalLabTab = lazy(() => import('./pages/digital/school/DigitalLabTab'))
 const DigitalChecklistTool = lazy(() => import('./pages/digital/school/tools/DigitalChecklistTool'));
 const AIWelcomePage = lazy(() => import('./pages/AIWelcomePage'));
 const RegisterCompletePage = lazy(() => import('./pages/RegisterCompletePage'));
+const CareerResumeBuilderPage = lazy(() => import('./pages/career/ResumeBuilderPage'));
+const CareerKResumePage = lazy(() => import('./pages/career/KResumePage'));
+const CareerInterviewSimulatorPage = lazy(() => import('./pages/career/InterviewSimulatorPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const TermsPage = lazy(() => import('./pages/legal/TermsPage'));
 const PrivacyPage = lazy(() => import('./pages/legal/PrivacyPage'));
@@ -127,6 +130,11 @@ export default function App() {
             <Route path="/marketing" element={<Navigate to="/marketing/hub" replace />} />
             <Route path="/marketing/modules/:moduleId" element={<MarketingModuleDetailPage />} />
             <Route path="/marketing/tools/:toolId" element={<MarketingToolRouter />} />
+
+            {/* 커리어학과 — 자소서 빌더 / K-이력서 / 면접 시뮬레이터 */}
+            <Route path="/career/resume-builder" element={<CareerResumeBuilderPage />} />
+            <Route path="/career/k-resume" element={<CareerKResumePage />} />
+            <Route path="/career/interview" element={<CareerInterviewSimulatorPage />} />
 
             {/* 내 프로필 */}
             <Route path="/profile" element={<ProfilePage />} />
