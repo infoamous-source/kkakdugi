@@ -11,6 +11,7 @@ import {
 import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
 import type { ROASInput, ROASOutput, ROASChannel } from '../../../../types/school';
 import { getMyTeam, addTeamIdea } from '../../../../services/teamService';
+import { addIdeaBoxItem } from '../../../../services/ideaBoxService';
 import { TrafficLight } from './common/TrafficLight';
 import { SaveToGemBoxButton } from './common/SaveToGemBoxButton';
 
@@ -139,7 +140,7 @@ export default function ROASSimulatorTool() {
   };
 
   const handleSaveToGemBox = async () => {
-    if (!user || !output || !myTeamId) return;
+    if (!user || !output) return;
     const statusKo = output.status === 'loss' ? '손해' : output.status === 'breakeven' ? '본전' : '좋아요';
     const title = `📊 ROAS ${output.roas}× (${statusKo})`;
     const content = [
@@ -151,7 +152,19 @@ export default function ROASSimulatorTool() {
       `처방: ${output.prescription.replace(/\n/g, ' ')}`,
       `오늘 할 일: ${output.todoOne}`,
     ].join('\n');
-    await addTeamIdea(myTeamId, user.id, user.name, '📊', 'roas-simulator', title, content);
+    // 개인 보석함에 항상 저장
+    await addIdeaBoxItem({
+      id: crypto.randomUUID(),
+      userId: user.id,
+      type: 'tool-result',
+      title,
+      content,
+      toolId: 'roas-simulator',
+    });
+    // 팀이 있으면 팀 보석함에도
+    if (myTeamId) {
+      await addTeamIdea(myTeamId, user.id, user.name, '📊', 'roas-simulator', title, content);
+    }
     setSavedToGemBox(true);
   };
 
@@ -413,14 +426,12 @@ export default function ROASSimulatorTool() {
               </p>
             </div>
 
-            {/* 보석함 저장 */}
-            {myTeamId && (
-              <SaveToGemBoxButton
-                onSave={handleSaveToGemBox}
-                saved={savedToGemBox}
-                className="mt-2"
-              />
-            )}
+            {/* 보석함 저장 (개인 보석함, 팀 있으면 팀에도) */}
+            <SaveToGemBoxButton
+              onSave={handleSaveToGemBox}
+              saved={savedToGemBox}
+              className="mt-2"
+            />
 
             {/* 졸업 CTA */}
             <div className="bg-gradient-to-br from-amber-100 to-amber-200 border border-amber-400 rounded-xl p-3 text-center">

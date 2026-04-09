@@ -8,6 +8,7 @@ import { generateBrandingStrategy } from '../../../../services/gemini/marketComp
 import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
 import type { EdgeMakerResult, CompetitorInfo } from '../../../../types/school';
 import { getMyTeam, addTeamIdea } from '../../../../services/teamService';
+import { addIdeaBoxItem } from '../../../../services/ideaBoxService';
 import { SimpleMarkdown } from '@/components/common/SimpleMarkdown';
 import { PlusListInput } from './common/PlusListInput';
 import { SaveToGemBoxButton } from './common/SaveToGemBoxButton';
@@ -129,7 +130,7 @@ export default function EdgeMakerTool() {
   };
 
   const handleSaveToTeamBox = async () => {
-    if (!user || !result || !myTeamId) return;
+    if (!user || !result) return;
     const brandName = result.output.brandNames?.[0]?.name || 'Brand';
     const title = `⚡ ${brandName}`;
     const content = [
@@ -137,7 +138,17 @@ export default function EdgeMakerTool() {
       `슬로건: "${result.output.slogan}"`,
       `브랜드: ${result.output.brandNames.map(b => `${b.name} (${b.type})`).join(', ')}`,
     ].join('\n');
-    await addTeamIdea(myTeamId, user.id, user.name, '⚡', 'edge-maker', title, content);
+    await addIdeaBoxItem({
+      id: crypto.randomUUID(),
+      userId: user.id,
+      type: 'tool-result',
+      title,
+      content,
+      toolId: 'edge-maker',
+    });
+    if (myTeamId) {
+      await addTeamIdea(myTeamId, user.id, user.name, '⚡', 'edge-maker', title, content);
+    }
     setSavedToTeamBox(true);
     setTimeout(() => setSavedToTeamBox(false), 2000);
   };
@@ -514,9 +525,7 @@ export default function EdgeMakerTool() {
             )}
 
             {/* 결과를 아이디어보석함에 저장하기 */}
-            {myTeamId && (
-              <SaveToGemBoxButton onSave={handleSaveToTeamBox} saved={savedToTeamBox} />
-            )}
+            <SaveToGemBoxButton onSave={handleSaveToTeamBox} saved={savedToTeamBox} />
 
             {/* 다음 교시 CTA */}
             <div className="bg-blue-50 border border-dashed border-blue-300 rounded-xl p-3 text-center">

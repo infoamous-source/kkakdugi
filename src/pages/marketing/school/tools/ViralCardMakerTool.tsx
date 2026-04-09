@@ -14,6 +14,7 @@ import type {
   ViralImageSource,
 } from '../../../../types/school';
 import { getMyTeam, addTeamIdea } from '../../../../services/teamService';
+import { addIdeaBoxItem } from '../../../../services/ideaBoxService';
 import { PlusListInput } from './common/PlusListInput';
 import { SaveToGemBoxButton } from './common/SaveToGemBoxButton';
 import { ViralCardTemplate } from './common/ViralCardTemplates';
@@ -184,13 +185,40 @@ export default function ViralCardMakerTool() {
   };
 
   const handleSaveToGemBox = async () => {
-    if (!user || !slides || !myTeamId) return;
+    if (!user || !slides) return;
     const title = `🎨 ${productName} 카드뉴스 4장`;
     const content = slides
       .map((s, i) => `${i + 1}. [${s.stepKoLabel}] ${s.copyText.replace(/\n/g, ' ')}`)
       .join('\n');
-    await addTeamIdea(myTeamId, user.id, user.name, '🎨', 'viral-card-maker', title, content);
+    await addIdeaBoxItem({
+      id: crypto.randomUUID(),
+      userId: user.id,
+      type: 'tool-result',
+      title,
+      content,
+      toolId: 'viral-card-maker',
+    });
+    if (myTeamId) {
+      await addTeamIdea(myTeamId, user.id, user.name, '🎨', 'viral-card-maker', title, content);
+    }
     setSavedToGemBox(true);
+  };
+
+  // PNG 다운로드 — html2canvas로 slide 캡처
+  const handleDownloadCardPng = async (slideIdx: number) => {
+    const el = document.getElementById(`viral-slide-${slideIdx}`);
+    if (!el) return;
+    try {
+      const { default: html2canvas } = await import('html2canvas');
+      const canvas = await html2canvas(el, { scale: 3, useCORS: true, backgroundColor: '#fff' });
+      const link = document.createElement('a');
+      link.download = `viral-card-${slideIdx + 1}-${productName}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('PNG download failed:', err);
+      alert('PNG 다운로드 실패. 다시 시도해주세요.');
+    }
   };
 
   const isInputValid =
@@ -395,14 +423,21 @@ export default function ViralCardMakerTool() {
 
             <div className="grid grid-cols-2 gap-2.5">
               {slides.map((slide, i) => (
-                <ViralCardTemplate
-                  key={i}
-                  slide={slide}
-                  index={i}
-                  productName={productName}
-                  imageUrl={slide.imageUrl || null}
-                  fallbackGradient={FALLBACK_GRADIENTS[i]}
-                />
+                <div key={i} id={`viral-slide-${i}`} className="relative">
+                  <ViralCardTemplate
+                    slide={slide}
+                    index={i}
+                    productName={productName}
+                    imageUrl={slide.imageUrl || null}
+                    fallbackGradient={FALLBACK_GRADIENTS[i]}
+                  />
+                  <button
+                    onClick={() => handleDownloadCardPng(i)}
+                    className="absolute bottom-1 right-1 bg-black/60 hover:bg-black/80 text-white text-[10px] px-2 py-1 rounded"
+                  >
+                    📥 PNG
+                  </button>
+                </div>
               ))}
             </div>
 
@@ -416,12 +451,6 @@ export default function ViralCardMakerTool() {
                   <RefreshCw className="w-3 h-3" /> 다른 이미지로
                 </button>
               )}
-              <button
-                onClick={() => alert('PNG 다운로드는 추후 지원 예정이에요')}
-                className="text-[11px] text-gray-500 hover:text-gray-700"
-              >
-                📥 PNG 받기
-              </button>
             </div>
 
             {isMock && aiEnabled && (
@@ -430,9 +459,7 @@ export default function ViralCardMakerTool() {
               </p>
             )}
 
-            {myTeamId && (
-              <SaveToGemBoxButton onSave={handleSaveToGemBox} saved={savedToGemBox} />
-            )}
+            <SaveToGemBoxButton onSave={handleSaveToGemBox} saved={savedToGemBox} />
 
             <div className="bg-blue-50 border border-dashed border-blue-300 rounded-xl p-3 text-center">
               <button

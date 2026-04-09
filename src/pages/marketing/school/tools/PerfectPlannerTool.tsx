@@ -14,6 +14,7 @@ import type {
   LiveScript,
 } from '../../../../types/school';
 import { getMyTeam, addTeamIdea } from '../../../../services/teamService';
+import { addIdeaBoxItem } from '../../../../services/ideaBoxService';
 import { PlusListInput } from './common/PlusListInput';
 import { SaveToGemBoxButton } from './common/SaveToGemBoxButton';
 
@@ -136,7 +137,7 @@ export default function PerfectPlannerTool() {
   };
 
   const handleSaveToGemBox = async () => {
-    if (!user || !result || !myTeamId) return;
+    if (!user || !result) return;
     const dp = result.detailPage;
     const title = `📋 ${productName} · ${mode === 'detail' ? '상세페이지' : '라이브 방송'}`;
     const content = [
@@ -145,7 +146,17 @@ export default function PerfectPlannerTool() {
       `Pain: ${dp.painPoints.map((p) => p.text.replace(/\n/g, ' ')).join(' / ')}`,
       `특징: ${dp.features.map((f) => f.title).join(' · ')}`,
     ].join('\n');
-    await addTeamIdea(myTeamId, user.id, user.name, '📋', 'perfect-planner', title, content);
+    await addIdeaBoxItem({
+      id: crypto.randomUUID(),
+      userId: user.id,
+      type: 'tool-result',
+      title,
+      content,
+      toolId: 'perfect-planner',
+    });
+    if (myTeamId) {
+      await addTeamIdea(myTeamId, user.id, user.name, '📋', 'perfect-planner', title, content);
+    }
     setSavedToGemBox(true);
   };
 
@@ -355,9 +366,7 @@ export default function PerfectPlannerTool() {
             </div>
 
             {/* 보석함 저장 */}
-            {myTeamId && (
-              <SaveToGemBoxButton onSave={handleSaveToGemBox} saved={savedToGemBox} />
-            )}
+            <SaveToGemBoxButton onSave={handleSaveToGemBox} saved={savedToGemBox} />
 
             {/* 다음 교시 CTA */}
             <div className="bg-blue-50 border border-dashed border-blue-300 rounded-xl p-3 text-center">

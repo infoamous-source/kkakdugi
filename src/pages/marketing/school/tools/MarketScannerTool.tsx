@@ -8,6 +8,7 @@ import { generateMarketAnalysis } from '../../../../services/gemini/marketCompas
 import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
 import type { MarketScannerResult } from '../../../../types/school';
 import { getMyTeam, addTeamIdea } from '../../../../services/teamService';
+import { addIdeaBoxItem } from '../../../../services/ideaBoxService';
 import { SimpleMarkdown } from '@/components/common/SimpleMarkdown';
 import { PlusListInput } from './common/PlusListInput';
 import { SaveToGemBoxButton } from './common/SaveToGemBoxButton';
@@ -146,14 +147,24 @@ export default function MarketScannerTool() {
   };
 
   const handleSaveToTeamBox = async () => {
-    if (!user || !result || !myTeamId) return;
+    if (!user || !result) return;
     const title = `🔍 ${result.input.itemKeyword}`;
     const content = [
       `키워드: ${result.output.relatedKeywords.map(k => `#${k}`).join(' ')}`,
       `고객의 소리: ${result.output.painPoints.join(' / ')}`,
       result.output.analysisReport ? `\n분석:\n${result.output.analysisReport}` : '',
     ].filter(Boolean).join('\n');
-    await addTeamIdea(myTeamId, user.id, user.name, '🔍', 'market-scanner', title, content);
+    await addIdeaBoxItem({
+      id: crypto.randomUUID(),
+      userId: user.id,
+      type: 'tool-result',
+      title,
+      content,
+      toolId: 'market-scanner',
+    });
+    if (myTeamId) {
+      await addTeamIdea(myTeamId, user.id, user.name, '🔍', 'market-scanner', title, content);
+    }
     setSavedToTeamBox(true);
     setTimeout(() => setSavedToTeamBox(false), 2000);
   };
@@ -499,9 +510,7 @@ export default function MarketScannerTool() {
             )}
 
             {/* 결과를 아이디어보석함에 저장하기 */}
-            {myTeamId && (
-              <SaveToGemBoxButton onSave={handleSaveToTeamBox} saved={savedToTeamBox} />
-            )}
+            <SaveToGemBoxButton onSave={handleSaveToTeamBox} saved={savedToTeamBox} />
 
             {/* 다음 단계 */}
             <div className="bg-kk-cream rounded-2xl border border-kk-warm p-5">
