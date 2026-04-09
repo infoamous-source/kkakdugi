@@ -66,7 +66,7 @@ export function PlusListInput({
         )}
       </label>
       {displayItems.map((item, i) => (
-        <div key={i} className="flex items-center gap-1.5 mb-1.5">
+        <div key={i} className="flex items-center gap-1.5 mb-1.5 w-full min-w-0">
           <span className="text-gray-400 text-xs w-5 shrink-0 text-center">
             {BULLETS[i] || `${i + 1}.`}
           </span>
@@ -75,7 +75,7 @@ export function PlusListInput({
             value={item}
             onChange={(e) => updateItem(i, e.target.value)}
             placeholder={placeholder}
-            className={`flex-1 px-2.5 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kk-red ${
+            className={`flex-1 min-w-0 px-2.5 py-2 border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-kk-red ${
               autoLoadedBadge && item
                 ? 'border-blue-200 bg-blue-50'
                 : 'border-gray-200'
