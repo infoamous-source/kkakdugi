@@ -32,3 +32,6 @@ dev-dist/
 
 # Design preview
 design-preview.html
+
+# Supabase CLI temp
+supabase/.temp/
