@@ -125,8 +125,12 @@ export default function AIWelcomePage() {
                   API 키가 뭔가요?
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  API 키는 여러분이 AI 도구를 사용할 수 있게 해주는 <strong>특별한 비밀번호</strong>예요.
-                  마치 집 열쇠처럼, 이 키가 있어야 AI 비서와 대화할 수 있답니다! 🔑
+                  API 키는 여러분이 AI 도구를 사용할 수 있게 해주는 <strong>연결고리</strong>와 같아요.
+                  이 키가 있어야 AI 비서를 불러올 수 있답니다! 🔑
+                </p>
+                <p className="text-gray-500 leading-relaxed text-sm mt-2">
+                  An API KEY is like a <strong>connector</strong> that lets you use AI tools.
+                  You need this KEY to call your AI assistant!
                 </p>
               </div>
 
