@@ -6,6 +6,11 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { SocialProvider } from '../../contexts/AuthContext';
 import KkakdugiCharacter from '../brand/KkakdugiCharacter';
 
+// 소셜 로그인 활성화 플래그 — Supabase OAuth provider가 enable되어 있을 때만 true로
+// VITE_ENABLE_SOCIAL_LOGIN=true 설정 시 카카오/구글 버튼 노출
+// 2026-04-09: D-1 런칭 — Supabase OAuth 미설정 상태라 기본 false
+const SOCIAL_LOGIN_ENABLED = import.meta.env.VITE_ENABLE_SOCIAL_LOGIN === 'true';
+
 interface LocationState {
   redirectTo?: string;
 }
@@ -261,7 +266,7 @@ export default function LoginForm() {
           </div>
 
           {/* 소셜 로그인 구분선 */}
-          {!isInstructorMode && (
+          {!isInstructorMode && SOCIAL_LOGIN_ENABLED && (
             <div className="mt-6 relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-200" />
@@ -275,7 +280,7 @@ export default function LoginForm() {
           )}
 
           {/* 소셜 로그인 버튼 (학생 모드에서만) */}
-          {!isInstructorMode && (
+          {!isInstructorMode && SOCIAL_LOGIN_ENABLED && (
             <div className="mt-4 flex flex-col gap-3">
               {/* 카카오 로그인 */}
               <button
