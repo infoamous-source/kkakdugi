@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2, Key } from 'lucide-react';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { supabase } from '../../../../lib/supabase';
 import { useSchoolProgress } from '../../../../hooks/useSchoolProgress';
 import { generateSalesPlan } from '../../../../services/gemini/perfectPlannerService';
 import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
