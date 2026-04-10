@@ -72,6 +72,9 @@ export default function ShowcasePage() {
             const parsed = JSON.parse(data[0].content);
             setPlan(parsed.plan);
             setProductName(parsed.productName || '');
+            // 제출 시 저장된 이미지 URL 우선 사용
+            if (parsed.mainImg) setMainImg(parsed.mainImg);
+            if (parsed.subImg) setSubImg(parsed.subImg);
           } catch {
             setNoContent(true);
           }
@@ -82,16 +85,12 @@ export default function ShowcasePage() {
       });
   }, [selectedTeam]);
 
-  // Pexels 이미지 — 제품명이 아닌 상세 내용 기반으로 검색
+  // 저장된 이미지 없을 때만 Pexels 검색
   useEffect(() => {
-    if (!plan) return;
-    setMainImg(null);
-    setSubImg(null);
-    // 특징/헤드라인에서 키워드 추출
-    const mainKeyword = plan.features?.[0]?.title || plan.productTitle || productName;
-    const subKeyword = plan.solutionHeadline?.replace(/\n/g, ' ') || plan.headline?.replace(/\n/g, ' ') || productName;
-    searchPexelsImage(mainKeyword).then(u => u && setMainImg(u));
-    searchPexelsImage(subKeyword).then(u => u && setSubImg(u));
+    if (!plan || mainImg || subImg) return;
+    const kw = plan.productTitle || productName;
+    searchPexelsImage(kw).then(u => u && setMainImg(u));
+    searchPexelsImage(kw + ' premium').then(u => u && setSubImg(u));
   }, [plan, productName]);
 
   const currentTeamName = teams.find(t => t.id === selectedTeam)?.name || '';

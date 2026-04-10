@@ -396,10 +396,15 @@ export default function PerfectPlannerTool() {
                         .eq('tool_id', 'showcase');
                     }
 
+                    // 현재 화면의 이미지 URL도 함께 저장
+                    const { searchPexelsImage } = await import('../../../../services/pexelsService');
+                    const savedMainImg = await searchPexelsImage(productName);
+                    const savedSubImg = await searchPexelsImage(productName + ' premium');
+
                     await addTeamIdea(
                       myTeamId, user.id, user.name, '📋', 'showcase',
                       `🎓 ${productName} 발표용 상세페이지`,
-                      JSON.stringify({ plan: result.detailPage, productName })
+                      JSON.stringify({ plan: result.detailPage, productName, mainImg: savedMainImg, subImg: savedSubImg })
                     );
                     alert('✅ 발표용 상세페이지가 올라갔어요!\n선생님이 화면에서 보여줄 거예요.');
                   } catch (err) {
