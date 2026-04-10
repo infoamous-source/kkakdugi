@@ -187,7 +187,7 @@ export default function ViralCardMakerTool() {
 
   const handleSaveToGemBox = async () => {
     if (!user || !slides) return;
-    const title = `🎨 ${productName} 카드뉴스 4장`;
+    const title = `🎨 ${productName} SNS 광고이미지 4장`;
     const content = slides
       .map((s, i) => `${i + 1}. [${s.stepKoLabel}] ${s.copyText.replace(/\n/g, ' ')}`)
       .join('\n');
@@ -328,44 +328,6 @@ export default function ViralCardMakerTool() {
               />
             </div>
 
-            {/* 이미지 배경 */}
-            <div className="mb-3">
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                이미지 배경
-              </label>
-              <div className="flex gap-1.5">
-                <button
-                  onClick={() => setImageSource('pexels')}
-                  className={`flex-1 p-2 rounded-lg text-xs text-center border-2 ${
-                    imageSource === 'pexels'
-                      ? 'border-orange-500 bg-orange-50 text-orange-900'
-                      : 'border-gray-200 text-gray-700'
-                  }`}
-                >
-                  <div className="font-bold">📷 실사 무료이미지</div>
-                  <div className="text-[10px] mt-0.5 opacity-70">Pexels에서 자동 매칭</div>
-                </button>
-                <button
-                  onClick={() => setImageSource('ai')}
-                  className={`flex-1 p-2 rounded-lg text-xs text-center border-2 ${
-                    imageSource === 'ai'
-                      ? 'border-orange-500 bg-orange-50 text-orange-900'
-                      : 'border-gray-200 text-gray-700'
-                  }`}
-                  disabled
-                  title="AI 생성 이미지는 추후 제공 예정"
-                >
-                  <div className="font-bold">🎨 AI 생성 이미지</div>
-                  <div className="text-[10px] mt-0.5 opacity-70">Gemini로 직접 생성</div>
-                </button>
-              </div>
-              {!pexelsEnabled && imageSource === 'pexels' && (
-                <p className="text-[10px] text-amber-600 mt-1">
-                  ⚠️ Pexels 키 미설정 — 컬러 그라데이션 배경으로 표시됩니다
-                </p>
-              )}
-            </div>
-
             {/* 분위기 선택 */}
             <div className="mb-3">
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">
@@ -396,7 +358,7 @@ export default function ViralCardMakerTool() {
               disabled={!isInputValid}
               className="w-full py-3 bg-gray-900 hover:bg-black text-white font-bold rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              4장 카드뉴스 생성 →
+              4장 SNS 광고이미지 생성 →
             </button>
           </div>
         )}
@@ -405,7 +367,7 @@ export default function ViralCardMakerTool() {
         {phase === 'loading' && (
           <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
             <Loader2 className="w-8 h-8 text-kk-red animate-spin mx-auto mb-4" />
-            <p className="text-sm font-medium text-gray-600">4장 카드뉴스를 만들고 있어요…</p>
+            <p className="text-sm font-medium text-gray-600">4장 SNS 광고이미지를 만들고 있어요…</p>
           </div>
         )}
 
@@ -413,7 +375,7 @@ export default function ViralCardMakerTool() {
         {phase === 'result' && slides && (
           <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-3">
             <h3 className="text-xs text-gray-500 font-semibold">
-              4장 카드뉴스 ({pexelsEnabled ? 'Pexels 이미지' : '컬러 그라데이션'} + 레이아웃 템플릿)
+              4장 SNS 광고이미지 ({pexelsEnabled ? 'Pexels 이미지' : '컬러 그라데이션'} + 레이아웃 템플릿)
             </h3>
 
             {imageLoading && (

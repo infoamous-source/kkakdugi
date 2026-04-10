@@ -168,6 +168,19 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // PWA Service Worker 강제 해제 — 캐시된 옛날 번들로 빈 화면 뜨는 이슈 방지
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(r) { r.unregister(); });
+        });
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            names.forEach(function(n) { caches.delete(n); });
+          });
+        }
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
