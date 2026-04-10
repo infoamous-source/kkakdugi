@@ -162,21 +162,28 @@ attentionLine.type은 "B" 또는 "C" 중 랜덤으로 선택하세요.
   }
 }
 
-# 작성 규칙
+# 작성 규칙 (반드시 지켜!)
 - 모든 텍스트 TOPIK 3급 쉬운 한국어 ~해요 체
 - painPoints는 반드시 "~한 사람!" 형태 (마지막에 느낌표)
-- headline은 구어체, 캐주얼 ("3분이면 카페가 우리집?!" 수준)
+- headline은 구어체, 캐주얼
 - reviews는 실감나는 구체적 상황 포함
 - features의 colorKey는 amber/green/blue 순서로
 - 모든 \\n은 실제 줄바꿈 1개를 의미 (카드 내 2줄 정도까지만)
-- ${input.productName}을 결과 곳곳에 자연스럽게 녹이세요
-- 가격(originalPrice, salePrice, discountPercent)은 offers 내용("${offers}")에서 추론하거나 합리적으로 설정`;
+
+# ⚠️ 가장 중요한 규칙 (이것을 어기면 실패)
+1. 상품 정보의 "주요 고객"(${customers}), "장점"(${strengths}), "혜택"(${offers})을 반드시 모두 반영하세요
+2. 제품명("${input.productName}")이 짧거나 모호해도, 고객·장점·혜택 내용을 보고 상품을 정확하게 파악하세요
+3. productTitle, headline, painPoints, features, reviews 모두 입력된 고객·장점 기반으로 작성하세요
+4. 절대로 커피/식품 등 관련 없는 상품으로 추측하지 마세요 — 오직 입력 데이터만 참고
+5. 가격은 offers("${offers}")에서 추론하거나, 상품 성격에 맞게 합리적으로 설정`;
 }
 
 // ─── Mock fallback ───
 
 function getMockSalesPlan(input: PerfectPlannerInput): PerfectPlannerResult['output'] {
   const productName = input.productName || '상품';
+  const customer = input.customers.filter(Boolean)[0] || '고객';
+  const strength = input.strengths.filter(Boolean)[0] || '좋은 품질';
   const offer = input.offers.filter(Boolean)[0] || '30% 할인';
   const discountMatch = offer.match(/(\d+)\s*%/);
   const discountPercent = discountMatch ? Number(discountMatch[1]) : 30;
@@ -192,7 +199,7 @@ function getMockSalesPlan(input: PerfectPlannerInput): PerfectPlannerResult['out
   const attentionLine = attentionPool[Math.floor(Math.random() * attentionPool.length)];
 
   const detailPage: DetailPagePlan = {
-    productTitle: `[오늘만 ${discountPercent}% 특가] ${productName} / 카페 수준 / 3분 추출`,
+    productTitle: `[오늘만 ${discountPercent}% 특가] ${productName}`,
     brandLine: `${productName} 공식`,
     originalPrice,
     salePrice,
@@ -203,16 +210,16 @@ function getMockSalesPlan(input: PerfectPlannerInput): PerfectPlannerResult['out
     countdownValue: '06:23:41',
     attentionLine,
     headlinePrefix: '잠깐, 혹시',
-    headline: '3분이면\n카페가\n우리집?! ☕',
-    headlineHighlight: '우리집?!',
+    headline: `${productName}\n지금 시작하세요!`,
+    headlineHighlight: productName,
     painPointsTitle: '😩 혹시 이런 분\n아니세요?',
     painPoints: [
-      { emoji: '☕', text: '출근 전 카페에서\n줄 서는 게 지치는 사람!' },
-      { emoji: '🤢', text: '인스턴트 커피는\n맛이 없는 사람!' },
-      { emoji: '💸', text: '캡슐 한 알에 천원,\n비싸다고 느끼는 사람!' },
+      { emoji: '😫', text: `${customer}인데\n좋은 것을 못 찾는 사람!` },
+      { emoji: '🤔', text: `${strength}\n해보고 싶은 사람!` },
+      { emoji: '💸', text: '돈은 아끼면서\n좋은 건 누리고 싶은 사람!' },
     ],
     solutionPrefix: '그래서 만들었어요',
-    solutionHeadline: '캡슐 한 알이면\n카페가 부엌에',
+    solutionHeadline: `${productName}으로\n바로 해결!`,
     featuresTitle: `✅ ${productName}만의\n3가지 약속`,
     features: [
       {
