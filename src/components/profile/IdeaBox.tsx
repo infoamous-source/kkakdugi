@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Lightbulb,
@@ -9,6 +9,7 @@ import {
   Package,
   ClipboardCopy,
   Download,
+  Users,
 } from 'lucide-react';
 import {
   type IdeaItem,
@@ -17,6 +18,8 @@ import {
 } from '../../types/ideaBox';
 import { useIdeaBox } from '../../hooks/useIdeaBox';
 import { SCHOOL_CURRICULUM } from '../../types/school';
+import { getMyTeam, getTeamIdeas } from '../../services/teamService';
+import type { TeamIdea } from '../../types/team';
 
 interface IdeaBoxProps {
   userId: string;
@@ -37,7 +40,7 @@ const TOOL_TABS = [
   })),
 ];
 
-export default function IdeaBox({ userId: _userId }: IdeaBoxProps) {
+export default function IdeaBox({ userId }: IdeaBoxProps) {
   const { t } = useTranslation('common');
   const { items: rawItems, removeItem } = useIdeaBox();
   const [activeToolTab, setActiveToolTab] = useState('all');
@@ -45,6 +48,26 @@ export default function IdeaBox({ userId: _userId }: IdeaBoxProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [bulkCopied, setBulkCopied] = useState(false);
+  const [viewMode, setViewMode] = useState<'personal' | 'team'>('personal');
+  const [teamInfo, setTeamInfo] = useState<{ teamId: string; teamName: string } | null>(null);
+  const [teamIdeas, setTeamIdeas] = useState<TeamIdea[]>([]);
+  const [teamLoading, setTeamLoading] = useState(false);
+
+  useEffect(() => {
+    getMyTeam(userId).then(info => {
+      if (info) setTeamInfo({ teamId: info.team.id || '', teamName: info.team.name });
+    }).catch(() => {});
+  }, [userId]);
+
+  useEffect(() => {
+    if (viewMode === 'team' && teamInfo?.teamId) {
+      setTeamLoading(true);
+      getTeamIdeas(teamInfo.teamId).then(ideas => {
+        setTeamIdeas(ideas);
+        setTeamLoading(false);
+      }).catch(() => setTeamLoading(false));
+    }
+  }, [viewMode, teamInfo]);
 
   // Map Supabase rows to display format
   const items = rawItems.map((r) => ({
@@ -234,6 +257,58 @@ export default function IdeaBox({ userId: _userId }: IdeaBoxProps) {
         </p>
       </div>
 
+      {/* 개인 / 조별 탭 */}
+      {teamInfo && (
+        <div className="flex gap-2 bg-gray-100 rounded-xl p-1">
+          <button
+            onClick={() => setViewMode('personal')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition-all ${
+              viewMode === 'personal' ? 'bg-white shadow text-kk-brown' : 'text-gray-500'
+            }`}
+          >
+            <Lightbulb className="w-4 h-4" />
+            내 보석함
+          </button>
+          <button
+            onClick={() => setViewMode('team')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition-all ${
+              viewMode === 'team' ? 'bg-white shadow text-purple-700' : 'text-gray-500'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            조별 보석함 ({teamInfo.teamName})
+          </button>
+        </div>
+      )}
+
+      {/* 조별 보석함 뷰 */}
+      {viewMode === 'team' && teamInfo && (
+        <div className="space-y-3">
+          {teamLoading ? (
+            <div className="text-center py-8 text-gray-400">불러오는 중...</div>
+          ) : teamIdeas.length === 0 ? (
+            <div className="text-center py-12">
+              <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-400 text-sm">조별 보석함이 비어있어요.<br/>도구 결과에서 "조별 보석함에 저장"을 눌러보세요!</p>
+            </div>
+          ) : (
+            teamIdeas.map(idea => (
+              <div key={idea.id} className="bg-white border border-purple-200 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">{idea.animal_icon || '💡'}</span>
+                  <div>
+                    <h3 className="font-medium text-sm text-gray-800">{idea.title}</h3>
+                    <span className="text-[10px] text-purple-500">{idea.user_name} · {new Date(idea.created_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}</span>
+                  </div>
+                </div>
+                <pre className="text-xs text-gray-600 whitespace-pre-wrap bg-purple-50 rounded-lg p-3">{idea.content}</pre>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {viewMode === 'personal' && <>
       {/* AI 도구별 탭 */}
       <div className="flex gap-1.5 overflow-x-auto pb-1">
         {TOOL_TABS.map(tab => {
@@ -379,6 +454,7 @@ export default function IdeaBox({ userId: _userId }: IdeaBoxProps) {
           ))}
         </div>
       )}
+      </>}
     </div>
   );
 }
