@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Loader2, ChevronDown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { searchPexelsImage } from '../services/pexelsService';
 import type { DetailPagePlan } from '../types/school';
 
 /**
@@ -17,6 +18,8 @@ export default function ShowcasePage() {
   const [contentLoading, setContentLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [noContent, setNoContent] = useState(false);
+  const [mainImg, setMainImg] = useState<string | null>(null);
+  const [subImg, setSubImg] = useState<string | null>(null);
 
   // 팀 목록 로드
   useEffect(() => {
@@ -78,6 +81,15 @@ export default function ShowcasePage() {
         setContentLoading(false);
       });
   }, [selectedTeam]);
+
+  // Pexels 이미지 로드
+  useEffect(() => {
+    if (!productName) return;
+    setMainImg(null);
+    setSubImg(null);
+    searchPexelsImage(productName).then(u => u && setMainImg(u));
+    searchPexelsImage(productName + ' premium').then(u => u && setSubImg(u));
+  }, [productName]);
 
   const currentTeamName = teams.find(t => t.id === selectedTeam)?.name || '';
 
@@ -168,14 +180,17 @@ export default function ShowcasePage() {
               className="w-full flex items-center justify-center"
               style={{
                 aspectRatio: '1',
-                background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #f59e0b 100%)',
+                background: mainImg
+                  ? `url('${mainImg}') center/cover`
+                  : 'linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #f59e0b 100%)',
               }}
             >
-              <div className="text-center px-6">
-                <div className="text-5xl mb-3">🛍️</div>
-                <div className="text-2xl font-bold text-amber-900">{productName || plan.productTitle}</div>
-                <div className="text-sm text-amber-700 mt-1">{plan.brandLine}</div>
-              </div>
+              {!mainImg && (
+                <div className="text-center px-6">
+                  <div className="text-5xl mb-3">🛍️</div>
+                  <div className="text-2xl font-bold text-amber-900">{productName || plan.productTitle}</div>
+                </div>
+              )}
             </div>
 
             {/* 가격 */}
@@ -209,9 +224,14 @@ export default function ShowcasePage() {
             )}
 
             {/* 솔루션 */}
-            <div className="bg-black text-white px-4 pt-6 pb-6 text-center">
-              <div className="text-[11px] text-amber-400 font-bold mb-1.5">{plan.solutionPrefix}</div>
-              <div className="text-[24px] font-black leading-[1.1] whitespace-pre-line">{plan.solutionHeadline}</div>
+            <div className="bg-black text-white">
+              <div className="px-4 pt-6 pb-4 text-center">
+                <div className="text-[11px] text-amber-400 font-bold mb-1.5">{plan.solutionPrefix}</div>
+                <div className="text-[24px] font-black leading-[1.1] whitespace-pre-line">{plan.solutionHeadline}</div>
+              </div>
+              {subImg && (
+                <div className="w-full" style={{ aspectRatio: '1', background: `url('${subImg}') center/cover` }} />
+              )}
             </div>
 
             {/* 특징 */}
