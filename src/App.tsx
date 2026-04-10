@@ -45,6 +45,8 @@ const CareerResumeBuilderPage = lazy(() => import('./pages/career/ResumeBuilderP
 const CareerKResumePage = lazy(() => import('./pages/career/KResumePage'));
 const CareerInterviewSimulatorPage = lazy(() => import('./pages/career/InterviewSimulatorPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const InquiryPage = lazy(() => import('./pages/InquiryPage'));
+const AdminInquiryPage = lazy(() => import('./pages/AdminInquiryPage'));
 const TermsPage = lazy(() => import('./pages/legal/TermsPage'));
 const PrivacyPage = lazy(() => import('./pages/legal/PrivacyPage'));
 
@@ -67,6 +69,10 @@ export default function App() {
           {/* 법적 페이지 (P0-3) */}
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
+
+          {/* 1:1 문의 게시판 */}
+          <Route path="/inquiry" element={<InquiryPage />} />
+          <Route path="/admin/inquiries" element={<AdminInquiryPage />} />
 
           {/* 인증 페이지 */}
           <Route path="/login" element={<LoginPage />} />

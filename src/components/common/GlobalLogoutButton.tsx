@@ -157,6 +157,15 @@ export default function GlobalLogoutButton() {
               {t('nav.home', '홈으로')}
             </button>
 
+            {/* 1:1 문의하기 */}
+            <button
+              onClick={() => { setMenuOpen(false); navigate(user.role === 'instructor' ? '/admin/inquiries' : '/inquiry'); }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-kk-brown/70 hover:bg-kk-cream/40 transition-colors"
+            >
+              <span className="w-4 h-4 text-center text-xs">💬</span>
+              {user.role === 'instructor' ? '학생 문의 관리' : '1:1 문의하기'}
+            </button>
+
             {/* 강사/CEO 대시보드 (학생 모드가 아닐 때) */}
             {!isStudentMode && (user.role === 'instructor' || user.role === 'ceo') && (
               <button
