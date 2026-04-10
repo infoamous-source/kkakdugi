@@ -82,14 +82,17 @@ export default function ShowcasePage() {
       });
   }, [selectedTeam]);
 
-  // Pexels 이미지 로드
+  // Pexels 이미지 — 제품명이 아닌 상세 내용 기반으로 검색
   useEffect(() => {
-    if (!productName) return;
+    if (!plan) return;
     setMainImg(null);
     setSubImg(null);
-    searchPexelsImage(productName).then(u => u && setMainImg(u));
-    searchPexelsImage(productName + ' premium').then(u => u && setSubImg(u));
-  }, [productName]);
+    // 특징/헤드라인에서 키워드 추출
+    const mainKeyword = plan.features?.[0]?.title || plan.productTitle || productName;
+    const subKeyword = plan.solutionHeadline?.replace(/\n/g, ' ') || plan.headline?.replace(/\n/g, ' ') || productName;
+    searchPexelsImage(mainKeyword).then(u => u && setMainImg(u));
+    searchPexelsImage(subKeyword).then(u => u && setSubImg(u));
+  }, [plan, productName]);
 
   const currentTeamName = teams.find(t => t.id === selectedTeam)?.name || '';
 
@@ -117,7 +120,7 @@ export default function ShowcasePage() {
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
-              {teams.find(t => t.id === selectedTeam)?.itemName || currentTeamName || '조 선택'}
+              {currentTeamName || '조 선택'}
               <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {dropdownOpen && (
@@ -132,7 +135,7 @@ export default function ShowcasePage() {
                         : 'text-gray-300 hover:bg-gray-700'
                     }`}
                   >
-                    {team.itemName ? `${team.itemName} (${team.name})` : team.name}
+                    {team.name}
                   </button>
                 ))}
               </div>
