@@ -368,6 +368,29 @@ export default function PerfectPlannerTool() {
             {/* 보석함 저장 */}
             <SaveToGemBoxButton onSave={handleSaveToGemBox} saved={savedToGemBox} />
 
+            {/* 발표용 올리기 */}
+            {myTeamId && (
+              <button
+                onClick={async () => {
+                  if (!user || !result) return;
+                  try {
+                    await addTeamIdea(
+                      myTeamId, user.id, user.name, '📋', 'showcase',
+                      `🎓 ${productName} 발표용 상세페이지`,
+                      JSON.stringify({ plan: result.detailPage, productName })
+                    );
+                    alert('✅ 발표용 상세페이지가 올라갔어요! 선생님이 /showcase에서 확인할 수 있어요.');
+                  } catch (err) {
+                    console.error('Showcase upload error:', err);
+                    alert('올리기 실패. 다시 시도해주세요.');
+                  }
+                }}
+                className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                🎓 발표용으로 올리기
+              </button>
+            )}
+
             {/* 다음 교시 CTA */}
             <div className="bg-blue-50 border border-dashed border-blue-300 rounded-xl p-3 text-center">
               <button
