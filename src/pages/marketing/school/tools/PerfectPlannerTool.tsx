@@ -409,16 +409,6 @@ export default function PerfectPlannerTool() {
 // ═══════════════════════════════════════════════════════════════
 
 function DetailPagePreview({ plan, productName }: { plan: DetailPagePlan; productName?: string }) {
-  const [mainImage, setMainImage] = useState<string | null>(null);
-  const [subImage, setSubImage] = useState<string | null>(null);
-  useEffect(() => {
-    if (!productName) return;
-    import('../../../../services/pexelsService').then(({ searchPexelsImage }) => {
-      searchPexelsImage(productName).then(url => url && setMainImage(url));
-      searchPexelsImage(productName + ' lifestyle').then(url => url && setSubImage(url));
-    }).catch(() => {});
-  }, [productName]);
-
   // headline에서 highlight 단어를 노란색으로
   const renderHeadlineWithHighlight = () => {
     const lines = plan.headline.split('\n');
@@ -455,16 +445,20 @@ function DetailPagePreview({ plan, productName }: { plan: DetailPagePlan; produc
         <span>🔍 🛒</span>
       </div>
 
-      {/* 1. 큰 메인 이미지 (정사각형) - Pexels 동적 검색 */}
+      {/* 1. 큰 메인 이미지 (정사각형) — 브랜드 그라데이션 + 제품명 */}
       <div
-        className="w-full"
+        className="w-full flex items-center justify-center"
         style={{
           aspectRatio: '1',
-          background: mainImage
-            ? `url('${mainImage}') center/cover`
-            : 'linear-gradient(135deg, #f8e8d0 0%, #e8d0b8 100%)',
+          background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #f59e0b 100%)',
         }}
-      />
+      >
+        <div className="text-center px-6">
+          <div className="text-4xl mb-3">🛍️</div>
+          <div className="text-lg font-bold text-amber-900">{productName || plan.productTitle}</div>
+          <div className="text-xs text-amber-700 mt-1">{plan.brandLine}</div>
+        </div>
+      </div>
 
       {/* 2. 가격 영역 */}
       <div className="px-4 py-3.5" style={{ borderBottom: '8px solid #f4f4f5' }}>
@@ -547,14 +541,18 @@ function DetailPagePreview({ plan, productName }: { plan: DetailPagePlan; produc
           </div>
         </div>
         <div
-          className="w-full"
+          className="w-full flex items-center justify-center"
           style={{
             aspectRatio: '1',
-            background: subImage
-              ? `url('${subImage}') center/cover`
-              : 'linear-gradient(135deg, #2a2a2a 0%, #444 100%)',
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
           }}
-        />
+        >
+          <div className="text-center px-6">
+            <div className="text-5xl mb-3">✨</div>
+            <div className="text-white text-lg font-bold">{productName || plan.productTitle}</div>
+            <div className="text-blue-300 text-xs mt-1">Premium Quality</div>
+          </div>
+        </div>
       </div>
 
       {/* 7. 3가지 특징 */}
