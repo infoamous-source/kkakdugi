@@ -409,6 +409,16 @@ export default function PerfectPlannerTool() {
 // ═══════════════════════════════════════════════════════════════
 
 function DetailPagePreview({ plan, productName }: { plan: DetailPagePlan; productName?: string }) {
+  const [mainImg, setMainImg] = useState<string | null>(null);
+  const [subImg, setSubImg] = useState<string | null>(null);
+  useEffect(() => {
+    if (!productName) return;
+    import('../../../../services/pexelsService').then(({ searchPexelsImage }) => {
+      searchPexelsImage(productName).then(u => u && setMainImg(u));
+      searchPexelsImage(productName + ' premium').then(u => u && setSubImg(u));
+    }).catch(() => {});
+  }, [productName]);
+
   // headline에서 highlight 단어를 노란색으로
   const renderHeadlineWithHighlight = () => {
     const lines = plan.headline.split('\n');
@@ -445,19 +455,22 @@ function DetailPagePreview({ plan, productName }: { plan: DetailPagePlan; produc
         <span>🔍 🛒</span>
       </div>
 
-      {/* 1. 큰 메인 이미지 (정사각형) — 브랜드 그라데이션 + 제품명 */}
+      {/* 1. 큰 메인 이미지 (정사각형) */}
       <div
         className="w-full flex items-center justify-center"
         style={{
           aspectRatio: '1',
-          background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #f59e0b 100%)',
+          background: mainImg
+            ? `url('${mainImg}') center/cover`
+            : 'linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #f59e0b 100%)',
         }}
       >
-        <div className="text-center px-6">
-          <div className="text-4xl mb-3">🛍️</div>
-          <div className="text-lg font-bold text-amber-900">{productName || plan.productTitle}</div>
-          <div className="text-xs text-amber-700 mt-1">{plan.brandLine}</div>
-        </div>
+        {!mainImg && (
+          <div className="text-center px-6">
+            <div className="text-4xl mb-3">🛍️</div>
+            <div className="text-lg font-bold text-amber-900">{productName || plan.productTitle}</div>
+          </div>
+        )}
       </div>
 
       {/* 2. 가격 영역 */}
@@ -544,14 +557,17 @@ function DetailPagePreview({ plan, productName }: { plan: DetailPagePlan; produc
           className="w-full flex items-center justify-center"
           style={{
             aspectRatio: '1',
-            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+            background: subImg
+              ? `url('${subImg}') center/cover`
+              : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
           }}
         >
-          <div className="text-center px-6">
-            <div className="text-5xl mb-3">✨</div>
-            <div className="text-white text-lg font-bold">{productName || plan.productTitle}</div>
-            <div className="text-blue-300 text-xs mt-1">Premium Quality</div>
-          </div>
+          {!subImg && (
+            <div className="text-center px-6">
+              <div className="text-5xl mb-3">✨</div>
+              <div className="text-white text-lg font-bold">{productName || plan.productTitle}</div>
+            </div>
+          )}
         </div>
       </div>
 
