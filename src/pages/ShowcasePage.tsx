@@ -9,7 +9,7 @@ import type { DetailPagePlan } from '../types/school';
  * 상단 토글로 조 선택
  */
 export default function ShowcasePage() {
-  const [teams, setTeams] = useState<{ id: string; name: string }[]>([]);
+  const [teams, setTeams] = useState<{ id: string; name: string; itemName?: string }[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>('');
   const [plan, setPlan] = useState<DetailPagePlan | null>(null);
   const [productName, setProductName] = useState('');
@@ -25,10 +25,25 @@ export default function ShowcasePage() {
       .select('id, name')
       .eq('classroom_group_id', '5efa716c-b723-43e6-9778-86cfcee9f0ec')
       .order('name')
-      .then(({ data }) => {
+      .then(async ({ data }) => {
         if (data && data.length > 0) {
-          setTeams(data);
-          setSelectedTeam(data[0].id);
+          // 각 팀의 showcase 아이템명 가져오기
+          const enriched = await Promise.all(data.map(async (t) => {
+            const { data: ideas } = await supabase
+              .from('team_ideas')
+              .select('content')
+              .eq('team_id', t.id)
+              .eq('tool_id', 'showcase')
+              .order('created_at', { ascending: false })
+              .limit(1);
+            let itemName: string | undefined;
+            if (ideas && ideas[0]) {
+              try { itemName = JSON.parse(ideas[0].content).productName; } catch {}
+            }
+            return { ...t, itemName };
+          }));
+          setTeams(enriched);
+          setSelectedTeam(enriched[0].id);
         }
         setLoading(false);
       });
@@ -90,7 +105,7 @@ export default function ShowcasePage() {
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
-              {currentTeamName || '조 선택'}
+              {teams.find(t => t.id === selectedTeam)?.itemName || currentTeamName || '조 선택'}
               <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {dropdownOpen && (
@@ -105,7 +120,7 @@ export default function ShowcasePage() {
                         : 'text-gray-300 hover:bg-gray-700'
                     }`}
                   >
-                    {team.name}
+                    {team.itemName ? `${team.itemName} (${team.name})` : team.name}
                   </button>
                 ))}
               </div>
