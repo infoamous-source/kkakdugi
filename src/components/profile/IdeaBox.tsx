@@ -108,16 +108,40 @@ export default function IdeaBox({ userId: _userId }: IdeaBoxProps) {
 
   const handleExportPdf = async () => {
     try {
+      // html2canvas로 보석함 목록을 이미지로 캡처 → PDF (한글 100% 보장)
+      const target = document.getElementById('idea-box-list');
+      if (!target) { alert('내보낼 항목이 없어요'); return; }
+      const { default: html2canvas } = await import('html2canvas');
+      const canvas = await html2canvas(target, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
       const { jsPDF } = await import('jspdf');
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const text = buildAllText(filteredItems);
-      const lines = pdf.splitTextToSize(text, 170);
-      let y = 20;
+      const pageW = pdf.internal.pageSize.getWidth() - 20;
       const pageH = pdf.internal.pageSize.getHeight() - 20;
-      for (const line of lines) {
-        if (y > pageH) { pdf.addPage(); y = 20; }
-        pdf.text(line, 20, y);
-        y += 6;
+      const imgRatio = canvas.height / canvas.width;
+      const imgW = pageW;
+      const imgH = imgW * imgRatio;
+      const imgData = canvas.toDataURL('image/png');
+      // 여러 페이지로 분할
+      let srcY = 0;
+      const sliceH = (pageH / imgH) * canvas.height;
+      let page = 0;
+      while (srcY < canvas.height) {
+        if (page > 0) pdf.addPage();
+        const sliceCanvas = document.createElement('canvas');
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = Math.min(sliceH, canvas.height - srcY);
+        const ctx = sliceCanvas.getContext('2d')!;
+        ctx.drawImage(canvas, 0, srcY, canvas.width, sliceCanvas.height, 0, 0, canvas.width, sliceCanvas.height);
+        const sliceData = sliceCanvas.toDataURL('image/png');
+        const sliceImgH = (sliceCanvas.height / canvas.width) * imgW;
+        pdf.addImage(sliceData, 'PNG', 10, 10, imgW, sliceImgH);
+        srcY += sliceH;
+        page++;
       }
       pdf.save(`아이디어보석함_${dateStr()}.pdf`);
     } catch (err) {
@@ -264,7 +288,7 @@ export default function IdeaBox({ userId: _userId }: IdeaBoxProps) {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div id="idea-box-list" className="space-y-3">
           {filteredItems.map(item => (
             <div
               key={item.id}
