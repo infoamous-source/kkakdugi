@@ -47,8 +47,8 @@ function toEnglishKeyword(text: string): string {
   for (const [kr, en] of Object.entries(KR_EN_MAP)) {
     if (text.includes(kr)) return en;
   }
-  // 못 찾으면 'product' 로 폴백
-  return 'product';
+  // 매핑 없으면 한국어 원문 그대로 (Pexels가 한국어도 일부 인식)
+  return text.trim();
 }
 
 interface PexelsPhoto {
