@@ -219,7 +219,7 @@ export default function ShowcasePage() {
                 {plan.reviews.map((r, i) => (
                   <div key={i} className="mb-2 p-3 bg-yellow-50 rounded-xl">
                     <div className="flex items-center gap-1 mb-1">
-                      <span className="text-yellow-500 text-xs">{'⭐'.repeat(r.rating || 5)}</span>
+                      <span className="text-yellow-500 text-xs">{r.stars || '⭐⭐⭐⭐⭐'}</span>
                       <span className="text-[10px] text-gray-500">{r.author}</span>
                     </div>
                     <p className="text-xs text-gray-700">{r.text}</p>
