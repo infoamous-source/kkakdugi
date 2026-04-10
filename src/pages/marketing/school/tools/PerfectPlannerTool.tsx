@@ -368,15 +368,8 @@ export default function PerfectPlannerTool() {
             {/* 보석함 저장 */}
             <SaveToGemBoxButton onSave={handleSaveToGemBox} saved={savedToGemBox} />
 
-            {/* 발표용 올리기 — 조장만 */}
-            {myTeamId && user && [
-              '56ad7185-9b73-4342-82bb-3ab4cc8ffa3e', // 1조 HTOO NANDI AUNG
-              '66903c73-61ef-488c-aab5-9478d5f71bb5', // 2조 원아연
-              '0910e650-f749-46c0-8926-1d0ecb524674', // 3조 샤흐노자
-              '05222c80-67b8-412b-b28a-275c4d27eb5a', // 4조 NGUYEN QUE ANH
-              '21a98499-c9eb-4568-88a7-022d475920cb', // 5조 JA HTOI PAN
-              '384d6d75-c598-4888-96fa-5dd3553c85ba', // 선생님 (테스트용)
-            ].includes(user.id) && (
+            {/* 발표용 올리기 — 팀 배정된 모든 학생 */}
+            {myTeamId && (
               <button
                 onClick={async () => {
                   if (!user || !result) return;
