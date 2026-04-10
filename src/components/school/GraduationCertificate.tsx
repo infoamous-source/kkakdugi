@@ -130,14 +130,7 @@ const CERT_CSS = `
     letter-spacing: 22px;
     margin-bottom: 2px;
     padding-left: 22px;
-    background: linear-gradient(180deg, #d4af37 0%, #8b6914 50%, #d4af37 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow:
-      0 1px 0 rgba(255,255,255,0.5),
-      2px 2px 3px rgba(120, 90, 20, 0.15);
-    filter: drop-shadow(0 2px 1px rgba(184, 148, 45, 0.3));
+    color: #b8942d;
   }
   .cert-title-sub {
     font-family: 'Cinzel', serif;
@@ -492,7 +485,11 @@ export default function GraduationCertificate({ userName, userOrg, onClose }: Gr
   const todayFormatted = `${y} . ${m} . ${d}`;
   const serialNumber = `KKD-${y}-MK-${String(Math.floor(Math.random() * 90000) + 10000)}`;
   const serialHash = `#${simpleHash(userName + y + m + d)}`;
-  const spacedName = userName.split('').join(' ');
+  // 한글이면 글자 띄우기, 영어/혼합이면 그대로
+  const isKorean = /^[가-힣\s/]+$/.test(userName.replace(/[^가-힣a-zA-Z\s/]/g, ''));
+  const spacedName = isKorean
+    ? userName.split('').filter(c => c !== ' ').join(' ')
+    : userName;
 
   const renderToCanvas = async (): Promise<HTMLCanvasElement | null> => {
     if (!certRef.current) return null;
