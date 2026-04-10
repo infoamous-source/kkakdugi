@@ -345,7 +345,7 @@ export default function PerfectPlannerTool() {
               </button>
             </div>
 
-            {mode === 'detail' && <DetailPagePreview plan={result.detailPage} />}
+            {mode === 'detail' && <DetailPagePreview plan={result.detailPage} productName={productName} />}
             {mode === 'live' && <LiveScriptCueSheet script={result.liveScript} />}
 
             {/* AI 실패 안내 */}
@@ -408,7 +408,17 @@ export default function PerfectPlannerTool() {
 // mockup: docs/mockups/perfect-planner.html AFTER 컬럼
 // ═══════════════════════════════════════════════════════════════
 
-function DetailPagePreview({ plan }: { plan: DetailPagePlan }) {
+function DetailPagePreview({ plan, productName }: { plan: DetailPagePlan; productName?: string }) {
+  const [mainImage, setMainImage] = useState<string | null>(null);
+  const [subImage, setSubImage] = useState<string | null>(null);
+  useEffect(() => {
+    if (!productName) return;
+    import('../../../../services/pexelsService').then(({ searchPexelsImage }) => {
+      searchPexelsImage(productName).then(url => url && setMainImage(url));
+      searchPexelsImage(productName + ' lifestyle').then(url => url && setSubImage(url));
+    }).catch(() => {});
+  }, [productName]);
+
   // headline에서 highlight 단어를 노란색으로
   const renderHeadlineWithHighlight = () => {
     const lines = plan.headline.split('\n');
@@ -445,13 +455,14 @@ function DetailPagePreview({ plan }: { plan: DetailPagePlan }) {
         <span>🔍 🛒</span>
       </div>
 
-      {/* 1. 큰 메인 이미지 (정사각형) - Pexels fallback */}
+      {/* 1. 큰 메인 이미지 (정사각형) - Pexels 동적 검색 */}
       <div
         className="w-full"
         style={{
           aspectRatio: '1',
-          background:
-            "url('https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?w=600') center/cover",
+          background: mainImage
+            ? `url('${mainImage}') center/cover`
+            : 'linear-gradient(135deg, #f8e8d0 0%, #e8d0b8 100%)',
         }}
       />
 
@@ -539,8 +550,9 @@ function DetailPagePreview({ plan }: { plan: DetailPagePlan }) {
           className="w-full"
           style={{
             aspectRatio: '1',
-            background:
-              "url('https://images.pexels.com/photos/1695052/pexels-photo-1695052.jpeg?w=600') center/cover",
+            background: subImage
+              ? `url('${subImage}') center/cover`
+              : 'linear-gradient(135deg, #2a2a2a 0%, #444 100%)',
           }}
         />
       </div>
