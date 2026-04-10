@@ -88,17 +88,42 @@ export default function IdeaBox({ userId: _userId }: IdeaBoxProps) {
     }
   };
 
+  const dateStr = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  };
+
   const handleExportTxt = () => {
     const text = buildAllText(filteredItems);
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob(['\uFEFF' + text], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `아이디어상자_${new Date().toLocaleDateString('ko-KR')}.txt`;
+    a.download = `아이디어보석함_${dateStr()}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportPdf = async () => {
+    try {
+      const { jsPDF } = await import('jspdf');
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const text = buildAllText(filteredItems);
+      const lines = pdf.splitTextToSize(text, 170);
+      let y = 20;
+      const pageH = pdf.internal.pageSize.getHeight() - 20;
+      for (const line of lines) {
+        if (y > pageH) { pdf.addPage(); y = 20; }
+        pdf.text(line, 20, y);
+        y += 6;
+      }
+      pdf.save(`아이디어보석함_${dateStr()}.pdf`);
+    } catch (err) {
+      console.error('PDF export failed:', err);
+      alert('PDF 내보내기 실패. TXT로 시도해주세요.');
+    }
   };
 
   const filteredItems = items.filter(item => {
@@ -124,8 +149,8 @@ export default function IdeaBox({ userId: _userId }: IdeaBoxProps) {
     return items.filter(i => i.toolId === tabId).length;
   };
 
-  const getTypeLabel = (type: IdeaItemType): string => {
-    const labelMap: Record<IdeaItemType, string> = {
+  const getTypeLabel = (type: string): string => {
+    const labelMap: Record<string, string> = {
       persona: t('profile.ideaBox.typePersona', '페르소나'),
       usp: t('profile.ideaBox.typeUSP', 'USP'),
       copy: t('profile.ideaBox.typeCopy', '카피'),
@@ -134,8 +159,9 @@ export default function IdeaBox({ userId: _userId }: IdeaBoxProps) {
       roi: t('profile.ideaBox.typeROI', 'ROI'),
       ad: t('profile.ideaBox.typeAd', '광고'),
       other: t('profile.ideaBox.typeOther', '기타'),
+      'tool-result': '도구 결과',
     };
-    return labelMap[type] || type;
+    return labelMap[type] || '기타';
   };
 
   return (
@@ -163,10 +189,18 @@ export default function IdeaBox({ userId: _userId }: IdeaBoxProps) {
               <button
                 onClick={handleExportTxt}
                 className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                title="내보내기"
+                title="TXT 내보내기"
               >
                 <Download className="w-3 h-3" />
-                내보내기
+                TXT
+              </button>
+              <button
+                onClick={handleExportPdf}
+                className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                title="PDF 내보내기"
+              >
+                <Download className="w-3 h-3" />
+                PDF
               </button>
             </div>
           )}
