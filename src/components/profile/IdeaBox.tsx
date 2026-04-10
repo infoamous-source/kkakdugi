@@ -293,15 +293,22 @@ export default function IdeaBox({ userId }: IdeaBoxProps) {
             </div>
           ) : (
             teamIdeas.map(idea => (
-              <div key={idea.id} className="bg-white border border-purple-200 rounded-xl p-4">
-                <div className="flex items-center gap-2 mb-2">
+              <div
+                key={idea.id}
+                className="bg-white border border-purple-200 rounded-xl p-4 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.99]"
+                onClick={() => setExpandedId(expandedId === idea.id ? null : idea.id)}
+              >
+                <div className="flex items-center gap-2">
                   <span className="text-lg">{idea.animal_icon || '💡'}</span>
-                  <div>
-                    <h3 className="font-medium text-sm text-gray-800">{idea.title}</h3>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-sm text-gray-800 truncate">{idea.title}</h3>
                     <span className="text-[10px] text-purple-500">{idea.user_name} · {new Date(idea.created_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}</span>
                   </div>
+                  <span className="text-gray-400 text-xs shrink-0">{expandedId === idea.id ? '▲' : '▼'}</span>
                 </div>
-                <pre className="text-xs text-gray-600 whitespace-pre-wrap bg-purple-50 rounded-lg p-3">{idea.content}</pre>
+                {expandedId === idea.id && (
+                  <pre className="mt-3 text-xs text-gray-600 whitespace-pre-wrap bg-purple-50 rounded-lg p-3 animate-[fadeIn_0.2s]">{idea.content}</pre>
+                )}
               </div>
             ))
           )}
