@@ -374,12 +374,33 @@ export default function PerfectPlannerTool() {
                 onClick={async () => {
                   if (!user || !result) return;
                   try {
+                    // 기존 제출물 확인
+                    const { data: existing } = await supabase
+                      .from('team_ideas')
+                      .select('id, user_name')
+                      .eq('team_id', myTeamId)
+                      .eq('tool_id', 'showcase')
+                      .limit(1);
+
+                    if (existing && existing.length > 0) {
+                      const ok = window.confirm(
+                        `⚠️ 우리 조에서 이미 제출한 자료가 있어요!\n(${existing[0].user_name}님이 올림)\n\n덮어쓰기 할까요?`
+                      );
+                      if (!ok) return;
+                      // 기존 것 삭제
+                      await supabase
+                        .from('team_ideas')
+                        .delete()
+                        .eq('team_id', myTeamId)
+                        .eq('tool_id', 'showcase');
+                    }
+
                     await addTeamIdea(
                       myTeamId, user.id, user.name, '📋', 'showcase',
                       `🎓 ${productName} 발표용 상세페이지`,
                       JSON.stringify({ plan: result.detailPage, productName })
                     );
-                    alert('✅ 발표용 상세페이지가 올라갔어요! 선생님이 /showcase에서 확인할 수 있어요.');
+                    alert('✅ 발표용 상세페이지가 올라갔어요!\n선생님이 화면에서 보여줄 거예요.');
                   } catch (err) {
                     console.error('Showcase upload error:', err);
                     alert('올리기 실패. 다시 시도해주세요.');
