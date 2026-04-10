@@ -26,6 +26,18 @@ const KR_EN_MAP: Record<string, string> = {
   비누:'soap natural',세제:'detergent clean',치약:'toothpaste',
   건강:'health wellness',비타민:'vitamin supplement',프로틴:'protein fitness',
   유기농:'organic natural',친환경:'eco friendly green',핸드메이드:'handmade craft',
+  떡볶이:'tteokbokki',떡:'rice cake korean',김밥:'kimbap',비빔밥:'bibimbap',
+  불고기:'bulgogi',삼겹살:'korean bbq',족발:'jokbal korean',냉면:'naengmyeon',
+  라떼:'latte coffee',스무디:'smoothie',버블티:'bubble tea',베이글:'bagel',
+  마카롱:'macaron',크로와상:'croissant',도넛:'donut',타르트:'tart dessert',
+  한복:'hanbok korean',전통:'korean traditional',한옥:'hanok korean house',
+  소주:'soju korean',막걸리:'makgeolli rice wine',
+  네일:'nail art beauty',헤어:'hair salon',마사지:'massage spa',
+  카페:'cafe coffee shop',레스토랑:'restaurant dining',배달:'food delivery',
+  교육:'education learning',앱:'mobile app',웹사이트:'website design',
+  유튜브:'youtube video',인스타:'instagram social media',블로그:'blog writing',
+  브랜드:'brand identity',패키지:'packaging design',디자인:'design creative',
+  인테리어:'interior design',자동차:'car automobile',
 };
 
 function toEnglishKeyword(text: string): string {
