@@ -896,44 +896,24 @@
       },
       "personas": {
         "CEO": {
-          "name": "Big Picture Person",
-          "title": "Brand Marketing",
-          "desc": "You are someone who draws the big picture.\nYou can see how the world is changing.\nYou always think about \"Where should our brand go?\"\nYou discover opportunities that others miss.\nYou are great at setting direction for your team.\nBrand marketing is the perfect fit for you.\nYou create the image and values of a company.\nYou plan things like ads, logos, and slogans.\nYou make people feel \"This brand is great!\"\nYou are a marketer who grows brands with big dreams.",
-          "strength1": "Insight into market trends",
-          "strength2": "Leadership to guide teams",
-          "strength3": "Long-term vision and strategic planning"
+          "name": "Brand Marketer",
+          "title": "Brand Marketing"
         },
         "PM": {
-          "name": "Storyteller",
-          "title": "Content Marketing",
-          "desc": "You are someone who creates stories.\nYour head is full of fun ideas.\nYou imagine \"What if I make this? People would love it!\"\nYou enjoy sharing stories through writing, photos, and videos.\nYou create content that moves people's hearts.\nContent marketing is the perfect fit for you.\nYou plan content for blogs, SNS, and YouTube.\nYou tell brand stories in an interesting way.\nYou read trends quickly and try new things.\nYou are a marketer who makes brands shine with creativity.",
-          "strength1": "Original idea generation",
-          "strength2": "Storytelling and planning skills",
-          "strength3": "Trend-setting intuition"
+          "name": "Content Creator",
+          "title": "Content Marketing"
         },
         "CPO": {
-          "name": "Numbers Person",
-          "title": "Performance Marketing",
-          "desc": "You are someone who speaks with numbers.\nYou always check \"How effective was it?\"\nWhen you see data, you instantly know what the problem is.\nYou make decisions based on numbers, not feelings.\nYou analyze ad results and find better methods.\nPerformance marketing is the perfect fit for you.\nYou calculate how much revenue each ad dollar brings.\nYou check clicks, conversion rates, and other numbers daily.\nYou advertise efficiently without wasting money.\nYou are a smart marketer who proves results with data.",
-          "strength1": "Data-driven decision making",
-          "strength2": "Logical thinking and problem solving",
-          "strength3": "Performance measurement and optimization"
+          "name": "Data Analyst",
+          "title": "Performance Marketing"
         },
         "CMO": {
-          "name": "People Gatherer",
-          "title": "CRM Marketing",
-          "desc": "You are someone who gathers people.\nYou understand how others feel very well.\nYou are great at figuring out \"What does this person like?\"\nYou have a talent for making customers come back again.\nYou value relationships between people.\nCRM marketing is the perfect fit for you.\nYou send personalized messages to customers.\nYou plan things like membership levels, points, and coupons.\nYou make customers feel \"This place is the best!\"\nYou are a marketer who grows brands by building relationships.",
-          "strength1": "Trend detection ability",
-          "strength2": "Creating empathetic content",
-          "strength3": "SNS and viral marketing sense"
+          "name": "Community Builder",
+          "title": "CRM Marketing"
         },
         "CSL": {
-          "name": "Sales Person",
-          "title": "Live Commerce",
-          "desc": "You are someone who sells things.\nYou enjoy talking in front of people.\nWhen you explain \"Why this product is great,\" everyone wants to buy it.\nWhen customers hesitate, you say just the right words to persuade them.\nWhen you set a goal, you follow through to the end.\nLive commerce is the perfect fit for you.\nYou introduce and sell products in front of a camera.\nYou sell things while chatting with customers in real time.\nSaying \"If you don't buy now, you'll regret it!\" comes naturally to you.\nYou are a marketer who creates sales through action.",
-          "strength1": "Excellent persuasion and negotiation",
-          "strength2": "Understanding customer needs",
-          "strength3": "Drive to achieve goals"
+          "name": "Sales Leader",
+          "title": "Live Commerce"
         }
       },
       "questions": {
