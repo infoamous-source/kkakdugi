@@ -540,20 +540,19 @@ body {
   animation: fadeSlideUp 0.3s ease-out forwards;
 }
 
-/* 카드 입장 애니메이션 */
+/* 카드 입장 애니메이션 — 비활성 (빈 화면 방지) */
 .animate-card-enter {
-  animation: staggerIn 0.4s ease-out both;
+  opacity: 1;
 }
 
-/* 스크롤 등장 */
+/* 스크롤 등장 — 비활성 (투명도 애니메이션 혼동 방지) */
 .animate-on-scroll {
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  opacity: 1;
+  transform: none;
 }
 .animate-on-scroll.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
 /* 터치 피드백 */
