@@ -220,7 +220,7 @@ export default function ShowcasePage() {
                   <div key={i} className="mb-2 p-3 bg-yellow-50 rounded-xl">
                     <div className="flex items-center gap-1 mb-1">
                       <span className="text-yellow-500 text-xs">{'⭐'.repeat(r.rating || 5)}</span>
-                      <span className="text-[10px] text-gray-500">{r.reviewer}</span>
+                      <span className="text-[10px] text-gray-500">{r.author}</span>
                     </div>
                     <p className="text-xs text-gray-700">{r.text}</p>
                   </div>
@@ -231,7 +231,7 @@ export default function ShowcasePage() {
             {/* CTA */}
             <div className="sticky bottom-0 bg-white border-t px-4 py-3">
               <div className="w-full py-3.5 bg-red-500 text-white font-bold text-center rounded-lg text-sm">
-                {plan.ctaText || '지금 구매하기'}
+                {plan.stickyCtaText || '지금 구매하기'}
               </div>
             </div>
           </div>

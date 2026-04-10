@@ -26,7 +26,7 @@ const KR_EN_MAP: Record<string, string> = {
   비누:'soap natural',세제:'detergent clean',치약:'toothpaste',
   건강:'health wellness',비타민:'vitamin supplement',프로틴:'protein fitness',
   유기농:'organic natural',친환경:'eco friendly green',핸드메이드:'handmade craft',
-  떡볶이:'tteokbokki',떡:'rice cake korean',김밥:'kimbap',비빔밥:'bibimbap',
+  떡볶이:'tteokbokki',김밥:'kimbap',비빔밥:'bibimbap',
   불고기:'bulgogi',삼겹살:'korean bbq',족발:'jokbal korean',냉면:'naengmyeon',
   라떼:'latte coffee',스무디:'smoothie',버블티:'bubble tea',베이글:'bagel',
   마카롱:'macaron',크로와상:'croissant',도넛:'donut',타르트:'tart dessert',
