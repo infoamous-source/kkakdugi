@@ -23,6 +23,11 @@ i18n
     interpolation: {
       escapeValue: false,
     },
+    // 2026-04-11: 빈 화면 방지 — 번역 파일 로딩 중 Suspense 블로킹 해제
+    // false로 하면 로딩 중에는 키 그대로 보이고, 로드 완료 후 자동 교체
+    react: {
+      useSuspense: false,
+    },
   });
 
 export default i18n;

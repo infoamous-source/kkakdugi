@@ -534,10 +534,18 @@ body {
   }
 }
 
-/* 페이지 입장 애니메이션 — fill-mode: forwards
-   (both로 두면 애니메이션 fire 실패 시 opacity: 0에 고정돼 빈 화면 버그 발생) */
+/* 페이지 입장 애니메이션 */
 .animate-page-enter {
+  opacity: 1; /* 안전 기본값 — 애니메이션 실패해도 보임 */
   animation: fadeSlideUp 0.3s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-page-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* 카드 입장 애니메이션 — 비활성 (빈 화면 방지) */
