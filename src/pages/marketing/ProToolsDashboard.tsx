@@ -1,19 +1,24 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Lock, ExternalLink } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { ArrowLeft, Lock, ExternalLink, Crown } from 'lucide-react';
 import { useSchoolProgress } from '../../hooks/useSchoolProgress';
 import { marketingTools } from '../../data/marketing/modules';
 import CountdownBadge from '../../components/school/CountdownBadge';
 
+const proStudioTools = [
+  { id: 'market-research', name: '시장 리서치 리포트', desc: '경쟁사 분석 + 시장 규모 추정 + PDF 리포트', icon: '\u{1F4CA}', route: '/marketing/pro/studio/market-research' },
+  { id: 'brand-kit', name: '브랜드 키트', desc: '로고 컨셉 + 컬러 팔레트 + 브랜드 가이드라인', icon: '\u{1F3A8}', route: '/marketing/pro/studio/brand-kit' },
+  { id: 'content-studio', name: '콘텐츠 스튜디오', desc: '사진 업로드 + 텍스트 편집 + 멀티 사이즈', icon: '\u{1F4F1}', route: '/marketing/pro/studio/content-studio' },
+  { id: 'landing-builder', name: '랜딩페이지 빌더', desc: '섹션 편집 + 사진 업로드 + 포트폴리오 PDF', icon: '\u{1F6D2}', route: '/marketing/pro/studio/landing-builder' },
+  { id: 'marketing-dashboard', name: '마케팅 대시보드', desc: '월별 ROAS + 채널별 비교 + 월간 리포트', icon: '\u{1F4C8}', route: '/marketing/pro/studio/marketing-dashboard' },
+];
+
 export default function ProToolsDashboard() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
-  const { user } = useAuth();
-
   const { isGraduated: graduated, isProAccessValid: proValid, proRemainingDays: remainingDays } = useSchoolProgress();
 
-  // 미졸업 → 허브로 리다이렉트
+  // 미졸업 -> 허브로 리다이렉트
   if (!graduated) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -37,7 +42,7 @@ export default function ProToolsDashboard() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center max-w-md">
-          <div className="text-4xl mb-4">⏰</div>
+          <div className="text-4xl mb-4">{'\u23F0'}</div>
           <h2 className="text-xl font-bold text-gray-800 mb-2">{t('school.pro.expired')}</h2>
           <p className="text-sm text-gray-500 mb-6">{t('school.pro.expiredHint')}</p>
           <button
@@ -73,8 +78,57 @@ export default function ProToolsDashboard() {
         </div>
       </header>
 
-      {/* 도구 그리드 */}
       <main className="max-w-4xl mx-auto px-4 py-8">
+        {/* Pro Studio Section */}
+        <div className="mb-10">
+          <div className="flex items-center gap-3 mb-5">
+            <Crown className="w-6 h-6 text-amber-500" />
+            <h2 className="text-xl font-extrabold text-gray-900">프로 스튜디오</h2>
+            <span className="text-[10px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wider">
+              PRO
+            </span>
+          </div>
+          <p className="text-sm text-gray-500 mb-5">AI 기반 프리미엄 마케팅 도구 모음</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {proStudioTools.map((tool) => (
+              <button
+                key={tool.id}
+                onClick={() => navigate(tool.route)}
+                className="relative bg-white rounded-2xl p-5 text-left hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group overflow-hidden"
+                style={{
+                  border: '2px solid transparent',
+                  backgroundImage: 'linear-gradient(white, white), linear-gradient(135deg, #f59e0b, #ef4444, #8b5cf6)',
+                  backgroundOrigin: 'border-box',
+                  backgroundClip: 'padding-box, border-box',
+                }}
+              >
+                {/* PRO Badge */}
+                <div className="absolute top-3 right-3">
+                  <span className="text-[9px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    PRO
+                  </span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">{tool.icon}</span>
+                  <div className="flex-1 pr-8">
+                    <h3 className="font-bold text-gray-800 mb-1">{tool.name}</h3>
+                    <p className="text-sm text-gray-500 line-clamp-2">{tool.desc}</p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Separator */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-xs text-gray-400 font-medium">기본 도구</span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
+        {/* 기존 도구 그리드 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {marketingTools.map((tool) => (
             <button
@@ -97,7 +151,7 @@ export default function ProToolsDashboard() {
                     ? 'bg-purple-50 text-purple-600'
                     : 'bg-blue-50 text-blue-600'
                 }`}>
-                  {tool.type === 'ai' ? '🤖 AI' : tool.type === 'interactive' ? '🛠️ Interactive' : '📖 Static'}
+                  {tool.type === 'ai' ? '\u{1F916} AI' : tool.type === 'interactive' ? '\u{1F6E0}\uFE0F Interactive' : '\u{1F4D6} Static'}
                 </span>
               </div>
             </button>

@@ -4,7 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useSchoolProgress } from '../../../hooks/useSchoolProgress';
 import { SCHOOL_CURRICULUM } from '../../../types/school';
 import ToolCard from '../../../components/school/ToolCard';
-import { FlaskConical, GraduationCap } from 'lucide-react';
+import { FlaskConical, GraduationCap, Loader2 } from 'lucide-react';
 
 export default function LabTab() {
   const { t } = useTranslation('common');
@@ -13,8 +13,11 @@ export default function LabTab() {
 
   const { progress, isLoading: schoolLoading } = useSchoolProgress();
 
-  if (!user) return null; // MarketingSchoolLayout이 이미 auth guard 역할
-  if (schoolLoading || !progress) return null;
+  if (!user || schoolLoading || !progress) return (
+    <div className="flex justify-center py-12">
+      <Loader2 className="w-6 h-6 animate-spin text-kk-red/40" />
+    </div>
+  );
 
   // 6개 AI 도구 모두 표시 (1~6교시, ROAS 예측기 포함)
   const allTools = SCHOOL_CURRICULUM;

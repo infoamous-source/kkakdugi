@@ -9,7 +9,7 @@ import StudentCard from '../../../components/school/StudentCard';
 import StampBoard from '../../../components/school/StampBoard';
 import GraduationModal from '../../../components/school/GraduationModal';
 import GraduationCertificate from '../../../components/school/GraduationCertificate';
-import { GraduationCap, UserCircle, Award } from 'lucide-react';
+import { GraduationCap, UserCircle, Award, Loader2 } from 'lucide-react';
 
 export default function AttendanceTab() {
   const { t } = useTranslation('common');
@@ -42,8 +42,11 @@ export default function AttendanceTab() {
   const { progress, isLoading: schoolLoading, isGraduated: graduated, canGraduate: canGrad, aptitudeResult } = useSchoolProgress();
   const personaId = aptitudeResult?.resultType ?? null;
 
-  if (!user) return null; // MarketingSchoolLayout이 이미 auth guard 역할
-  if (schoolLoading || !progress) return null;
+  if (!user || schoolLoading || !progress) return (
+    <div className="flex justify-center py-12">
+      <Loader2 className="w-6 h-6 animate-spin text-kk-red/40" />
+    </div>
+  );
 
   const handleGraduationComplete = () => {
     setShowGraduationModal(false);

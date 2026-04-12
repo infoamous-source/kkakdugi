@@ -1,0 +1,18 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "https://kkakdugischool.vercel.app",
+      "localStorage": [
+        {
+          "name": "sb-wcjeytljpqvwfyspewlz-auth-token",
+          "value": "{\"access_token\":\"eyJhbGciOiJFUzI1NiIsImtpZCI6IjNjMGJiNGRiLThjZGMtNGI2NS1iZDNhLTU4Y2U2MDM1Zjk3MyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3djamV5dGxqcHF2d2Z5c3Bld2x6LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI0NjRmZGFmMi00OGM2LTRhNWEtODk1Yy04MzQwN2QyMjhhZjMiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc2MDE0NzgwLCJpYXQiOjE3NzYwMTExODAsImVtYWlsIjoidG5kbHM3NTI5QG5hdmVyLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiJ0bmRsczc1MjlAbmF2ZXIuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImluc3RydWN0b3JfY29kZSI6IjEyM0EiLCJuYW1lIjoiVElOQUpBTkUiLCJvcmdfY29kZSI6IjExMjIiLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInJvbGUiOiJzdHVkZW50Iiwic3ViIjoiNDY0ZmRhZjItNDhjNi00YTVhLTg5NWMtODM0MDdkMjI4YWYzIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzYwMTExODB9XSwic2Vzc2lvbl9pZCI6ImQwNjRkYTA0LWJlMzQtNDExMy05ZjdkLWQzMmY3ZmZlMTlkMSIsImlzX2Fub255bW91cyI6ZmFsc2V9.r6gxapkqHC6dcUUKVJ76Vdl9_Or7UTdw_qJb6OvJKK3fptf5cHf8MZ8sh53cxtRH3YDZowNnC5PqQVn829VHyA\",\"token_type\":\"bearer\",\"expires_in\":3600,\"expires_at\":1776014780,\"refresh_token\":\"yjkyjbbkd3ag\",\"user\":{\"id\":\"464fdaf2-48c6-4a5a-895c-83407d228af3\",\"aud\":\"authenticated\",\"role\":\"authenticated\",\"email\":\"tndls7529@naver.com\",\"email_confirmed_at\":\"2026-02-11T06:21:19.69779Z\",\"phone\":\"\",\"confirmed_at\":\"2026-02-11T06:21:19.69779Z\",\"last_sign_in_at\":\"2026-04-12T16:26:20.667456789Z\",\"app_metadata\":{\"provider\":\"email\",\"providers\":[\"email\"]},\"user_metadata\":{\"email\":\"tndls7529@naver.com\",\"email_verified\":true,\"instructor_code\":\"123A\",\"name\":\"TINAJANE\",\"org_code\":\"1122\",\"phone_verified\":false,\"role\":\"student\",\"sub\":\"464fdaf2-48c6-4a5a-895c-83407d228af3\"},\"identities\":[{\"identity_id\":\"157f5d86-76da-406f-b7f5-4b48fe2b7480\",\"id\":\"464fdaf2-48c6-4a5a-895c-83407d228af3\",\"user_id\":\"464fdaf2-48c6-4a5a-895c-83407d228af3\",\"identity_data\":{\"email\":\"tndls7529@naver.com\",\"email_verified\":false,\"instructor_code\":\"123A\",\"name\":\"TINAJANE\",\"org_code\":\"1122\",\"phone_verified\":false,\"role\":\"student\",\"sub\":\"464fdaf2-48c6-4a5a-895c-83407d228af3\"},\"provider\":\"email\",\"last_sign_in_at\":\"2026-02-11T06:21:19.693217Z\",\"created_at\":\"2026-02-11T06:21:19.693267Z\",\"updated_at\":\"2026-02-11T06:21:19.693267Z\",\"email\":\"tndls7529@naver.com\"}],\"created_at\":\"2026-02-11T06:21:19.671096Z\",\"updated_at\":\"2026-04-12T16:26:20.692218Z\",\"is_anonymous\":false},\"weak_password\":null}"
+        },
+        {
+          "name": "i18nextLng",
+          "value": "ko"
+        }
+      ]
+    }
+  ]
+}

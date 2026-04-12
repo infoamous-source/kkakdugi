@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { EnrollmentProvider } from './contexts/EnrollmentContext';
@@ -10,46 +10,52 @@ import PageTransition from './components/common/PageTransition';
 import GatewayPage from './pages/GatewayPage';
 import LoginPage from './pages/LoginPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
+import { lazyWithRetry } from './utils/lazyWithRetry';
 
-// Lazy-loaded pages
-const TrackPage = lazy(() => import('./pages/TrackPage'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage'));
-const AdminPage = lazy(() => import('./pages/AdminPage'));
-const CeoPage = lazy(() => import('./pages/CeoPage'));
-const OrganizationDetailPage = lazy(() => import('./pages/OrganizationDetailPage'));
-const KoreaAppsPage = lazy(() => import('./pages/KoreaAppsPage'));
-const MarketingModuleDetailPage = lazy(() => import('./pages/marketing/MarketingModuleDetailPage'));
-const MarketingToolRouter = lazy(() => import('./pages/marketing/MarketingToolRouter'));
-const MarketingHubPage = lazy(() => import('./pages/marketing/MarketingHubPage'));
-const MarketingSchoolLayout = lazy(() => import('./pages/marketing/school/MarketingSchoolLayout'));
-const AttendanceTab = lazy(() => import('./pages/marketing/school/AttendanceTab'));
-const CurriculumTab = lazy(() => import('./pages/marketing/school/CurriculumTab'));
-const LabTab = lazy(() => import('./pages/marketing/school/LabTab'));
-const SchoolToolRouter = lazy(() => import('./pages/marketing/school/SchoolToolRouter'));
-const PeriodDetailPage = lazy(() => import('./pages/marketing/school/PeriodDetailPage'));
-const ProToolsDashboard = lazy(() => import('./pages/marketing/ProToolsDashboard'));
-const AISetupPage = lazy(() => import('./pages/marketing/school/AISetupPage'));
-const GraduationProjectPage = lazy(() => import('./pages/marketing/school/GraduationProjectPage'));
-const ProfilePage = lazy(() => import('./pages/ProfilePage'));
-const DigitalModulePage = lazy(() => import('./pages/DigitalModulePage'));
-const KkakdugiPracticePage = lazy(() => import('./pages/KkakdugiPracticePage'));
-const DigitalHubPage = lazy(() => import('./pages/digital/DigitalHubPage'));
-const DigitalSchoolLayout = lazy(() => import('./pages/digital/school/DigitalSchoolLayout'));
-const DigitalAttendanceTab = lazy(() => import('./pages/digital/school/DigitalAttendanceTab'));
-const DigitalCurriculumTab = lazy(() => import('./pages/digital/school/DigitalCurriculumTab'));
-const DigitalLabTab = lazy(() => import('./pages/digital/school/DigitalLabTab'));
-const DigitalChecklistTool = lazy(() => import('./pages/digital/school/tools/DigitalChecklistTool'));
-const AIWelcomePage = lazy(() => import('./pages/AIWelcomePage'));
-const RegisterCompletePage = lazy(() => import('./pages/RegisterCompletePage'));
-const CareerResumeBuilderPage = lazy(() => import('./pages/career/ResumeBuilderPage'));
-const CareerKResumePage = lazy(() => import('./pages/career/KResumePage'));
-const CareerInterviewSimulatorPage = lazy(() => import('./pages/career/InterviewSimulatorPage'));
-const AboutPage = lazy(() => import('./pages/AboutPage'));
-const InquiryPage = lazy(() => import('./pages/InquiryPage'));
-const ShowcasePage = lazy(() => import('./pages/ShowcasePage'));
-const AdminInquiryPage = lazy(() => import('./pages/AdminInquiryPage'));
-const TermsPage = lazy(() => import('./pages/legal/TermsPage'));
-const PrivacyPage = lazy(() => import('./pages/legal/PrivacyPage'));
+// Lazy-loaded pages (lazyWithRetry: 청크 404 시 자동 새로고침)
+const TrackPage = lazyWithRetry(() => import('./pages/TrackPage'));
+const RegisterPage = lazyWithRetry(() => import('./pages/RegisterPage'));
+const AdminPage = lazyWithRetry(() => import('./pages/AdminPage'));
+const CeoPage = lazyWithRetry(() => import('./pages/CeoPage'));
+const OrganizationDetailPage = lazyWithRetry(() => import('./pages/OrganizationDetailPage'));
+const KoreaAppsPage = lazyWithRetry(() => import('./pages/KoreaAppsPage'));
+const MarketingModuleDetailPage = lazyWithRetry(() => import('./pages/marketing/MarketingModuleDetailPage'));
+const MarketingToolRouter = lazyWithRetry(() => import('./pages/marketing/MarketingToolRouter'));
+const MarketingHubPage = lazyWithRetry(() => import('./pages/marketing/MarketingHubPage'));
+const MarketingSchoolLayout = lazyWithRetry(() => import('./pages/marketing/school/MarketingSchoolLayout'));
+const AttendanceTab = lazyWithRetry(() => import('./pages/marketing/school/AttendanceTab'));
+const CurriculumTab = lazyWithRetry(() => import('./pages/marketing/school/CurriculumTab'));
+const LabTab = lazyWithRetry(() => import('./pages/marketing/school/LabTab'));
+const SchoolToolRouter = lazyWithRetry(() => import('./pages/marketing/school/SchoolToolRouter'));
+const PeriodDetailPage = lazyWithRetry(() => import('./pages/marketing/school/PeriodDetailPage'));
+const ProToolsDashboard = lazyWithRetry(() => import('./pages/marketing/ProToolsDashboard'));
+const AISetupPage = lazyWithRetry(() => import('./pages/marketing/school/AISetupPage'));
+const GraduationProjectPage = lazyWithRetry(() => import('./pages/marketing/school/GraduationProjectPage'));
+const ProfilePage = lazyWithRetry(() => import('./pages/ProfilePage'));
+const DigitalModulePage = lazyWithRetry(() => import('./pages/DigitalModulePage'));
+const KkakdugiPracticePage = lazyWithRetry(() => import('./pages/KkakdugiPracticePage'));
+const DigitalHubPage = lazyWithRetry(() => import('./pages/digital/DigitalHubPage'));
+const DigitalSchoolLayout = lazyWithRetry(() => import('./pages/digital/school/DigitalSchoolLayout'));
+const DigitalAttendanceTab = lazyWithRetry(() => import('./pages/digital/school/DigitalAttendanceTab'));
+const DigitalCurriculumTab = lazyWithRetry(() => import('./pages/digital/school/DigitalCurriculumTab'));
+const DigitalLabTab = lazyWithRetry(() => import('./pages/digital/school/DigitalLabTab'));
+const DigitalChecklistTool = lazyWithRetry(() => import('./pages/digital/school/tools/DigitalChecklistTool'));
+const AIWelcomePage = lazyWithRetry(() => import('./pages/AIWelcomePage'));
+const RegisterCompletePage = lazyWithRetry(() => import('./pages/RegisterCompletePage'));
+const CareerResumeBuilderPage = lazyWithRetry(() => import('./pages/career/ResumeBuilderPage'));
+const CareerKResumePage = lazyWithRetry(() => import('./pages/career/KResumePage'));
+const CareerInterviewSimulatorPage = lazyWithRetry(() => import('./pages/career/InterviewSimulatorPage'));
+const AboutPage = lazyWithRetry(() => import('./pages/AboutPage'));
+const InquiryPage = lazyWithRetry(() => import('./pages/InquiryPage'));
+const ShowcasePage = lazyWithRetry(() => import('./pages/ShowcasePage'));
+const AdminInquiryPage = lazyWithRetry(() => import('./pages/AdminInquiryPage'));
+const TermsPage = lazyWithRetry(() => import('./pages/legal/TermsPage'));
+const PrivacyPage = lazyWithRetry(() => import('./pages/legal/PrivacyPage'));
+const MarketResearchTool = lazyWithRetry(() => import('./pages/marketing/pro/MarketResearchTool'));
+const BrandKitTool = lazyWithRetry(() => import('./pages/marketing/pro/BrandKitTool'));
+const ContentStudioTool = lazyWithRetry(() => import('./pages/marketing/pro/ContentStudioTool'));
+const LandingBuilderTool = lazyWithRetry(() => import('./pages/marketing/pro/LandingBuilderTool'));
+const MarketingDashboardTool = lazyWithRetry(() => import('./pages/marketing/pro/MarketingDashboardTool'));
 
 export default function App() {
   return (
@@ -97,6 +103,11 @@ export default function App() {
           {/* 마케팅 허브 (학교 시스템) */}
           <Route path="/marketing/hub" element={<MarketingHubPage />} />
           <Route path="/marketing/pro" element={<ProToolsDashboard />} />
+          <Route path="/marketing/pro/studio/market-research" element={<MarketResearchTool />} />
+          <Route path="/marketing/pro/studio/brand-kit" element={<BrandKitTool />} />
+          <Route path="/marketing/pro/studio/content-studio" element={<ContentStudioTool />} />
+          <Route path="/marketing/pro/studio/landing-builder" element={<LandingBuilderTool />} />
+          <Route path="/marketing/pro/studio/marketing-dashboard" element={<MarketingDashboardTool />} />
           <Route path="/marketing/school/ai-setup" element={<AISetupPage />} />
 
           {/* 마케팅 학교 (Bottom Tab 레이아웃) */}
