@@ -45,7 +45,7 @@ export const marketingModules: MarketingModule[] = [
     icon: 'Search',
     duration: '2h',
     lessons: 6,
-    toolIds: ['persona-maker'],
+    toolIds: [],
     color: 'blue',
     learningItems: [
       {
@@ -77,7 +77,7 @@ export const marketingModules: MarketingModule[] = [
     icon: 'Lightbulb',
     duration: '1.5h',
     lessons: 5,
-    toolIds: ['usp-finder'],
+    toolIds: [],
     color: 'blue',
     learningItems: [
       {
@@ -111,7 +111,7 @@ export const marketingModules: MarketingModule[] = [
     icon: 'Palette',
     duration: '2h',
     lessons: 6,
-    toolIds: ['color-picker'],
+    toolIds: [],
     color: 'purple',
     learningItems: [
       {
@@ -175,7 +175,7 @@ export const marketingModules: MarketingModule[] = [
     icon: 'DollarSign',
     duration: '2h',
     lessons: 6,
-    toolIds: ['roi-calculator'],
+    toolIds: [],
     color: 'purple',
     learningItems: [
       {
@@ -209,7 +209,7 @@ export const marketingModules: MarketingModule[] = [
     icon: 'Sparkles',
     duration: '3h',
     lessons: 8,
-    toolIds: ['k-copywriter', 'sns-ad-maker'],
+    toolIds: ['k-copywriter'],
     color: 'red',
     learningItems: [
       {
@@ -237,6 +237,7 @@ export const marketingModules: MarketingModule[] = [
 // ─── 8개 실무 툴 데이터 ───
 
 export const marketingTools: MarketingTool[] = [
+  // ── 유지 도구 ──
   {
     id: 'glossary',
     nameKey: 'marketing.tools.glossary.title',
@@ -247,49 +248,13 @@ export const marketingTools: MarketingTool[] = [
     route: '/marketing/tools/glossary',
   },
   {
-    id: 'persona-maker',
-    nameKey: 'marketing.tools.personaMaker.title',
-    descriptionKey: 'marketing.tools.personaMaker.description',
-    moduleId: 'mk-02',
-    type: 'interactive',
-    icon: 'UserCircle',
-    route: '/marketing/tools/persona-maker',
-  },
-  {
-    id: 'usp-finder',
-    nameKey: 'marketing.tools.uspFinder.title',
-    descriptionKey: 'marketing.tools.uspFinder.description',
-    moduleId: 'mk-03',
-    type: 'interactive',
-    icon: 'Target',
-    route: '/marketing/tools/usp-finder',
-  },
-  {
-    id: 'color-picker',
-    nameKey: 'marketing.tools.colorPicker.title',
-    descriptionKey: 'marketing.tools.colorPicker.description',
-    moduleId: 'mk-04',
-    type: 'interactive',
-    icon: 'Palette',
-    route: '/marketing/tools/color-picker',
-  },
-  {
     id: 'hashtag-generator',
     nameKey: 'marketing.tools.hashtagGenerator.title',
     descriptionKey: 'marketing.tools.hashtagGenerator.description',
     moduleId: 'mk-05',
-    type: 'interactive',
+    type: 'ai',
     icon: 'Hash',
     route: '/marketing/tools/hashtag-generator',
-  },
-  {
-    id: 'roi-calculator',
-    nameKey: 'marketing.tools.roiCalculator.title',
-    descriptionKey: 'marketing.tools.roiCalculator.description',
-    moduleId: 'mk-06',
-    type: 'interactive',
-    icon: 'Calculator',
-    route: '/marketing/tools/roi-calculator',
   },
   {
     id: 'k-copywriter',
@@ -300,15 +265,11 @@ export const marketingTools: MarketingTool[] = [
     icon: 'PenTool',
     route: '/marketing/tools/k-copywriter',
   },
-  {
-    id: 'sns-ad-maker',
-    nameKey: 'marketing.tools.snsAdMaker.title',
-    descriptionKey: 'marketing.tools.snsAdMaker.description',
-    moduleId: 'mk-07',
-    type: 'ai',
-    icon: 'Image',
-    route: '/marketing/tools/sns-ad-maker',
-  },
+  // ── 제거됨: persona-maker (→ 시장 리서치에 통합) ──
+  // ── 제거됨: usp-finder (→ 브랜드 키트에 통합) ──
+  // ── 제거됨: color-picker (→ 브랜드 키트에 통합) ──
+  // ── 제거됨: roi-calculator (→ 마케팅 대시보드에 통합) ──
+  // ── 제거됨: sns-ad-maker (→ 콘텐츠 스튜디오로 대체) ──
 ];
 
 // ─── 스테이지 설정 ───
