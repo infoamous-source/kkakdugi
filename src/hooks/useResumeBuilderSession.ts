@@ -7,9 +7,14 @@
  * Phase F 이후에 Supabase 테이블로 승격 가능.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { StrengthResult } from '../types/career/strengths';
 import type { KResume } from '../types/career/resume';
+import {
+  loadSessionFromSupabase,
+  saveSessionToSupabase,
+  deleteSessionFromSupabase,
+} from '../services/career/sessionService';
 
 export type BuilderStep =
   | 'initial_profile'
@@ -156,20 +161,39 @@ function saveSession(userId: string, session: ResumeBuilderSession): void {
   }
 }
 
-/** 자소서 빌더 세션 훅 — 자동 저장·복원 */
+/** 자소서 빌더 세션 훅 — localStorage + Supabase 이중 저장·복원 */
 export function useResumeBuilderSession(userId: string | null | undefined) {
   const [session, setSession] = useState<ResumeBuilderSession>(() =>
     userId ? loadSession(userId) : emptySession(),
   );
+  const supabaseSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // userId 바뀌면 해당 사용자 세션 재로딩
+  // userId 바뀌면 해당 사용자 세션 재로딩 (Supabase 우선 → localStorage 폴백)
   useEffect(() => {
-    if (userId) setSession(loadSession(userId));
+    if (!userId) return;
+    const localData = loadSession(userId);
+    setSession(localData);
+    // Supabase에서 더 최신 버전이 있는지 비동기 확인
+    loadSessionFromSupabase(userId).then((remote) => {
+      if (remote && remote.updatedAt > localData.updatedAt) {
+        setSession(remote);
+        saveSession(userId, remote); // 로컬도 동기화
+      }
+    });
   }, [userId]);
 
-  // 세션 변경 시 localStorage 자동 저장
+  // 세션 변경 시 localStorage 즉시 저장 + Supabase 디바운스 2초 저장
   useEffect(() => {
-    if (userId) saveSession(userId, session);
+    if (!userId) return;
+    saveSession(userId, session);
+    // Supabase 디바운스 저장 (네트워크 부하 최소화)
+    if (supabaseSaveTimer.current) clearTimeout(supabaseSaveTimer.current);
+    supabaseSaveTimer.current = setTimeout(() => {
+      saveSessionToSupabase(userId, session);
+    }, 2000);
+    return () => {
+      if (supabaseSaveTimer.current) clearTimeout(supabaseSaveTimer.current);
+    };
   }, [userId, session]);
 
   const updateSession = useCallback(
@@ -196,9 +220,12 @@ export function useResumeBuilderSession(userId: string | null | undefined) {
     }));
   }, []);
 
-  /** 전체 세션 리셋 */
+  /** 전체 세션 리셋 (localStorage + Supabase 모두) */
   const resetAll = useCallback(() => {
-    if (userId) localStorage.removeItem(STORAGE_KEY_PREFIX + userId);
+    if (userId) {
+      localStorage.removeItem(STORAGE_KEY_PREFIX + userId);
+      deleteSessionFromSupabase(userId);
+    }
     setSession(emptySession());
   }, [userId]);
 
