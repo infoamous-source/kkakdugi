@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { ArrowLeft, RefreshCw, Copy, Download, Sparkles, MessageSquare } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ArrowLeft, RefreshCw, Copy, Download, Sparkles, MessageSquare, FileText } from 'lucide-react';
 import type { ResumeDraft, ResumeTarget } from '../../../hooks/useResumeBuilderSession';
 import type { StrengthResult } from '../../../types/career/strengths';
 import type { UserProfileView } from '../../../lib/userProfile';
 import { traitsToKoNames } from '../../../data/career/traits';
+import { exportToPdf } from '../../../lib/pdfExport';
 
 interface Props {
   drafts: ResumeDraft[];
@@ -35,6 +36,7 @@ export default function ResumeResultStep({
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [interviewQuestions, setInterviewQuestions] = useState<string[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   const handleCopy = async (key: string, text: string) => {
     try {
@@ -113,8 +115,8 @@ ${ITEMS.map((item) => {
         </div>
       </div>
 
-      {/* 자소서 항목 4개 */}
-      <div className="space-y-3 mb-5">
+      {/* 자소서 항목 4개 — PDF 캡처 영역 */}
+      <div ref={pdfRef} className="space-y-3 mb-5">
         {ITEMS.map((item) => {
           const content = (latestDraft as unknown as Record<string, string>)[item.key];
           const sources = (latestDraft.sources as unknown as Record<string, { traitIds: string[]; interviewQuestionIds: string[] }>)[item.key];
@@ -169,14 +171,14 @@ ${ITEMS.map((item) => {
       </div>
 
       {/* 액션 바 */}
-      <div className="grid grid-cols-2 gap-2 mb-4">
+      <div className="grid grid-cols-3 gap-2 mb-4">
         <button
           type="button"
           onClick={handleCopyAll}
           className="py-3 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-1.5"
         >
           <Copy className="w-4 h-4" />
-          전체 복사
+          {copiedKey === 'all' ? '복사됨 ✓' : '전체 복사'}
         </button>
         <button
           type="button"
@@ -184,7 +186,22 @@ ${ITEMS.map((item) => {
           className="py-3 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-1.5"
         >
           <Download className="w-4 h-4" />
-          텍스트 저장
+          TXT 저장
+        </button>
+        <button
+          type="button"
+          onClick={async () => {
+            if (pdfRef.current) {
+              await exportToPdf(
+                pdfRef.current,
+                `자기소개서_${target.company}_${target.jobTitle}.pdf`,
+              );
+            }
+          }}
+          className="py-3 border border-emerald-300 bg-emerald-50 rounded-xl text-sm font-medium text-emerald-700 hover:bg-emerald-100 flex items-center justify-center gap-1.5"
+        >
+          <FileText className="w-4 h-4" />
+          PDF 저장
         </button>
       </div>
 

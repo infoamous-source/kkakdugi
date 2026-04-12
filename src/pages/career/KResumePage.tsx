@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Sparkles, Loader2, Copy, Download, FileText, AlertCircle } from 'lucide-react';
+import { exportToPdf } from '../../lib/pdfExport';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUserProfile } from '../../lib/userProfile';
 import { useResumeBuilderSession } from '../../hooks/useResumeBuilderSession';
@@ -21,6 +22,7 @@ export default function KResumePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   if (!profile?.isReady) {
     return (
@@ -171,7 +173,7 @@ export default function KResumePage() {
 
       {/* 이력서 결과 */}
       {latestResume && (
-        <div className="space-y-4">
+        <div className="space-y-4" ref={pdfRef}>
           {/* 인적사항 */}
           <section className="bg-white rounded-2xl border border-gray-100 p-5">
             <h3 className="font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2">
@@ -288,7 +290,7 @@ export default function KResumePage() {
           )}
 
           {/* 액션 바 */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={handleCopyAll}
@@ -303,7 +305,22 @@ export default function KResumePage() {
               className="py-3 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-1.5"
             >
               <Download className="w-4 h-4" />
-              텍스트 저장
+              TXT 저장
+            </button>
+            <button
+              type="button"
+              onClick={async () => {
+                if (pdfRef.current) {
+                  await exportToPdf(
+                    pdfRef.current,
+                    `이력서_${latestResume.personal.name ?? 'resume'}.pdf`,
+                  );
+                }
+              }}
+              className="py-3 border border-emerald-300 bg-emerald-50 rounded-xl text-sm font-medium text-emerald-700 hover:bg-emerald-100 flex items-center justify-center gap-1.5"
+            >
+              <FileText className="w-4 h-4" />
+              PDF 저장
             </button>
           </div>
 
