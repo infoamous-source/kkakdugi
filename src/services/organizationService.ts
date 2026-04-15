@@ -73,6 +73,20 @@ export async function getOrganizations(instructorId: string): Promise<Organizati
   return data as OrganizationRow[];
 }
 
+/** CEO용: 전체 기관 목록 조회 (모든 강사의 기관 포함) */
+export async function getAllOrganizations(): Promise<OrganizationRow[]> {
+  const { data, error } = await supabase
+    .from('organizations')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Get all organizations error:', error.message);
+    return [];
+  }
+  return data as OrganizationRow[];
+}
+
 /** 기관 삭제 */
 export async function deleteOrganization(orgId: string): Promise<boolean> {
   const { error } = await supabase

@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import {
   createOrganization,
   getOrganizations,
+  getAllOrganizations,
   deleteOrganization,
   getOrgStudentCount,
   type OrganizationRow,
@@ -26,10 +27,15 @@ export default function OrganizationManagement() {
   const [isCreating, setIsCreating] = useState(false);
   const [selectedProgramTypes, setSelectedProgramTypes] = useState<SchoolId[]>(['marketing']);
 
+  const isCeo = user?.role === 'ceo';
+
   const loadData = useCallback(async () => {
     if (!user?.id) return;
     setIsLoading(true);
-    const orgList = await getOrganizations(user.id);
+    // CEO는 전체 기관, 강사는 본인 기관만
+    const orgList = isCeo
+      ? await getAllOrganizations()
+      : await getOrganizations(user.id);
     const withCounts = await Promise.all(
       orgList.map(async (org) => ({
         ...org,

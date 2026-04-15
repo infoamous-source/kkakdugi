@@ -44,13 +44,16 @@ export default function CeoDashboard() {
           .eq('role', 'instructor')
           .order('created_at', { ascending: false });
 
-        // Fetch all students
-        const { data: studentProfiles } = await supabase
+        // Fetch all students (CEO는 전체 조회 가능해야 함 — RLS 정책 확인 필요)
+        const { data: studentProfiles, error: studentError } = await supabase
           .from('profiles')
           .select('*')
           .eq('role', 'student')
           .order('created_at', { ascending: false });
 
+        if (studentError) {
+          console.error('[CeoDashboard] Student fetch error (RLS?):', studentError.message);
+        }
         const students = (studentProfiles || []) as ProfileRow[];
         setAllStudents(students);
 
