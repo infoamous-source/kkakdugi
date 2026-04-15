@@ -11,7 +11,7 @@ i18n
     fallbackLng: 'ko',
     defaultNS: 'common',
     ns: ['common', 'apps'],
-    supportedLngs: ['ko', 'en', 'vi', 'zh'],
+    supportedLngs: ['ko', 'en'],
     backend: {
       loadPath: `${import.meta.env.BASE_URL}locales/{{lng}}/{{ns}}.json`,
     },
