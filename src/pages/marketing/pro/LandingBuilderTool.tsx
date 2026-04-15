@@ -1,164 +1,122 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Download, Sparkles, Edit3, Image, Check } from 'lucide-react';
-import { generateText, isGeminiEnabled } from '../../../services/gemini/geminiClient';
+import { ArrowLeft, Loader2, Download, Sparkles, Plus, Trash2, GripVertical, Monitor, Tablet, Smartphone } from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useUserProfile } from '../../../lib/userProfile';
+import { useSchoolProgress } from '../../../hooks/useSchoolProgress';
+import { isGeminiEnabled } from '../../../services/gemini/geminiClient';
+import { generateLandingSections } from '../../../services/gemini/proLandingService';
+import type { LandingSection, SectionType } from '../../../services/gemini/proLandingService';
+import SchoolDataBanner from '../pro/common/SchoolDataBanner';
+import EditableSection from '../pro/common/EditableSection';
+import ColorPickerInput from '../pro/common/ColorPickerInput';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-interface LandingSection {
-  type: 'hero' | 'features' | 'testimonial' | 'pricing' | 'cta';
-  title: string;
-  content: string;
-  image?: string;
-}
+type PreviewSize = 'mobile' | 'tablet' | 'desktop';
+const PREVIEW_WIDTHS: Record<PreviewSize, number> = { mobile: 340, tablet: 540, desktop: 720 };
 
-const MOCK_SECTIONS: LandingSection[] = [
-  {
-    type: 'hero',
-    title: '당신의 비즈니스를 한 단계 끌어올리세요',
-    content: '검증된 솔루션으로 매출을 200% 성장시킨 고객사가 이미 1,000곳이 넘습니다.',
-  },
-  {
-    type: 'features',
-    title: '왜 선택해야 할까요?',
-    content: '간편한 시작: 5분 만에 설정 완료\n강력한 분석: 실시간 데이터 대시보드\n맞춤 지원: 전담 매니저 배정\n안전한 보안: 국제 보안 인증 획득',
-  },
-  {
-    type: 'testimonial',
-    title: '고객 후기',
-    content: '"도입 후 3개월 만에 매출이 150% 올랐습니다. 더 일찍 시작할 걸 그랬어요."\n- 김OO, ABC 대표',
-  },
-  {
-    type: 'pricing',
-    title: '합리적인 가격',
-    content: '무료 체험: 14일간 모든 기능 무료\n스타터: 월 29,000원 (소규모 팀)\n프로: 월 79,000원 (성장하는 비즈니스)\n엔터프라이즈: 맞춤 견적',
-  },
-  {
-    type: 'cta',
-    title: '지금 시작하세요',
-    content: '14일 무료 체험, 신용카드 없이 시작\n지금 가입하면 첫 달 50% 할인',
-  },
+const SECTION_TYPE_OPTIONS: { value: SectionType; label: string }[] = [
+  { value: 'hero', label: '히어로' },
+  { value: 'features', label: '특징/기능' },
+  { value: 'testimonial', label: '고객 후기' },
+  { value: 'pricing', label: '가격' },
+  { value: 'cta', label: 'CTA' },
+  { value: 'faq', label: 'FAQ' },
+  { value: 'team', label: '팀 소개' },
+  { value: 'guarantee', label: '보증/환불' },
 ];
-
-function parseAISections(text: string): LandingSection[] | null {
-  try {
-    const sections: LandingSection[] = [];
-    const typeMap: Record<string, LandingSection['type']> = {
-      '히어로': 'hero', '메인': 'hero', '상단': 'hero',
-      '특징': 'features', '기능': 'features', '장점': 'features',
-      '후기': 'testimonial', '리뷰': 'testimonial', '고객': 'testimonial',
-      '가격': 'pricing', '요금': 'pricing', '플랜': 'pricing',
-      'CTA': 'cta', '행동': 'cta', '시작': 'cta', '전환': 'cta',
-    };
-
-    const blocks = text.split(/##\s+/).filter((b) => b.trim());
-    for (const block of blocks) {
-      const lines = block.split('\n');
-      const titleLine = lines[0].trim();
-      const contentLines = lines.slice(1).filter((l) => l.trim()).map((l) => l.replace(/^[-*]\s*/, '').trim());
-
-      let sectionType: LandingSection['type'] = 'features';
-      for (const [keyword, type] of Object.entries(typeMap)) {
-        if (titleLine.includes(keyword)) { sectionType = type; break; }
-      }
-
-      if (contentLines.length > 0) {
-        sections.push({
-          type: sectionType,
-          title: titleLine.replace(/[[\]()]/g, ''),
-          content: contentLines.join('\n'),
-        });
-      }
-    }
-
-    return sections.length >= 3 ? sections : null;
-  } catch {
-    return null;
-  }
-}
 
 export default function LandingBuilderTool() {
   const navigate = useNavigate();
   const previewRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const profile = useUserProfile();
+  const { progress } = useSchoolProgress();
+  const schoolData = progress?.marketCompassData;
+
   const [productName, setProductName] = useState('');
-  const [features, setFeatures] = useState('');
-  const [price, setPrice] = useState('');
+  const [productDesc, setProductDesc] = useState('');
   const [target, setTarget] = useState('');
   const [sections, setSections] = useState<LandingSection[]>([]);
   const [loading, setLoading] = useState(false);
-  const [editingIdx, setEditingIdx] = useState<number | null>(null);
-  const [editText, setEditText] = useState({ title: '', content: '' });
+  const [isMock, setIsMock] = useState(false);
+  const [previewSize, setPreviewSize] = useState<PreviewSize>('mobile');
+  const [showSchoolBanner, setShowSchoolBanner] = useState(true);
 
   const aiEnabled = isGeminiEnabled();
+
+  // Prefill from school data (PerfectPlanner)
+  useEffect(() => {
+    if (schoolData?.perfectPlannerResult) {
+      const r = schoolData.perfectPlannerResult;
+      if (!productName && r.input.productName) setProductName(r.input.productName);
+    }
+  }, [schoolData]);
+
+  const schoolSummary = schoolData?.perfectPlannerResult
+    ? `퍼펙트플래너 제품: "${schoolData.perfectPlannerResult.input.productName}", 상세페이지 기획 완료`
+    : '';
 
   const handleGenerate = async () => {
     if (!productName.trim()) return;
     setLoading(true);
     setSections([]);
+    setIsMock(false);
 
-    if (aiEnabled) {
-      try {
-        const prompt = `당신은 랜딩페이지 기획 전문가입니다. 아래 정보로 모바일 랜딩페이지 콘텐츠를 생성하세요.
+    const ppResult = schoolData?.perfectPlannerResult?.output?.detailPage;
+    const existingData = ppResult ? {
+      headline: ppResult.headline,
+      painPoints: ppResult.painPoints?.map(p => p.text),
+      features: ppResult.features?.map(f => f.title),
+    } : undefined;
 
-제품/서비스: ${productName}
-주요 기능: ${features || '미입력'}
-가격: ${price || '미입력'}
-타겟: ${target || '일반 소비자'}
-
-다음 5개 섹션을 작성하세요:
-
-## 히어로 섹션
-매력적인 헤드라인과 서브 카피 (2-3줄)
-
-## 특징/기능 섹션
-핵심 기능 4가지를 각각 한 줄로
-
-## 고객 후기 섹션
-가상의 고객 후기 1개 (이름 포함)
-
-## 가격 섹션
-가격 플랜 정보 (3-4단계)
-
-## CTA 섹션
-행동 유도 문구 + 혜택 안내
-
-한국어로 작성. 각 섹션은 ##으로 시작.`;
-
-        const result = await generateText(prompt);
-        if (result) {
-          const parsed = parseAISections(result);
-          if (parsed) {
-            setSections(parsed);
-            setLoading(false);
-            return;
-          }
-        }
-      } catch { /* fallback */ }
-    }
-
-    setSections(MOCK_SECTIONS);
+    const result = await generateLandingSections({
+      brandName: productName,
+      target,
+      productDesc,
+      existingData,
+    }, profile);
+    setSections(result.sections);
+    setIsMock(result.isMock);
     setLoading(false);
   };
 
-  const startEdit = (idx: number) => {
-    setEditingIdx(idx);
-    setEditText({ title: sections[idx].title, content: sections[idx].content });
+  const addSection = () => {
+    const id = `sec_${Date.now()}`;
+    setSections(prev => [...prev, { id, type: 'features', title: '새 섹션', content: '내용을 입력하세요', bgColor: '#ffffff' }]);
   };
 
-  const saveEdit = () => {
-    if (editingIdx === null) return;
-    setSections((prev) => prev.map((s, i) => i === editingIdx ? { ...s, title: editText.title, content: editText.content } : s));
-    setEditingIdx(null);
+  const removeSection = (id: string) => {
+    setSections(prev => prev.filter(s => s.id !== id));
   };
 
-  const handleImageChange = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setSections((prev) => prev.map((s, i) => i === idx ? { ...s, image: reader.result as string } : s));
-    };
-    reader.readAsDataURL(file);
+  const moveSection = (idx: number, dir: -1 | 1) => {
+    const target = idx + dir;
+    if (target < 0 || target >= sections.length) return;
+    setSections(prev => {
+      const arr = [...prev];
+      [arr[idx], arr[target]] = [arr[target], arr[idx]];
+      return arr;
+    });
+  };
+
+  const updateSection = (id: string, updates: Partial<LandingSection>) => {
+    setSections(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+  };
+
+  const sectionBg = (type: SectionType) => {
+    switch (type) {
+      case 'hero': return 'bg-gradient-to-b from-gray-900 to-gray-800 text-white';
+      case 'features': return 'bg-white text-gray-900';
+      case 'testimonial': return 'bg-blue-50 text-gray-900';
+      case 'pricing': return 'bg-gray-50 text-gray-900';
+      case 'cta': return 'bg-gradient-to-r from-blue-600 to-purple-600 text-white';
+      case 'faq': return 'bg-white text-gray-900';
+      case 'team': return 'bg-gray-50 text-gray-900';
+      case 'guarantee': return 'bg-green-50 text-gray-900';
+      default: return 'bg-white text-gray-900';
+    }
   };
 
   const handleExportPDF = async () => {
@@ -169,7 +127,6 @@ export default function LandingBuilderTool() {
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
       let y = 0;
       const pageHeight = pdf.internal.pageSize.getHeight();
       while (y < pdfHeight) {
@@ -181,20 +138,11 @@ export default function LandingBuilderTool() {
     } catch { /* ignore */ }
   };
 
-  const sectionBg = (type: LandingSection['type']) => {
-    switch (type) {
-      case 'hero': return 'bg-gradient-to-b from-gray-900 to-gray-800 text-white';
-      case 'features': return 'bg-white text-gray-900';
-      case 'testimonial': return 'bg-blue-50 text-gray-900';
-      case 'pricing': return 'bg-gray-50 text-gray-900';
-      case 'cta': return 'bg-gradient-to-r from-blue-600 to-purple-600 text-white';
-      default: return 'bg-white text-gray-900';
-    }
-  };
+  const previewWidth = PREVIEW_WIDTHS[previewSize];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-3xl mx-auto px-4 pb-20">
+      <div className="max-w-4xl mx-auto px-4 pb-20">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-gray-700 mt-6 mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4" /><span>뒤로 가기</span>
         </button>
@@ -202,11 +150,15 @@ export default function LandingBuilderTool() {
         <div className="bg-gradient-to-r from-blue-700 to-indigo-600 rounded-2xl p-5 text-white mb-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-2xl">{'\u{1F6D2}'}</span>
-            <h1 className="text-xl font-bold">랜딩페이지 빌더</h1>
+            <h1 className="text-xl font-bold">랜딩페이지 프로</h1>
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
-          <p className="text-blue-100 text-sm">AI가 랜딩페이지를 만들고, 직접 편집하세요</p>
+          <p className="text-blue-100 text-sm">섹션 추가/삭제/순서변경 + CTA 편집 + 반응형 프리뷰</p>
         </div>
+
+        {schoolSummary && showSchoolBanner && (
+          <SchoolDataBanner summary={schoolSummary} onDismiss={() => setShowSchoolBanner(false)} />
+        )}
 
         {/* Input Form */}
         <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-6 space-y-4">
@@ -216,21 +168,15 @@ export default function LandingBuilderTool() {
               placeholder="예: AI 마케팅 자동화 툴" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">주요 기능 (선택)</label>
-            <textarea value={features} onChange={(e) => setFeatures(e.target.value)} rows={3}
-              placeholder="예: 자동 SNS 게시, AI 카피 생성, 실시간 분석" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-sm resize-none" />
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">제품 설명 (선택)</label>
+            <textarea value={productDesc} onChange={(e) => setProductDesc(e.target.value)} rows={3}
+              placeholder="예: 자동 SNS 게시, AI 카피 생성, 실시간 분석"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-sm resize-none" />
           </div>
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">가격 (선택)</label>
-              <input type="text" value={price} onChange={(e) => setPrice(e.target.value)}
-                placeholder="예: 월 29,000원~" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-sm" />
-            </div>
-            <div className="flex-1">
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">타겟 (선택)</label>
-              <input type="text" value={target} onChange={(e) => setTarget(e.target.value)}
-                placeholder="예: 소상공인" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-sm" />
-            </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">타겟 (선택)</label>
+            <input type="text" value={target} onChange={(e) => setTarget(e.target.value)}
+              placeholder="예: 소상공인" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-sm" />
           </div>
           <button onClick={handleGenerate} disabled={!productName.trim() || loading}
             className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${productName.trim() && !loading ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
@@ -238,65 +184,123 @@ export default function LandingBuilderTool() {
           </button>
         </div>
 
-        {/* Mobile Preview */}
+        {/* Sections Editor + Preview */}
         {sections.length > 0 && (
           <div>
-            <h3 className="text-sm font-bold text-gray-800 mb-4">모바일 미리보기 (340px)</h3>
-            <div className="flex justify-center mb-6">
-              <div ref={previewRef} className="w-[340px] rounded-3xl overflow-hidden border-4 border-gray-800 shadow-2xl">
+            {isMock && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2 mb-4">
+                <p className="text-xs text-yellow-700">AI 미연결: 샘플 랜딩페이지입니다.</p>
+              </div>
+            )}
+
+            {/* Section Editor */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-gray-800">섹션 편집 ({sections.length}개)</h3>
+                <button onClick={addSection}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-semibold hover:bg-blue-100 transition-colors">
+                  <Plus className="w-3 h-3" /> 섹션 추가
+                </button>
+              </div>
+              <div className="space-y-3">
                 {sections.map((section, idx) => (
-                  <div key={idx} className={`relative ${sectionBg(section.type)}`}>
+                  <div key={section.id} className="border border-gray-100 rounded-xl p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex flex-col">
+                        <button onClick={() => moveSection(idx, -1)} disabled={idx === 0}
+                          className="text-gray-400 hover:text-gray-600 disabled:opacity-30 text-xs">▲</button>
+                        <button onClick={() => moveSection(idx, 1)} disabled={idx === sections.length - 1}
+                          className="text-gray-400 hover:text-gray-600 disabled:opacity-30 text-xs">▼</button>
+                      </div>
+                      <GripVertical className="w-3 h-3 text-gray-300" />
+                      <select value={section.type}
+                        onChange={(e) => updateSection(section.id, { type: e.target.value as SectionType })}
+                        className="px-2 py-1 border border-gray-200 rounded-lg text-xs">
+                        {SECTION_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                      <input type="text" value={section.title}
+                        onChange={(e) => updateSection(section.id, { title: e.target.value })}
+                        className="flex-1 px-2 py-1 border border-gray-200 rounded-lg text-xs" />
+                      <button onClick={() => removeSection(section.id)}
+                        className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                    <textarea value={section.content}
+                      onChange={(e) => updateSection(section.id, { content: e.target.value })}
+                      rows={2} className="w-full px-2 py-1 border border-gray-100 rounded-lg text-xs resize-none" />
+                    <div className="flex items-center gap-3 mt-2">
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] text-gray-400">배경:</span>
+                        <input type="color" value={section.bgColor || '#ffffff'}
+                          onChange={(e) => updateSection(section.id, { bgColor: e.target.value })}
+                          className="w-6 h-6 rounded cursor-pointer border-0 p-0" />
+                      </div>
+                      {(section.type === 'hero' || section.type === 'cta') && (
+                        <>
+                          <input type="text" value={section.ctaText || ''}
+                            onChange={(e) => updateSection(section.id, { ctaText: e.target.value })}
+                            placeholder="CTA 버튼 텍스트"
+                            className="px-2 py-1 border border-gray-200 rounded-lg text-xs w-40" />
+                          <div className="flex items-center gap-1">
+                            <span className="text-[10px] text-gray-400">CTA색:</span>
+                            <input type="color" value={section.ctaColor || '#F59E0B'}
+                              onChange={(e) => updateSection(section.id, { ctaColor: e.target.value })}
+                              className="w-6 h-6 rounded cursor-pointer border-0 p-0" />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Preview Size Toggle */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-gray-800">미리보기</h3>
+              <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+                {([
+                  { key: 'mobile' as const, icon: Smartphone, label: '모바일' },
+                  { key: 'tablet' as const, icon: Tablet, label: '태블릿' },
+                  { key: 'desktop' as const, icon: Monitor, label: '데스크톱' },
+                ] as const).map(({ key, icon: Icon, label }) => (
+                  <button key={key} onClick={() => setPreviewSize(key)}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${previewSize === key ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                    <Icon className="w-3 h-3" /> {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Landing Preview */}
+            <div className="flex justify-center mb-6">
+              <div ref={previewRef}
+                className="rounded-3xl overflow-hidden border-4 border-gray-800 shadow-2xl transition-all duration-300"
+                style={{ width: previewWidth }}>
+                {sections.map((section) => (
+                  <div key={section.id}
+                    className={`relative ${section.bgColor ? '' : sectionBg(section.type)}`}
+                    style={section.bgColor ? { backgroundColor: section.bgColor, color: isLightColor(section.bgColor) ? '#111827' : '#ffffff' } : undefined}>
                     {section.image && (
                       <img src={section.image} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
                     )}
                     <div className="relative p-6">
-                      {editingIdx === idx ? (
-                        <div className="space-y-2">
-                          <input
-                            type="text" value={editText.title}
-                            onChange={(e) => setEditText((prev) => ({ ...prev, title: e.target.value }))}
-                            className="w-full px-2 py-1 rounded text-sm text-gray-900 border"
-                          />
-                          <textarea
-                            value={editText.content}
-                            onChange={(e) => setEditText((prev) => ({ ...prev, content: e.target.value }))}
-                            rows={4} className="w-full px-2 py-1 rounded text-sm text-gray-900 border resize-none"
-                          />
-                          <button onClick={saveEdit} className="flex items-center gap-1 px-3 py-1 bg-green-500 text-white rounded text-xs font-semibold">
-                            <Check className="w-3 h-3" /> 저장
-                          </button>
+                      <h3 className={`text-lg font-bold mb-3 ${section.type === 'hero' ? 'text-center' : ''}`}>
+                        {section.title}
+                      </h3>
+                      {section.content.split('\n').map((line, li) => (
+                        <p key={li} className={`text-sm mb-1 ${section.type === 'hero' ? 'text-center opacity-80' : 'opacity-90'}`}>
+                          {line}
+                        </p>
+                      ))}
+                      {section.ctaText && (
+                        <div className="mt-4 text-center">
+                          <span className="inline-block px-6 py-2 font-bold rounded-full text-sm"
+                            style={{ backgroundColor: section.ctaColor || '#F59E0B', color: '#ffffff' }}>
+                            {section.ctaText}
+                          </span>
                         </div>
-                      ) : (
-                        <>
-                          <h3 className={`text-lg font-bold mb-3 ${section.type === 'hero' ? 'text-center' : ''}`}>
-                            {section.title}
-                          </h3>
-                          {section.content.split('\n').map((line, li) => (
-                            <p key={li} className={`text-sm mb-1 ${section.type === 'hero' ? 'text-center opacity-80' : 'opacity-90'}`}>
-                              {line}
-                            </p>
-                          ))}
-                          {section.type === 'cta' && (
-                            <div className="mt-4 text-center">
-                              <span className="inline-block px-6 py-2 bg-white text-blue-600 font-bold rounded-full text-sm">무료로 시작하기</span>
-                            </div>
-                          )}
-                        </>
                       )}
                     </div>
-                    {/* Edit Controls */}
-                    {editingIdx !== idx && (
-                      <div className="absolute top-2 right-2 flex gap-1">
-                        <button onClick={() => startEdit(idx)}
-                          className="p-1.5 bg-white/20 rounded-lg hover:bg-white/40 transition-colors">
-                          <Edit3 className="w-3 h-3" />
-                        </button>
-                        <label className="p-1.5 bg-white/20 rounded-lg hover:bg-white/40 transition-colors cursor-pointer">
-                          <Image className="w-3 h-3" />
-                          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(idx, e)} />
-                        </label>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -311,4 +315,13 @@ export default function LandingBuilderTool() {
       </div>
     </div>
   );
+}
+
+/** Simple helper to check if a hex color is light */
+function isLightColor(hex: string): boolean {
+  const c = hex.replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }

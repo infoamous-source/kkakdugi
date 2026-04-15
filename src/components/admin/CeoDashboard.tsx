@@ -10,6 +10,12 @@ import {
   Calendar,
   FileText,
   Wrench,
+  Bell,
+  Megaphone,
+  Plus,
+  Trash2,
+  ToggleLeft,
+  ToggleRight,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -19,7 +25,7 @@ import NotificationSender from './NotificationSender';
 import ClassReport from '../reports/ClassReport';
 import DevReport from '../reports/DevReport';
 
-type CeoTab = 'instructors' | 'organizations' | 'students' | 'analytics' | 'classes' | 'settings';
+type CeoTab = 'instructors' | 'organizations' | 'students' | 'analytics' | 'classes' | 'announcements' | 'settings';
 
 interface ClassSession {
   id: string;
@@ -185,6 +191,7 @@ export default function CeoDashboard() {
           { id: 'students' as CeoTab, icon: Users, label: '학생 전체' },
           { id: 'analytics' as CeoTab, icon: BarChart3, label: '학습 데이터' },
           { id: 'classes' as CeoTab, icon: Calendar, label: '수업 관리' },
+          { id: 'announcements' as CeoTab, icon: Megaphone, label: '공지 관리' },
           { id: 'settings' as CeoTab, icon: Settings, label: '설정' },
         ]).map(tab => {
           const Icon = tab.icon;
@@ -451,6 +458,11 @@ export default function CeoDashboard() {
         </div>
       )}
 
+      {/* Announcements Tab */}
+      {activeTab === 'announcements' && (
+        <AnnouncementManager />
+      )}
+
       {/* Settings Tab */}
       {activeTab === 'settings' && (
         <div className="bg-white rounded-xl border border-gray-100 p-6">
@@ -482,6 +494,176 @@ export default function CeoDashboard() {
       )}
       {showDevReport && (
         <DevReport onClose={() => setShowDevReport(false)} />
+      )}
+    </div>
+  );
+}
+
+// ═══ 공지사항 관리 컴포넌트 ═══
+
+interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  target_org: string | null;
+  target_role: string;
+  is_active: boolean;
+  created_at: string;
+  expires_at: string | null;
+}
+
+function AnnouncementManager() {
+  const { user } = useAuth();
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [targetOrg, setTargetOrg] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => { loadAnnouncements(); }, []);
+
+  const loadAnnouncements = async () => {
+    const { data } = await supabase
+      .from('announcements')
+      .select('*')
+      .order('created_at', { ascending: false });
+    setAnnouncements(data || []);
+    setLoading(false);
+  };
+
+  const handleCreate = async () => {
+    if (!title.trim() || !content.trim() || !user) return;
+    setSubmitting(true);
+    await supabase.from('announcements').insert({
+      title: title.trim(),
+      content: content.trim(),
+      target_org: targetOrg || null,
+      target_role: 'student',
+      created_by: user.id,
+    });
+    setTitle('');
+    setContent('');
+    setTargetOrg('');
+    setShowForm(false);
+    setSubmitting(false);
+    await loadAnnouncements();
+  };
+
+  const handleToggle = async (id: string, currentActive: boolean) => {
+    await supabase.from('announcements').update({ is_active: !currentActive }).eq('id', id);
+    await loadAnnouncements();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('이 공지를 삭제할까요?')) return;
+    await supabase.from('announcements').delete().eq('id', id);
+    await loadAnnouncements();
+  };
+
+  if (loading) return <div className="text-center py-12 text-gray-400">불러오는 중...</div>;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+          <Megaphone className="w-5 h-5 text-purple-600" />
+          공지사항 관리
+        </h3>
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="flex items-center gap-1.5 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-xl hover:bg-purple-700 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          새 공지 작성
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="bg-purple-50 border border-purple-200 rounded-xl p-5 space-y-3">
+          <input
+            type="text"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="공지 제목"
+            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500"
+          />
+          <textarea
+            value={content}
+            onChange={e => setContent(e.target.value)}
+            placeholder="공지 내용"
+            rows={3}
+            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 resize-none"
+          />
+          <input
+            type="text"
+            value={targetOrg}
+            onChange={e => setTargetOrg(e.target.value)}
+            placeholder="대상 기관코드 (비우면 전체)"
+            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={handleCreate}
+              disabled={submitting || !title.trim() || !content.trim()}
+              className="flex-1 py-2.5 bg-purple-600 text-white font-bold rounded-xl text-sm disabled:opacity-50"
+            >
+              {submitting ? '발송 중...' : '📢 공지 발송'}
+            </button>
+            <button
+              onClick={() => setShowForm(false)}
+              className="px-4 py-2.5 bg-gray-100 rounded-xl text-sm"
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      )}
+
+      {announcements.length === 0 ? (
+        <div className="bg-white rounded-xl border p-12 text-center text-gray-400">
+          등록된 공지가 없습니다
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {announcements.map(a => (
+            <div key={a.id} className={`bg-white rounded-xl border p-4 ${a.is_active ? 'border-purple-200' : 'border-gray-200 opacity-60'}`}>
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-medium text-sm text-gray-800">{a.title}</h4>
+                    {a.is_active
+                      ? <span className="text-[10px] px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">활성</span>
+                      : <span className="text-[10px] px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full font-medium">비활성</span>
+                    }
+                    {a.target_org && <span className="text-[10px] px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">{a.target_org}</span>}
+                  </div>
+                  <p className="text-xs text-gray-500 line-clamp-2">{a.content}</p>
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    {new Date(a.created_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 shrink-0 ml-3">
+                  <button
+                    onClick={() => handleToggle(a.id, a.is_active)}
+                    className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                    title={a.is_active ? '비활성화' : '활성화'}
+                  >
+                    {a.is_active ? <ToggleRight className="w-5 h-5 text-green-600" /> : <ToggleLeft className="w-5 h-5 text-gray-400" />}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(a.id)}
+                    className="p-1.5 hover:bg-red-50 rounded-lg transition-colors"
+                    title="삭제"
+                  >
+                    <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-500" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

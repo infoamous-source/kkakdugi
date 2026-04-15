@@ -1,7 +1,13 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2, Download, Sparkles, Plus, Trash2 } from 'lucide-react';
-import { generateText, isGeminiEnabled } from '../../../services/gemini/geminiClient';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useUserProfile } from '../../../lib/userProfile';
+import { useSchoolProgress } from '../../../hooks/useSchoolProgress';
+import { isGeminiEnabled } from '../../../services/gemini/geminiClient';
+import { generateDashboardAnalysis } from '../../../services/gemini/proDashboardService';
+import SchoolDataBanner from '../pro/common/SchoolDataBanner';
+import EditableSection from '../pro/common/EditableSection';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -12,47 +18,75 @@ interface MonthlyData {
   channel: string;
 }
 
-const CHANNELS = ['Instagram', 'YouTube', 'Naver', 'Google', 'TikTok', 'Facebook', 'Other'];
+const CHANNELS = ['Instagram', 'YouTube', 'Naver', 'Google', 'TikTok', 'Facebook', 'Kakao', 'Other'];
 
-const MOCK_ANALYSIS = `이번 분기 전체 ROAS는 평균 3.2로 양호한 수준입니다.
-
-주요 인사이트:
-- Instagram 채널이 가장 높은 ROAS를 기록하며 핵심 채널로 자리잡고 있습니다
-- YouTube는 초기 투자 대비 브랜드 인지도 기여가 크지만 직접 전환율은 낮습니다
-- 광고비 대비 매출이 가장 높았던 달의 전략을 다른 달에도 적용해보세요
-
-추천 액션:
-1. Instagram 예산을 10-15% 증액하여 성과를 극대화하세요
-2. YouTube는 리타겟팅 광고와 결합하면 전환율이 개선됩니다
-3. 월별 A/B 테스트를 통해 최적의 크리에이티브를 찾으세요`;
+type ChartType = 'bar' | 'roas' | 'channel';
 
 export default function MarketingDashboardTool() {
   const navigate = useNavigate();
   const reportRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const profile = useUserProfile();
+  const { progress } = useSchoolProgress();
+  const simulationResult = progress?.simulationResult;
+
   const [entries, setEntries] = useState<MonthlyData[]>([
     { month: '2026-01', adSpend: 500000, revenue: 1500000, channel: 'Instagram' },
     { month: '2026-02', adSpend: 600000, revenue: 2100000, channel: 'Instagram' },
     { month: '2026-03', adSpend: 450000, revenue: 1200000, channel: 'YouTube' },
   ]);
+  const [goalROAS, setGoalROAS] = useState<number>(3);
   const [analysis, setAnalysis] = useState('');
   const [loading, setLoading] = useState(false);
+  const [chartType, setChartType] = useState<ChartType>('bar');
+  const [showSchoolBanner, setShowSchoolBanner] = useState(true);
 
   const aiEnabled = isGeminiEnabled();
 
+  // Prefill from school data (ROAS Simulator)
+  useEffect(() => {
+    if (simulationResult) {
+      const r = simulationResult;
+      // Add school data as first entry if not already present
+      if (entries.length <= 3 && r.input.adSpend && r.input.revenue) {
+        const channelMap: Record<string, string> = {
+          instagram: 'Instagram',
+          naver: 'Naver',
+          kakao: 'Kakao',
+          youtube: 'YouTube',
+        };
+        setEntries(prev => {
+          const schoolEntry: MonthlyData = {
+            month: r.completedAt?.slice(0, 7) || '2026-01',
+            adSpend: r.input.adSpend,
+            revenue: r.input.revenue,
+            channel: channelMap[r.input.adChannel] || 'Other',
+          };
+          // Don't duplicate
+          if (prev.some(e => e.adSpend === schoolEntry.adSpend && e.revenue === schoolEntry.revenue)) return prev;
+          return [schoolEntry, ...prev];
+        });
+      }
+    }
+  }, [simulationResult]);
+
+  const schoolSummary = simulationResult
+    ? `ROAS 시뮬레이터: 광고비 ${simulationResult.input.adSpend.toLocaleString()}원, 매출 ${simulationResult.input.revenue.toLocaleString()}원, ROAS ${simulationResult.output.roas}`
+    : '';
+
   const addEntry = () => {
-    setEntries((prev) => [...prev, { month: '', adSpend: 0, revenue: 0, channel: 'Instagram' }]);
+    setEntries(prev => [...prev, { month: '', adSpend: 0, revenue: 0, channel: 'Instagram' }]);
   };
 
   const removeEntry = (idx: number) => {
-    setEntries((prev) => prev.filter((_, i) => i !== idx));
+    setEntries(prev => prev.filter((_, i) => i !== idx));
   };
 
   const updateEntry = (idx: number, field: keyof MonthlyData, value: string | number) => {
-    setEntries((prev) => prev.map((e, i) => i === idx ? { ...e, [field]: value } : e));
+    setEntries(prev => prev.map((e, i) => i === idx ? { ...e, [field]: value } : e));
   };
 
-  // Calculations
-  const validEntries = entries.filter((e) => e.month && e.adSpend > 0);
+  const validEntries = entries.filter(e => e.month && e.adSpend > 0);
 
   const calcROAS = (entry: MonthlyData) => entry.adSpend > 0 ? (entry.revenue / entry.adSpend).toFixed(2) : '0';
   const calcProfit = (entry: MonthlyData) => entry.revenue - entry.adSpend;
@@ -69,50 +103,26 @@ export default function MarketingDashboardTool() {
     ? validEntries.reduce((worst, e) => (e.revenue / e.adSpend) < (worst.revenue / worst.adSpend) ? e : worst)
     : null;
 
-  // Channel comparison
-  const channelData = CHANNELS.map((ch) => {
-    const chEntries = validEntries.filter((e) => e.channel === ch);
+  const channelData = CHANNELS.map(ch => {
+    const chEntries = validEntries.filter(e => e.channel === ch);
     const spend = chEntries.reduce((a, e) => a + e.adSpend, 0);
     const rev = chEntries.reduce((a, e) => a + e.revenue, 0);
     return { channel: ch, spend, revenue: rev, roas: spend > 0 ? (rev / spend).toFixed(2) : '-', count: chEntries.length };
-  }).filter((c) => c.count > 0);
+  }).filter(c => c.count > 0);
 
-  const maxRevenue = Math.max(...validEntries.map((e) => e.revenue), 1);
+  const maxRevenue = Math.max(...validEntries.map(e => e.revenue), 1);
+
+  const goalAchieved = Number(avgROAS) >= goalROAS;
 
   const handleAnalyze = async () => {
     setLoading(true);
     setAnalysis('');
 
-    if (aiEnabled) {
-      try {
-        const dataStr = validEntries.map((e) => `${e.month}: 광고비 ${e.adSpend.toLocaleString()}원, 매출 ${e.revenue.toLocaleString()}원, 채널: ${e.channel}, ROAS: ${calcROAS(e)}`).join('\n');
-        const prompt = `당신은 마케팅 데이터 분석 전문가입니다.
-
-아래 월별 마케팅 데이터를 분석하고 인사이트와 추천을 제공하세요:
-
-${dataStr}
-
-전체 평균 ROAS: ${avgROAS}
-총 광고비: ${totalAdSpend.toLocaleString()}원
-총 매출: ${totalRevenue.toLocaleString()}원
-
-다음을 포함하세요:
-1. 전반적인 성과 요약 (1-2문장)
-2. 주요 인사이트 (3가지)
-3. 추천 액션 (3가지)
-
-한국어로 간결하게 작성하세요.`;
-
-        const result = await generateText(prompt);
-        if (result) {
-          setAnalysis(result);
-          setLoading(false);
-          return;
-        }
-      } catch { /* fallback */ }
-    }
-
-    setAnalysis(MOCK_ANALYSIS);
+    const result = await generateDashboardAnalysis({
+      entries: validEntries,
+      goalROAS,
+    }, profile);
+    setAnalysis(result);
     setLoading(false);
   };
 
@@ -147,10 +157,44 @@ ${dataStr}
         <div className="bg-gradient-to-r from-emerald-700 to-teal-600 rounded-2xl p-5 text-white mb-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-2xl">{'\u{1F4C8}'}</span>
-            <h1 className="text-xl font-bold">마케팅 대시보드</h1>
+            <h1 className="text-xl font-bold">마케팅 대시보드 프로</h1>
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
-          <p className="text-emerald-100 text-sm">월별 데이터를 입력하고 성과를 분석하세요</p>
+          <p className="text-emerald-100 text-sm">목표 ROAS 설정 + 차트 타입 토글 + AI 심화 분석</p>
+        </div>
+
+        {schoolSummary && showSchoolBanner && (
+          <SchoolDataBanner summary={schoolSummary} onDismiss={() => setShowSchoolBanner(false)} />
+        )}
+
+        {/* Goal ROAS Setting */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-gray-800">목표 ROAS</h3>
+              <p className="text-xs text-gray-400">목표 대비 달성률을 추적합니다</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input type="number" value={goalROAS} min={1} max={20} step={0.5}
+                onChange={(e) => setGoalROAS(Number(e.target.value))}
+                className="w-20 px-3 py-2 border border-gray-200 rounded-xl text-sm text-center font-bold focus:border-emerald-400 focus:outline-none" />
+              <span className="text-sm text-gray-500 font-medium">x</span>
+            </div>
+          </div>
+          {validEntries.length > 0 && (
+            <div className="mt-3">
+              <div className="flex items-center justify-between text-xs mb-1">
+                <span className="text-gray-500">현재 {avgROAS}x / 목표 {goalROAS}x</span>
+                <span className={`font-bold ${goalAchieved ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {goalAchieved ? '달성!' : `${((Number(avgROAS) / goalROAS) * 100).toFixed(0)}%`}
+                </span>
+              </div>
+              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${goalAchieved ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                  style={{ width: `${Math.min(100, (Number(avgROAS) / goalROAS) * 100)}%` }} />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Data Entry */}
@@ -172,7 +216,7 @@ ${dataStr}
                   placeholder="매출" className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:border-emerald-400 focus:outline-none" />
                 <select value={entry.channel} onChange={(e) => updateEntry(idx, 'channel', e.target.value)}
                   className="px-1 py-1.5 border border-gray-200 rounded-lg text-xs focus:border-emerald-400 focus:outline-none">
-                  {CHANNELS.map((ch) => <option key={ch} value={ch}>{ch}</option>)}
+                  {CHANNELS.map(ch => <option key={ch} value={ch}>{ch}</option>)}
                 </select>
                 <button onClick={() => removeEntry(idx)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
                   <Trash2 className="w-4 h-4" />
@@ -189,7 +233,7 @@ ${dataStr}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
                 <p className="text-[10px] text-gray-500 mb-1">평균 ROAS</p>
-                <p className="text-xl font-extrabold text-emerald-600">{avgROAS}x</p>
+                <p className={`text-xl font-extrabold ${goalAchieved ? 'text-emerald-600' : 'text-amber-600'}`}>{avgROAS}x</p>
               </div>
               <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
                 <p className="text-[10px] text-gray-500 mb-1">총 매출</p>
@@ -221,29 +265,77 @@ ${dataStr}
               </div>
             )}
 
-            {/* Bar Chart */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <h3 className="text-sm font-bold text-gray-800 mb-4">월별 매출 트렌드</h3>
-              <div className="flex items-end gap-2" style={{ height: 160 }}>
-                {validEntries.map((entry, idx) => {
-                  const height = Math.max((entry.revenue / maxRevenue) * 140, 4);
-                  const roas = Number(calcROAS(entry));
-                  return (
-                    <div key={idx} className="flex-1 flex flex-col items-center gap-1">
-                      <span className="text-[9px] text-gray-500 font-mono">{roas}x</span>
-                      <div
-                        className={`w-full rounded-t-lg transition-all duration-300 ${roas >= 3 ? 'bg-emerald-500' : roas >= 2 ? 'bg-amber-500' : 'bg-red-500'}`}
-                        style={{ height }}
-                      />
-                      <span className="text-[9px] text-gray-400 mt-1">{entry.month.slice(5)}</span>
-                    </div>
-                  );
-                })}
-              </div>
+            {/* Chart Type Toggle */}
+            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+              {([
+                { key: 'bar' as const, label: '매출 바 차트' },
+                { key: 'roas' as const, label: 'ROAS 추이' },
+                { key: 'channel' as const, label: '채널별 비교' },
+              ]).map(({ key, label }) => (
+                <button key={key} onClick={() => setChartType(key)}
+                  className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${chartType === key ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                  {label}
+                </button>
+              ))}
             </div>
 
-            {/* Channel Comparison */}
-            {channelData.length > 0 && (
+            {/* Charts */}
+            {chartType === 'bar' && (
+              <div className="bg-white rounded-xl border border-gray-200 p-5">
+                <h3 className="text-sm font-bold text-gray-800 mb-4">월별 매출 트렌드</h3>
+                <div className="flex items-end gap-2" style={{ height: 160 }}>
+                  {validEntries.map((entry, idx) => {
+                    const height = Math.max((entry.revenue / maxRevenue) * 140, 4);
+                    const roas = Number(calcROAS(entry));
+                    return (
+                      <div key={idx} className="flex-1 flex flex-col items-center gap-1">
+                        <span className="text-[9px] text-gray-500 font-mono">{roas}x</span>
+                        <div
+                          className={`w-full rounded-t-lg transition-all duration-300 ${roas >= goalROAS ? 'bg-emerald-500' : roas >= goalROAS * 0.7 ? 'bg-amber-500' : 'bg-red-500'}`}
+                          style={{ height }}
+                        />
+                        <span className="text-[9px] text-gray-400 mt-1">{entry.month.slice(5)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* Goal line indicator */}
+                <div className="mt-2 flex items-center gap-2 text-[10px] text-gray-400">
+                  <div className="w-4 h-0.5 bg-emerald-500" /> 목표 달성
+                  <div className="w-4 h-0.5 bg-amber-500" /> 근접
+                  <div className="w-4 h-0.5 bg-red-500" /> 미달
+                </div>
+              </div>
+            )}
+
+            {chartType === 'roas' && (
+              <div className="bg-white rounded-xl border border-gray-200 p-5">
+                <h3 className="text-sm font-bold text-gray-800 mb-4">ROAS 추이</h3>
+                <div className="relative" style={{ height: 160 }}>
+                  {/* Goal line */}
+                  <div className="absolute left-0 right-0 border-t-2 border-dashed border-emerald-300"
+                    style={{ bottom: `${Math.min(100, (goalROAS / Math.max(...validEntries.map(e => Number(calcROAS(e))), goalROAS, 1)) * 100)}%` }}>
+                    <span className="absolute -top-4 right-0 text-[9px] text-emerald-500">목표 {goalROAS}x</span>
+                  </div>
+                  <div className="flex items-end gap-3 h-full">
+                    {validEntries.map((entry, idx) => {
+                      const roas = Number(calcROAS(entry));
+                      const maxR = Math.max(...validEntries.map(e => Number(calcROAS(e))), goalROAS);
+                      const h = Math.max((roas / maxR) * 140, 4);
+                      return (
+                        <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full">
+                          <span className="text-xs font-bold text-gray-800">{roas}x</span>
+                          <div className={`w-3 rounded-full ${roas >= goalROAS ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ height: h }} />
+                          <span className="text-[9px] text-gray-400 mt-1">{entry.month.slice(5)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {chartType === 'channel' && channelData.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-200 p-5">
                 <h3 className="text-sm font-bold text-gray-800 mb-3">채널별 비교</h3>
                 <div className="overflow-x-auto">
@@ -254,15 +346,23 @@ ${dataStr}
                         <th className="text-right py-2 font-semibold text-gray-600">광고비</th>
                         <th className="text-right py-2 font-semibold text-gray-600">매출</th>
                         <th className="text-right py-2 font-semibold text-gray-600">ROAS</th>
+                        <th className="text-right py-2 font-semibold text-gray-600">목표</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {channelData.map((ch) => (
+                      {channelData.map(ch => (
                         <tr key={ch.channel} className="border-b border-gray-50">
                           <td className="py-2 font-medium text-gray-800">{ch.channel}</td>
                           <td className="py-2 text-right text-gray-600">{formatWon(ch.spend)}</td>
                           <td className="py-2 text-right text-gray-600">{formatWon(ch.revenue)}</td>
-                          <td className={`py-2 text-right font-semibold ${Number(ch.roas) >= 3 ? 'text-emerald-600' : 'text-gray-800'}`}>{ch.roas}x</td>
+                          <td className={`py-2 text-right font-semibold ${Number(ch.roas) >= goalROAS ? 'text-emerald-600' : 'text-gray-800'}`}>{ch.roas}x</td>
+                          <td className="py-2 text-right">
+                            {ch.roas !== '-' && (
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${Number(ch.roas) >= goalROAS ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                                {Number(ch.roas) >= goalROAS ? '달성' : '미달'}
+                              </span>
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -272,20 +372,19 @@ ${dataStr}
             )}
 
             {/* AI Analysis */}
-            {!analysis && (
+            {!analysis ? (
               <button onClick={handleAnalyze} disabled={loading}
                 className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${!loading ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
-                {loading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> 분석 중...</span> : 'AI 분석 & 추천 받기'}
+                {loading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> 분석 중...</span> : 'AI 심화 분석 & 추천 받기'}
               </button>
-            )}
-
-            {analysis && (
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-emerald-500" /> AI 분석 리포트
-                </h3>
-                <div className="text-sm text-gray-700 whitespace-pre-line">{analysis}</div>
-              </div>
+            ) : (
+              <EditableSection
+                title="AI 심화 분석 리포트"
+                content={analysis}
+                onSave={(val) => setAnalysis(val)}
+                onRegenerate={handleAnalyze}
+                isRegenerating={loading}
+              />
             )}
           </div>
         )}
