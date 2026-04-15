@@ -1,12 +1,14 @@
 import { generateText, isGeminiEnabled } from './geminiClient';
 import { getMockCopyOptions } from '../../data/marketing/mockCopyOptions';
+import { buildSystemPrompt } from '../../lib/userProfile/promptBuilder';
+import type { UserProfileView } from '../../lib/userProfile/useUserProfile';
 import type { CopywriterInput, CopywriterOutput } from '../../types/marketing';
 
 /**
  * AI 카피라이터 서비스
  * Gemini API 사용 가능하면 AI 생성, 아니면 Mock 데이터 반환
  */
-export async function generateCopy(input: CopywriterInput): Promise<CopywriterOutput> {
+export async function generateCopy(input: CopywriterInput, profile?: UserProfileView | null): Promise<CopywriterOutput> {
   // API 키가 있으면 Gemini 시도
   if (isGeminiEnabled()) {
     try {
@@ -30,9 +32,23 @@ export async function generateCopy(input: CopywriterInput): Promise<CopywriterOu
 
       const lengthInstruction = lengthMap[input.length || 'medium'];
 
-      const prompt = `당신은 15년 경력의 한국 광고 카피라이터입니다. 식음료, 뷰티, 라이프스타일, 테크 등 다양한 업종의 히트 카피를 만들어온 전문가입니다. "쉬운 말로 마음을 움직인다"가 당신의 철학입니다.
+      // buildSystemPrompt 연동: TOPIK 맞춤 카피 생성
+      const systemPrompt = profile
+        ? buildSystemPrompt(profile, {
+            toolName: 'K-카피라이터',
+            toolPurpose: '제품 광고 카피 3개를 생성한다.',
+            bilingualFeedback: false,
+            extraInstructions: [
+              '당신은 15년 경력의 한국 광고 카피라이터입니다.',
+              '식음료, 뷰티, 라이프스타일, 테크 등 다양한 업종의 히트 카피를 만들어온 전문가입니다.',
+              '"쉬운 말로 마음을 움직인다"가 당신의 철학입니다.',
+              `톤 규칙: ${toneMap[input.tone]}`,
+              `길이 규칙: ${lengthInstruction}`,
+            ].join(' '),
+          })
+        : '';
 
-[과제]
+      const userPrompt = `[과제]
 아래 제품 정보를 분석한 뒤, 광고 카피를 정확히 3개 만드세요.
 
 [제품 정보]
@@ -52,7 +68,6 @@ export async function generateCopy(input: CopywriterInput): Promise<CopywriterOu
 - 한 가지 메시지에 집중해야 한다: 여러 장점을 나열하지 말고 하나를 깊게
 
 [필수 제약]
-- TOPIK 3급 수준의 쉬운 한국어만 사용 (어려운 한자어, 전문 용어 금지)
 - ${lengthInstruction}
 - 한국의 최신 문화와 트렌드 반영
 - 각 카피는 서로 다른 매력 포인트나 감정에 호소해야 함 (3개가 비슷하면 안 됨)
@@ -60,6 +75,7 @@ export async function generateCopy(input: CopywriterInput): Promise<CopywriterOu
 [출력 형식]
 카피 3개를 번호 없이 줄바꿈으로만 구분하여 출력하세요. 카피 외에 다른 텍스트는 절대 포함하지 마세요:`;
 
+      const prompt = systemPrompt ? `${systemPrompt}\n\n---\n\n${userPrompt}` : userPrompt;
       const result = await generateText(prompt);
       if (result) {
         const copies = result

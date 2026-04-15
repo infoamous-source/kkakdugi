@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2, Key } from 'lucide-react';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { useUserProfile } from '../../../../lib/userProfile';
 import { useSchoolProgress } from '../../../../hooks/useSchoolProgress';
 import {
   calculateRoas,
@@ -55,6 +56,7 @@ export default function ROASSimulatorTool() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user } = useAuth();
+  const profile = useUserProfile();
   const { hasStamp, autoStamp, progress, saveSimulationResult } = useSchoolProgress();
   const completed = hasStamp('roas-simulator');
   const aiEnabled = isGeminiEnabled();
@@ -105,7 +107,7 @@ export default function ROASSimulatorTool() {
     setPhase('loading');
     try {
       const input: ROASInput = { adSpend, revenue, adChannel };
-      const { output: result, isMock: mock } = await getRoasPrescription(input);
+      const { output: result, isMock: mock } = await getRoasPrescription(input, profile);
       setOutput(result);
       setIsMock(mock);
       setPhase('result');

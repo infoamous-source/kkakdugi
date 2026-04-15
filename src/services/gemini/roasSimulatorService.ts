@@ -1,5 +1,7 @@
 import { generateText, isGeminiEnabled } from './geminiClient';
 import { safeParseJSON } from './jsonHelper';
+import { buildSystemPrompt } from '../../lib/userProfile/promptBuilder';
+import type { UserProfileView } from '../../lib/userProfile/useUserProfile';
 import type { ROASInput, ROASOutput, ROASStatus, ROASChannel } from '../../types/school';
 
 // ─── 채널 한국어 라벨 ───
@@ -33,6 +35,7 @@ export function calculateRoas(adSpend: number, revenue: number): {
 
 export async function getRoasPrescription(
   input: ROASInput,
+  profile?: UserProfileView | null,
 ): Promise<{ output: ROASOutput; isMock: boolean }> {
   const { roas, profit, status } = calculateRoas(input.adSpend, input.revenue);
 
@@ -46,11 +49,23 @@ export async function getRoasPrescription(
             ? '같은 예산에서 광고 소재·문구를 개선하는'
             : '잘 되는 광고에 예산을 더 키우는';
 
-      const prompt = `## 역할
-한국 퍼포먼스 마케팅 10년차 전문가예요.
-외국인 학생(TOPIK 3급)에게 ROAS 진단 결과를 한 줄로 알려줘요.
+      // buildSystemPrompt 연동: TOPIK 맞춤 + 한국어+영어 병기 코칭
+      const systemPrompt = profile
+        ? buildSystemPrompt(profile, {
+            toolName: 'ROAS 진단기',
+            toolPurpose: '광고 효율(ROAS)을 진단하고 개선 처방을 코칭한다.',
+            bilingualFeedback: true,
+            extraInstructions: [
+              '당신은 한국 퍼포먼스 마케팅 10년차 전문가예요.',
+              'prescription 방향: ' + direction + ' 쪽으로.',
+              'prescription 두 번째 줄에 실제 숫자를 활용한 구체적 변경 포함.',
+              'todoOne은 광고 사진/문구/타겟/시간대 중 1개에 대한 즉시 실행 가능한 행동.',
+              '어려운 마케팅 용어 금지 (CTR, CPC, 리타겟팅 X). 쉬운 말로 대체.',
+            ].join(' '),
+          })
+        : '';
 
-## 입력 데이터
+      const userPrompt = `## 입력 데이터
 - 광고비: ${input.adSpend.toLocaleString()}원
 - 매출: ${input.revenue.toLocaleString()}원
 - ROAS: ${roas} (${statusKo})
@@ -58,17 +73,11 @@ export async function getRoasPrescription(
 
 ## 응답 형식 (JSON만, 다른 텍스트 X)
 {
-  "prescription": "큰 한 줄 처방. 형식: '동사 명령형\\n구체적 액션'. 줄바꿈 \\n 1개 사용. 예: '광고비를 줄이세요\\n30만원 → 20만원으로'",
-  "todoOne": "오늘 할 일 1개. 짧고 구체적인 행동. 예: '광고 사진을 새 걸로 바꿔보세요'"
-}
+  "prescription": "큰 한 줄 처방. 형식: '동사 명령형\\n구체적 액션'. 줄바꿈 \\n 1개 사용. 예: '광고비를 줄이세요 (Reduce ad spend)\\n30만원 → 20만원으로'",
+  "todoOne": "오늘 할 일 1개. 짧고 구체적인 행동. 예: '광고 사진을 새 걸로 바꿔보세요 (Try changing the ad photo)'"
+}`;
 
-## 작성 규칙
-- prescription 방향: ${direction} 쪽으로
-- prescription 두 번째 줄에 ${input.adSpend.toLocaleString()}원 같은 실제 숫자를 활용한 구체적 변경
-- todoOne은 광고 사진/문구/타겟/시간대 중 1개에 대한 즉시 실행 가능한 행동
-- 모든 텍스트 TOPIK 3급 쉬운 한국어 ~해요 체
-- 어려운 용어 금지 (CTR, CPC, 리타겟팅 X)`;
-
+      const prompt = systemPrompt ? `${systemPrompt}\n\n---\n\n${userPrompt}` : userPrompt;
       const text = await generateText(prompt);
       if (text) {
         const parsed = safeParseJSON(text);

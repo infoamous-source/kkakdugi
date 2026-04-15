@@ -7,6 +7,7 @@ import { supabase } from '../../../../lib/supabase';
 import { useSchoolProgress } from '../../../../hooks/useSchoolProgress';
 import { generateSalesPlan } from '../../../../services/gemini/perfectPlannerService';
 import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
+import { useUserProfile } from '../../../../lib/userProfile';
 import type {
   PerfectPlannerResult,
   PerfectPlannerInput,
@@ -25,6 +26,7 @@ export default function PerfectPlannerTool() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user } = useAuth();
+  const profile = useUserProfile();
   const {
     hasStamp,
     autoStamp,
@@ -118,7 +120,7 @@ export default function PerfectPlannerTool() {
         offers: cleanOffers,
         mode,
       };
-      const { result: planResult, isMock: mock } = await generateSalesPlan(input);
+      const { result: planResult, isMock: mock } = await generateSalesPlan(input, profile);
       setResult(planResult);
       setIsMock(mock);
       setPhase('result');

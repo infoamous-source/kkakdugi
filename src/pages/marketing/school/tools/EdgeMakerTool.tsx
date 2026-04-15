@@ -6,6 +6,7 @@ import { useAuth } from '../../../../contexts/AuthContext';
 import { useSchoolProgress } from '../../../../hooks/useSchoolProgress';
 import { generateBrandingStrategy } from '../../../../services/gemini/marketCompassService';
 import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
+import { useUserProfile } from '../../../../lib/userProfile';
 import type { EdgeMakerResult, CompetitorInfo } from '../../../../types/school';
 import { getMyTeam, addTeamIdea } from '../../../../services/teamService';
 import { addIdeaBoxItem } from '../../../../services/ideaBoxService';
@@ -19,6 +20,7 @@ export default function EdgeMakerTool() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user } = useAuth();
+  const profile = useUserProfile();
   const {
     hasStamp, autoStamp, isLoading,
     marketScannerResult: savedScannerResult,
@@ -87,7 +89,7 @@ export default function EdgeMakerTool() {
     const cleanStrengths = strengths.filter((s) => s.trim());
 
     try {
-      const { result: output, isMock: mock } = await generateBrandingStrategy(painPoints, cleanStrengths, competitors);
+      const { result: output, isMock: mock } = await generateBrandingStrategy(painPoints, cleanStrengths, competitors, profile);
 
       await new Promise((resolve) => setTimeout(resolve, 3500));
 

@@ -7,6 +7,7 @@ import { useSchoolProgress } from '../../../../hooks/useSchoolProgress';
 import { generateViralCards } from '../../../../services/gemini/viralCardService';
 import { searchPexelsImages, isPexelsEnabled } from '../../../../services/pexelsService';
 import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
+import { useUserProfile } from '../../../../lib/userProfile';
 import type {
   ViralCardResult,
   ViralCardSlide,
@@ -43,6 +44,7 @@ export default function ViralCardMakerTool() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user } = useAuth();
+  const profile = useUserProfile();
   const {
     hasStamp,
     autoStamp,
@@ -139,6 +141,7 @@ export default function ViralCardMakerTool() {
         cleanPersonas,
         usp.trim(),
         tone,
+        profile,
       );
       const withImages = await fetchImages(genResult.slides);
       setSlides(withImages);

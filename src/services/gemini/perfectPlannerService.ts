@@ -1,4 +1,6 @@
 import { generateText, isGeminiEnabled } from './geminiClient';
+import { buildSystemPrompt } from '../../lib/userProfile/promptBuilder';
+import type { UserProfileView } from '../../lib/userProfile/useUserProfile';
 import type {
   PerfectPlannerInput,
   PerfectPlannerResult,
@@ -12,10 +14,11 @@ import { safeParseJSON } from './jsonHelper';
 
 export async function generateSalesPlan(
   input: PerfectPlannerInput,
+  profile?: UserProfileView | null,
 ): Promise<{ result: PerfectPlannerResult['output']; isMock: boolean }> {
   if (isGeminiEnabled()) {
     try {
-      const prompt = buildPrompt(input);
+      const prompt = buildPrompt(input, profile);
       const text = await generateText(prompt);
       if (text) {
         const parsed = safeParseJSON(text);
@@ -45,17 +48,25 @@ export async function generateSalesPlan(
 
 // ─── 프롬프트 빌더 ───
 
-function buildPrompt(input: PerfectPlannerInput): string {
+function buildPrompt(input: PerfectPlannerInput, profile?: UserProfileView | null): string {
   const customers = input.customers.filter(Boolean).join(', ') || '일반 소비자';
   const strengths = input.strengths.filter(Boolean).join(', ') || '좋은 품질';
   const offers = input.offers.filter(Boolean).join(', ') || '특별 할인';
 
-  return `# 역할
-한국 쿠팡·네이버 스마트스토어·카카오 라이브커머스 전문 기획자예요.
-상세페이지는 스크롤을 멈추게 하고, 라이브 대본은 시청자가 "지금 안 사면 손해"라고 느끼게 만들어요.
-외국인 학생(TOPIK 3급)도 읽을 수 있는 쉬운 한국어로 작성해요.
+  // buildSystemPrompt 연동: TOPIK 맞춤 기획안 생성
+  const systemPrompt = profile
+    ? buildSystemPrompt(profile, {
+        toolName: '퍼펙트 플래너',
+        toolPurpose: '상세페이지 기획안과 라이브커머스 대본을 생성한다.',
+        bilingualFeedback: false,
+        extraInstructions: [
+          '한국 쿠팡·네이버 스마트스토어·카카오 라이브커머스 전문 기획자예요.',
+          '상세페이지는 스크롤을 멈추게 하고, 라이브 대본은 시청자가 "지금 안 사면 손해"라고 느끼게 만들어요.',
+        ].join(' '),
+      })
+    : '';
 
-# 상품 정보
+  const userPrompt = `# 상품 정보
 - 상품/브랜드: ${input.productName}
 - 주요 고객: ${customers}
 - 다른 곳에 없는 장점: ${strengths}
@@ -163,7 +174,6 @@ attentionLine.type은 "B" 또는 "C" 중 랜덤으로 선택하세요.
 }
 
 # 작성 규칙 (반드시 지켜!)
-- 모든 텍스트 TOPIK 3급 쉬운 한국어 ~해요 체
 - painPoints는 반드시 "~한 사람!" 형태 (마지막에 느낌표)
 - headline은 구어체, 캐주얼
 - reviews는 실감나는 구체적 상황 포함
@@ -176,6 +186,8 @@ attentionLine.type은 "B" 또는 "C" 중 랜덤으로 선택하세요.
 3. productTitle, headline, painPoints, features, reviews 모두 입력된 고객·장점 기반으로 작성하세요
 4. 절대로 커피/식품 등 관련 없는 상품으로 추측하지 마세요 — 오직 입력 데이터만 참고
 5. 가격은 offers("${offers}")에서 추론하거나, 상품 성격에 맞게 합리적으로 설정`;
+
+  return systemPrompt ? `${systemPrompt}\n\n---\n\n${userPrompt}` : userPrompt;
 }
 
 // ─── Mock fallback ───

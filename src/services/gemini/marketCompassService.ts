@@ -1,4 +1,6 @@
 import { generateText, isGeminiEnabled } from './geminiClient';
+import { buildSystemPrompt } from '../../lib/userProfile/promptBuilder';
+import type { UserProfileView } from '../../lib/userProfile/useUserProfile';
 import type { MarketScannerResult, EdgeMakerResult, CompetitorInfo } from '../../types/school';
 import { safeParseJSON } from './jsonHelper';
 
@@ -9,15 +11,26 @@ export async function generateMarketAnalysis(
   targetAge: string,
   targetGender: string,
   itemType: string = 'other',
+  profile?: UserProfileView | null,
 ): Promise<{ result: MarketScannerResult['output']; isMock: boolean }> {
   if (isGeminiEnabled()) {
     try {
-      const prompt = `당신은 한국에서 10년 이상 소비재·서비스 시장을 분석해 온 실전 시장 분석가예요.
-대기업 신사업팀과 스타트업 투자 심사에서 실제로 쓰이는 수준의 분석을 해요.
+      // buildSystemPrompt 연동: TOPIK 맞춤 시장 분석 코칭
+      const systemPrompt = profile
+        ? buildSystemPrompt(profile, {
+            toolName: '마켓 스캐너',
+            toolPurpose: '상품/키워드 기반으로 한국 시장을 분석하고 경쟁사·고객 불만·전략 레포트를 코칭한다.',
+            bilingualFeedback: true,
+            extraInstructions: [
+              '당신은 한국에서 10년 이상 소비재·서비스 시장을 분석해 온 실전 시장 분석가예요.',
+              '대기업 신사업팀과 스타트업 투자 심사에서 실제로 쓰이는 수준의 분석을 해요.',
+              'relatedKeywords와 painPoints는 한국어만.',
+              'analysisReport와 competitors의 strengths/weaknesses만 한국어+영어 병기.',
+            ].join(' '),
+          })
+        : '';
 
-아래 정보를 보고, 단계별로 생각한 뒤 JSON을 작성해 주세요.
-
-[분석 대상]
+      const userPrompt = `[분석 대상]
 상품/키워드: ${keyword}
 아이템 형태: ${itemType}
 타겟 연령: ${targetAge}
@@ -52,13 +65,13 @@ export async function generateMarketAnalysis(
   * 바로 아래에 핵심 발견 5가지를 번호 매겨서 정리 (각 1줄)
   * 빈 줄 1개
   * 그 아래에 20줄 상세 분석 레포트 (\\n으로 줄바꿈)
-  * 레포트에는 ① 시장 규모·성장 추세, ② 경쟁사별 포지셔닝 차이, ③ 타겟 고객의 구매 결정 요인, ④ 신규 진입 시 구체적 리스크와 기회를 포함해요
+  * 레포트에는 시장 규모·성장 추세, 경쟁사별 포지셔닝 차이, 타겟 고객의 구매 결정 요인, 신규 진입 시 구체적 리스크와 기회를 포함해요
   * 숫자·비율·시기 등 구체적 근거를 넣어서 "교과서 느낌"이 아닌 "실전 보고서" 느낌으로 작성해요
   * 하나의 레포트처럼 자연스럽게 이어지도록 작성
 - 아이템 형태(${itemType})에 맞는 시장 분석을 해주세요
-- 모든 텍스트는 TOPIK 3급 수준 외국인이 알아들을 수 있는 쉬운 한국어 (~해요 체)
 - 한국 시장 맥락에 맞는 현실적인 분석`;
 
+      const prompt = systemPrompt ? `${systemPrompt}\n\n---\n\n${userPrompt}` : userPrompt;
       const text = await generateText(prompt);
       if (text) {
         const parsed = safeParseJSON(text);
@@ -82,6 +95,7 @@ export async function generateBrandingStrategy(
   painPoints: string[],
   myStrengths: string[],
   competitors: CompetitorInfo[] = [],
+  profile?: UserProfileView | null,
 ): Promise<{ result: EdgeMakerResult['output']; isMock: boolean }> {
   if (isGeminiEnabled()) {
     try {
@@ -89,10 +103,22 @@ export async function generateBrandingStrategy(
         ? competitors.map((c, i) => `${i + 1}. ${c.name} - ${c.description}\n   강점: ${c.strengths.join(', ')}\n   약점: ${c.weaknesses.join(', ')}`).join('\n')
         : '(경쟁사 정보 없음)';
 
-      const prompt = `당신은 한국에서 50개 이상의 소비재 브랜드를 론칭한 경험이 있는 실전 브랜딩 전략가예요.
-스타트업부터 중견기업까지 다양한 브랜드의 네이밍, 포지셔닝, 비주얼 아이덴티티를 설계해 왔어요.
+      // buildSystemPrompt 연동: TOPIK 맞춤 브랜딩 전략
+      const systemPrompt = profile
+        ? buildSystemPrompt(profile, {
+            toolName: '엣지 메이커',
+            toolPurpose: '경쟁사 분석과 고객 불만을 기반으로 차별화된 브랜딩 전략을 생성한다.',
+            bilingualFeedback: false,
+            extraInstructions: [
+              '당신은 한국에서 50개 이상의 소비재 브랜드를 론칭한 경험이 있는 실전 브랜딩 전략가예요.',
+              '스타트업부터 중견기업까지 다양한 브랜드의 네이밍, 포지셔닝, 비주얼 아이덴티티를 설계해 왔어요.',
+              '[중요] brandingReport 필드만 한국어+영어 병기로 작성하라.',
+              'usp, brandNames, slogan, brandMood는 한국어만 출력하라.',
+            ].join(' '),
+          })
+        : '';
 
-아래 경쟁사 정보, 고객 불만, 나의 강점을 꼼꼼히 읽고, 차별화된 브랜딩 전략을 만들어주세요.
+      const userPrompt = `아래 경쟁사 정보, 고객 불만, 나의 강점을 꼼꼼히 읽고, 차별화된 브랜딩 전략을 만들어주세요.
 
 [경쟁사 정보]
 ${competitorText}
@@ -137,9 +163,9 @@ ${myStrengths.length > 0 ? myStrengths.map((s, i) => `${i + 1}. ${s}`).join('\n'
   * 그 아래에 20줄 상세 브랜딩 전략 레포트 (\\n으로 줄바꿈)
   * 경쟁사들의 포지셔닝 빈틈, 우리 강점이 그 빈틈을 메우는 이유, USP·이름·슬로건·컬러를 정한 근거를 논리적으로 연결해서 설명해요
   * "~이 좋아요" 식의 나열이 아닌, "A이기 때문에 → B 전략을 택했고 → C 결과를 기대한다"는 인과 관계로 써요
-  * 하나의 레포트처럼 자연스럽게 이어지도록 작성
-- 모든 텍스트는 TOPIK 3급 수준 외국인이 알아들을 수 있는 쉬운 한국어 (~해요 체)`;
+  * 하나의 레포트처럼 자연스럽게 이어지도록 작성`;
 
+      const prompt = systemPrompt ? `${systemPrompt}\n\n---\n\n${userPrompt}` : userPrompt;
       const text = await generateText(prompt);
       if (text) {
         const parsed = safeParseJSON(text);

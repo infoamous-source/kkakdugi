@@ -1,4 +1,6 @@
 import { generateText, isGeminiEnabled } from './geminiClient';
+import { buildSystemPrompt } from '../../lib/userProfile/promptBuilder';
+import type { UserProfileView } from '../../lib/userProfile/useUserProfile';
 import type {
   ViralCardResult,
   ViralCardSlide,
@@ -48,14 +50,27 @@ export async function generateViralCards(
   targetPersonas: string[],
   usp: string,
   tone: ViralTone,
+  profile?: UserProfileView | null,
 ): Promise<{ result: ViralCardResult['output']; isMock: boolean }> {
   if (isGeminiEnabled()) {
     try {
       const persona = targetPersonas.filter(Boolean).join(', ') || '일반 소비자';
-      const prompt = `# 역할
-인스타그램 카드뉴스 100만 팔로워 바이럴 전문가예요.
 
-# 브리프
+      // buildSystemPrompt 연동: TOPIK 맞춤 카드뉴스 카피 생성
+      const systemPrompt = profile
+        ? buildSystemPrompt(profile, {
+            toolName: '바이럴 카드 메이커',
+            toolPurpose: '인스타그램 카드뉴스 4장의 바이럴 카피와 이미지 키워드를 생성한다.',
+            bilingualFeedback: false,
+            extraInstructions: [
+              '인스타그램 카드뉴스 100만 팔로워 바이럴 전문가예요.',
+              '교과서적 표현 금지, 진짜 인스타 카피체로.',
+              `copyText: ${tone === 'spicy' ? '반말' : '존댓말'}. 각 카드 2-3줄, 한 줄 10자 이내.`,
+            ].join(' '),
+          })
+        : '';
+
+      const userPrompt = `# 브리프
 - 상품/브랜드: ${productName}
 - 타겟 고객: ${persona}
 - 차별점(USP): ${usp}
@@ -82,12 +97,11 @@ export async function generateViralCards(
 }
 
 # 작성 규칙
-- copyText: TOPIK 3급 쉬운 한국어 ${tone === 'spicy' ? '반말' : '존댓말'}. 각 카드 2-3줄, 한 줄 10자 이내
 - 카드 3·4는 반드시 "${productName}" 브랜드명을 포함
 - imageKeyword는 영어, 소문자, 구체적 (예: "coffee steam morning"), 텍스트가 없는 이미지 찾기 좋은 키워드
-- 4장이 하나의 스토리처럼 이어지게
-- 교과서적 표현 금지, 진짜 인스타 카피체로`;
+- 4장이 하나의 스토리처럼 이어지게`;
 
+      const prompt = systemPrompt ? `${systemPrompt}\n\n---\n\n${userPrompt}` : userPrompt;
       const text = await generateText(prompt);
       if (text) {
         const parsed = safeParseJSON(text);

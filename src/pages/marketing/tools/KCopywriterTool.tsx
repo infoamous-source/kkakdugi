@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { generateCopy } from '../../../services/gemini/copywriterService';
 import { usePortfolio } from '../../../hooks/usePortfolio';
 import { isGeminiEnabled } from '../../../services/gemini/geminiClient';
+import { useUserProfile } from '../../../lib/userProfile';
 import type { CopywriterOutput } from '../../../types/marketing';
 
 type Tone = 'emotional' | 'fun' | 'serious' | 'trendy' | 'storytelling';
@@ -14,6 +15,7 @@ export default function KCopywriterTool() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { logActivity } = usePortfolio();
+  const profile = useUserProfile();
 
   const toneOptions: { value: Tone; label: string; emoji: string; desc: string }[] = [
     { value: 'emotional', label: t('marketing.tools.kCopywriter.toneEmotional'), emoji: '💖', desc: t('marketing.tools.kCopywriter.toneEmotionalDesc') },
@@ -39,7 +41,7 @@ export default function KCopywriterTool() {
     setResult(null);
 
     try {
-      const output = await generateCopy({ productName, target, tone, length: copyLength });
+      const output = await generateCopy({ productName, target, tone, length: copyLength }, profile);
       setResult(output);
 
       logActivity(

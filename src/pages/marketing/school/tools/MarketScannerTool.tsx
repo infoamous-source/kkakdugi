@@ -6,6 +6,7 @@ import { useAuth } from '../../../../contexts/AuthContext';
 import { useSchoolProgress } from '../../../../hooks/useSchoolProgress';
 import { generateMarketAnalysis } from '../../../../services/gemini/marketCompassService';
 import { isGeminiEnabled } from '../../../../services/gemini/geminiClient';
+import { useUserProfile } from '../../../../lib/userProfile';
 import type { MarketScannerResult } from '../../../../types/school';
 import { getMyTeam, addTeamIdea } from '../../../../services/teamService';
 import { addIdeaBoxItem } from '../../../../services/ideaBoxService';
@@ -23,6 +24,7 @@ export default function MarketScannerTool() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user } = useAuth();
+  const profile = useUserProfile();
   const {
     hasStamp, autoStamp,
     marketScannerResult: savedScannerResult,
@@ -92,7 +94,7 @@ export default function MarketScannerTool() {
     const timer2 = setTimeout(() => setLoadingStep(2), 2400);
 
     try {
-      const { result: output, isMock: mock } = await generateMarketAnalysis(keywordForAnalysis, targetAge, targetGender, itemType);
+      const { result: output, isMock: mock } = await generateMarketAnalysis(keywordForAnalysis, targetAge, targetGender, itemType, profile);
 
       // 최소 3초 대기
       await new Promise((resolve) => setTimeout(resolve, 3500));

@@ -6,6 +6,8 @@ import { searchHashtags } from '../../../data/marketing/hashtagMocks';
 import type { HashtagGroup } from '../../../types/marketing';
 import { usePortfolio } from '../../../hooks/usePortfolio';
 import { generateText, isGeminiEnabled } from '../../../services/gemini/geminiClient';
+import { useUserProfile } from '../../../lib/userProfile';
+import { buildSystemPrompt } from '../../../lib/userProfile/promptBuilder';
 
 // AI 응답을 HashtagGroup[]으로 파싱
 function parseAIHashtags(text: string, keyword: string): HashtagGroup[] {
@@ -49,6 +51,7 @@ export default function HashtagGeneratorTool() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { logActivity } = usePortfolio();
+  const profile = useUserProfile();
   const [keyword, setKeyword] = useState('');
   const [results, setResults] = useState<HashtagGroup[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -72,8 +75,17 @@ export default function HashtagGeneratorTool() {
 
     if (aiEnabled) {
       try {
-        const prompt = `당신은 한국 SNS 마케팅 전문가입니다.
-키워드: "${keyword.trim()}"
+        // buildSystemPrompt 연동: TOPIK 맞춤 해시태그 생성
+        const systemPrompt = profile
+          ? buildSystemPrompt(profile, {
+              toolName: '해시태그 생성기',
+              toolPurpose: '키워드에 맞는 SNS 마케팅 해시태그를 생성한다.',
+              bilingualFeedback: false,
+              extraInstructions: '당신은 한국 SNS 마케팅 전문가입니다.',
+            })
+          : '';
+
+        const userPrompt = `키워드: "${keyword.trim()}"
 
 이 키워드에 관련된 한국어 마케팅 해시태그를 15~20개 생성해주세요.
 반드시 아래 4개 카테고리로 분류해서 작성하세요:
@@ -96,6 +108,7 @@ export default function HashtagGeneratorTool() {
 - 실제 인스타그램/틱톡에서 사용 가능한 형태
 - 각 카테고리 제목은 **인기**, **니치**, **브랜딩**, **트렌드**로 표시`;
 
+        const prompt = systemPrompt ? `${systemPrompt}\n\n---\n\n${userPrompt}` : userPrompt;
         const aiResult = await generateText(prompt);
         if (aiResult) {
           const parsed = parseAIHashtags(aiResult, keyword.trim());
@@ -291,9 +304,18 @@ export default function HashtagGeneratorTool() {
 
                     if (aiEnabled) {
                       try {
-                        const prompt = `당신은 한국 SNS 마케팅 전문가입니다. 키워드: "${kw}"에 관련된 한국어 마케팅 해시태그를 15~20개 생성해주세요.
+                        const suggestedSystemPrompt = profile
+                          ? buildSystemPrompt(profile, {
+                              toolName: '해시태그 생성기',
+                              toolPurpose: '키워드에 맞는 SNS 마케팅 해시태그를 생성한다.',
+                              bilingualFeedback: false,
+                              extraInstructions: '당신은 한국 SNS 마케팅 전문가입니다.',
+                            })
+                          : '';
+                        const suggestedUserPrompt = `키워드: "${kw}"에 관련된 한국어 마케팅 해시태그를 15~20개 생성해주세요.
 **인기** (5개) **니치** (5개) **브랜딩** (3~5개) **트렌드** (3~5개). 모든 해시태그는 #으로 시작, 한국어로 작성.`;
-                        const aiResult = await generateText(prompt);
+                        const suggestedPrompt = suggestedSystemPrompt ? `${suggestedSystemPrompt}\n\n---\n\n${suggestedUserPrompt}` : suggestedUserPrompt;
+                        const aiResult = await generateText(suggestedPrompt);
                         if (aiResult) {
                           const parsed = parseAIHashtags(aiResult, kw);
                           if (parsed.length > 0) { found = parsed; usedAI = true; }
