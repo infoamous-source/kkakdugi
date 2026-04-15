@@ -22,6 +22,7 @@ import { supabase } from '../../lib/supabase';
 import type { ProfileRow } from '../../types/database';
 import OrganizationManagement from './OrganizationManagement';
 import NotificationSender from './NotificationSender';
+import TeamManagement from './TeamManagement';
 import ClassReport from '../reports/ClassReport';
 import DevReport from '../reports/DevReport';
 
@@ -439,6 +440,11 @@ export default function CeoDashboard() {
               등록된 수업이 없습니다
             </div>
           )}
+
+          {/* 팀·프로젝트 관리 (수업 관리 탭 하위) */}
+          <div className="mt-8">
+            <TeamManagement />
+          </div>
         </div>
       )}
 
