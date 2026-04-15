@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { ArrowLeft, Send, MessageCircle, CheckCircle2, Loader2, Phone } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -63,8 +63,11 @@ export default function AdminInquiryPage() {
     }
   };
 
-  if (!user || user.role === 'student') {
-    return <div className="p-8 text-center text-gray-500">관리자 전용 페이지입니다</div>;
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  if (user.role === 'student') {
+    return <Navigate to="/" replace />;
   }
 
   const unreplied = inquiries.filter(i => !i.reply).length;

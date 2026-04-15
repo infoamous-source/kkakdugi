@@ -356,9 +356,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 /** Supabase에서 프로필 조회 */
 async function fetchProfile(userId: string): Promise<ProfileRow | null> {
+  // gemini_api_key는 syncGeminiKey에서만 사용 — 별도 조회
   const { data, error } = await supabase
     .from('profiles')
-    .select('*')
+    .select('id, name, email, role, organization, org_code, instructor_code, country, age, gender, learning_purpose, marketing_persona, korean_level, years_in_korea, visa_type, gemini_api_key, created_at, updated_at')
     .eq('id', userId)
     .single();
 
