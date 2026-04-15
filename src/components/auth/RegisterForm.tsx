@@ -18,7 +18,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { parseAuthError, type AuthError } from '../../utils/authErrors';
-import LanguageSwitcher from '../common/LanguageSwitcher';
+// LanguageSwitcher 비활성화 (2026-04-15)
+// 학생이 영어로 전환해놓으면 강사가 당황하는 문제.
+// 한국어 고정, 라벨 내 (English) 병기만 유지.
+// import LanguageSwitcher from '../common/LanguageSwitcher';
 import { validateOrgCode } from '../../services/organizationService';
 import { COUNTRIES } from '../../data/countries';
 
@@ -285,11 +288,6 @@ export default function RegisterForm() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-kk-bg to-kk-cream flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* 모국어 토글 (PRD v6 결정 #7 — TOPIK 0-2 사용자 지원) */}
-        <div className="flex justify-end mb-4">
-          <LanguageSwitcher />
-        </div>
-
         {/* 헤더 */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-kk-red to-kk-red-deep rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
