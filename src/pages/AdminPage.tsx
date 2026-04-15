@@ -15,9 +15,14 @@ export default function AdminPage() {
     );
   }
 
-  // 비로그인 또는 학생이면 리다이렉트 (instructor와 ceo 모두 접근 가능)
+  // 비로그인 또는 학생이면 리다이렉트
   if (!isAuthenticated || (user?.role !== 'instructor' && user?.role !== 'ceo')) {
     return <Navigate to="/" replace />;
+  }
+
+  // CEO는 /ceo 로 통합 (대시보드 2개 운영 금지)
+  if (user?.role === 'ceo') {
+    return <Navigate to="/ceo" replace />;
   }
 
   return (

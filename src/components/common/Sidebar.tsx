@@ -287,11 +287,11 @@ export default function Sidebar({ currentTrack }: SidebarProps) {
         </div>
       )}
 
-      {/* 강사 전용 대시보드 버튼 */}
+      {/* 강사/CEO 대시보드 버튼 — CEO는 /ceo, 강사는 /admin */}
       {isInstructor && (
         <div className="p-3 border-t border-kk-warm">
           <button
-            onClick={() => navigate('/admin')}
+            onClick={() => navigate(user?.role === 'ceo' ? '/ceo' : '/admin')}
             className={`
               w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
               bg-gradient-to-r from-kk-red to-kk-coral text-white font-semibold

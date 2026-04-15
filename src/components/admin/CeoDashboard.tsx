@@ -25,7 +25,7 @@ import NotificationSender from './NotificationSender';
 import ClassReport from '../reports/ClassReport';
 import DevReport from '../reports/DevReport';
 
-type CeoTab = 'instructors' | 'organizations' | 'students' | 'analytics' | 'classes' | 'announcements' | 'settings';
+type CeoTab = 'classes' | 'organizations' | 'instructors' | 'announcements' | 'analytics' | 'settings';
 
 interface ClassSession {
   id: string;
@@ -68,7 +68,7 @@ interface InstructorInfo {
 
 export default function CeoDashboard() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<CeoTab>('instructors');
+  const [activeTab, setActiveTab] = useState<CeoTab>('classes');
   const [instructors, setInstructors] = useState<InstructorInfo[]>([]);
   const [allStudents, setAllStudents] = useState<ProfileRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -186,12 +186,11 @@ export default function CeoDashboard() {
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-8 overflow-x-auto scrollbar-hide">
         {([
-          { id: 'instructors' as CeoTab, icon: GraduationCap, label: '강사 관리' },
-          { id: 'organizations' as CeoTab, icon: Building2, label: '기관 관리' },
-          { id: 'students' as CeoTab, icon: Users, label: '학생 전체' },
-          { id: 'analytics' as CeoTab, icon: BarChart3, label: '학습 데이터' },
           { id: 'classes' as CeoTab, icon: Calendar, label: '수업 관리' },
+          { id: 'organizations' as CeoTab, icon: Building2, label: '기관·학생' },
+          { id: 'instructors' as CeoTab, icon: GraduationCap, label: '강사 관리' },
           { id: 'announcements' as CeoTab, icon: Megaphone, label: '공지 관리' },
+          { id: 'analytics' as CeoTab, icon: BarChart3, label: '통계' },
           { id: 'settings' as CeoTab, icon: Settings, label: '설정' },
         ]).map(tab => {
           const Icon = tab.icon;
@@ -268,101 +267,35 @@ export default function CeoDashboard() {
       {/* Organizations Tab */}
       {activeTab === 'organizations' && <OrganizationManagement />}
 
-      {/* Students Tab */}
-      {activeTab === 'students' && (
-        <div className="bg-white rounded-xl border border-gray-100">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-800">전체 학생 목록 ({totalStudents}명)</h3>
-            <button
-              onClick={() => {
-                const headers = ['이름', '이메일', '기관', '강사코드', 'AI연결', '가입일'];
-                const rows = allStudents.map(s => [
-                  s.name,
-                  s.email,
-                  s.organization || '',
-                  s.instructor_code || '',
-                  s.gemini_api_key ? 'Y' : 'N',
-                  new Date(s.created_at).toLocaleDateString('ko-KR'),
-                ]);
-                const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `전체학생_${new Date().toISOString().slice(0, 10)}.csv`;
-                a.click();
-                URL.revokeObjectURL(url);
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg"
-            >
-              <Download className="w-4 h-4" />
-              CSV 다운로드
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">이름</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">이메일</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">기관</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">강사코드</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">AI</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">가입일</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {allStudents.map(s => (
-                  <tr key={s.id} className="hover:bg-gray-50">
-                    <td className="px-5 py-4 font-medium text-gray-800">{s.name}</td>
-                    <td className="px-5 py-4 text-sm text-gray-500">{s.email}</td>
-                    <td className="px-5 py-4 text-sm text-gray-700">{s.organization || '-'}</td>
-                    <td className="px-5 py-4">
-                      <span className="font-mono text-xs bg-gray-100 px-2 py-0.5 rounded">{s.instructor_code}</span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                        s.gemini_api_key ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-                      }`}>
-                        {s.gemini_api_key ? '연결' : '미연결'}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4 text-sm text-gray-500">
-                      {new Date(s.created_at).toLocaleDateString('ko-KR')}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      {/* 학생 탭 제거됨 — 기관 안에서 학생 조회 (OrganizationManagement에 통합) */}
 
-      {/* Analytics Tab */}
+      {/* Analytics → 통계 탭 */}
       {activeTab === 'analytics' && (
         <div className="space-y-6">
-          <div className="bg-white rounded-xl border border-gray-100 p-6">
-            <h3 className="font-semibold text-gray-800 mb-4">학습 데이터 요약</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-4 bg-blue-50 rounded-xl">
-                <p className="text-3xl font-bold text-blue-600">{totalStudents}</p>
-                <p className="text-sm text-gray-600 mt-1">전체 학생</p>
-              </div>
-              <div className="text-center p-4 bg-green-50 rounded-xl">
-                <p className="text-3xl font-bold text-green-600">
-                  {allStudents.filter(s => s.gemini_api_key).length}
-                </p>
-                <p className="text-sm text-gray-600 mt-1">AI 비서 연결</p>
-              </div>
-              <div className="text-center p-4 bg-purple-50 rounded-xl">
-                <p className="text-3xl font-bold text-purple-600">{totalInstructors}</p>
-                <p className="text-sm text-gray-600 mt-1">활동 강사</p>
-              </div>
+          {/* 전체 요약 카드 */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white rounded-xl border p-4 text-center">
+              <p className="text-3xl font-bold text-blue-600">{classSessions.length}</p>
+              <p className="text-xs text-gray-500 mt-1">총 수업</p>
+            </div>
+            <div className="bg-white rounded-xl border p-4 text-center">
+              <p className="text-3xl font-bold text-green-600">{totalStudents}</p>
+              <p className="text-xs text-gray-500 mt-1">총 학생</p>
+            </div>
+            <div className="bg-white rounded-xl border p-4 text-center">
+              <p className="text-3xl font-bold text-purple-600">{totalInstructors}</p>
+              <p className="text-xs text-gray-500 mt-1">총 강사</p>
+            </div>
+            <div className="bg-white rounded-xl border p-4 text-center">
+              <p className="text-3xl font-bold text-amber-600">
+                {allStudents.length > 0 ? Math.round(allStudents.filter(s => s.gemini_api_key).length / allStudents.length * 100) : 0}%
+              </p>
+              <p className="text-xs text-gray-500 mt-1">AI 연결률</p>
             </div>
           </div>
 
-          {/* Instructor-student ratio */}
-          <div className="bg-white rounded-xl border border-gray-100 p-6">
+          {/* 강사별 학생 분포 */}
+          <div className="bg-white rounded-xl border p-6">
             <h3 className="font-semibold text-gray-800 mb-4">강사별 학생 분포</h3>
             <div className="space-y-3">
               {instructors.map(inst => (
@@ -379,6 +312,57 @@ export default function CeoDashboard() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* API 키 풀 현황 */}
+          <div className="bg-white rounded-xl border p-6">
+            <h3 className="font-semibold text-gray-800 mb-4">API 사용 현황</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-blue-50 rounded-xl">
+                <p className="text-sm text-gray-600">AI 연결 학생</p>
+                <p className="text-2xl font-bold text-blue-600 mt-1">
+                  {allStudents.filter(s => s.gemini_api_key).length}명
+                </p>
+              </div>
+              <div className="p-4 bg-green-50 rounded-xl">
+                <p className="text-sm text-gray-600">미연결 학생</p>
+                <p className="text-2xl font-bold text-green-600 mt-1">
+                  {allStudents.filter(s => !s.gemini_api_key).length}명
+                </p>
+              </div>
+              <div className="p-4 bg-purple-50 rounded-xl">
+                <p className="text-sm text-gray-600">사용 모델</p>
+                <p className="text-lg font-bold text-purple-600 mt-1">gemini-2.5-flash-lite</p>
+              </div>
+            </div>
+          </div>
+
+          {/* CSV 다운로드 */}
+          <div className="bg-white rounded-xl border p-6">
+            <h3 className="font-semibold text-gray-800 mb-4">데이터 내보내기</h3>
+            <button
+              onClick={() => {
+                const headers = ['이름', '이메일', '기관코드', '국가', '한국어수준', '비자', 'AI연결', '가입일'];
+                const rows = allStudents.map(s => [
+                  s.name, s.email, s.org_code || '', s.country || '',
+                  s.korean_level || '', s.visa_type || '',
+                  s.gemini_api_key ? 'Y' : 'N',
+                  new Date(s.created_at).toLocaleDateString('ko-KR'),
+                ]);
+                const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `전체학생_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl"
+            >
+              <Download className="w-4 h-4" />
+              전체 학생 CSV 다운로드
+            </button>
           </div>
         </div>
       )}
