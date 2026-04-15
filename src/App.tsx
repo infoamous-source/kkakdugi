@@ -58,6 +58,7 @@ const BrandKitTool = lazyWithRetry(() => import('./pages/marketing/pro/BrandKitT
 const ContentStudioTool = lazyWithRetry(() => import('./pages/marketing/pro/ContentStudioTool'));
 const LandingBuilderTool = lazyWithRetry(() => import('./pages/marketing/pro/LandingBuilderTool'));
 const MarketingDashboardTool = lazyWithRetry(() => import('./pages/marketing/pro/MarketingDashboardTool'));
+const DetailPageTool = lazyWithRetry(() => import('./pages/marketing/pro/DetailPageTool'));
 
 /** Auth 상태에 따라 API 키 풀 초기화 */
 function ApiKeyPoolSync() {
@@ -116,6 +117,7 @@ export default function App() {
           <Route path="/marketing/pro/studio/market-research" element={<MarketResearchTool />} />
           <Route path="/marketing/pro/studio/brand-kit" element={<BrandKitTool />} />
           <Route path="/marketing/pro/studio/content-studio" element={<ContentStudioTool />} />
+          <Route path="/marketing/pro/studio/detail-page" element={<DetailPageTool />} />
           <Route path="/marketing/pro/studio/landing-builder" element={<LandingBuilderTool />} />
           <Route path="/marketing/pro/studio/marketing-dashboard" element={<MarketingDashboardTool />} />
           <Route path="/marketing/school/ai-setup" element={<AISetupPage />} />
