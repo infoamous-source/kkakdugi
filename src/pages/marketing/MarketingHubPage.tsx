@@ -32,8 +32,10 @@ export default function MarketingHubPage() {
     navigate('/marketing/school/attendance');
   };
 
+  const isStaff = user?.role === 'ceo' || user?.role === 'instructor';
+
   const handleProClick = () => {
-    if (!graduated) {
+    if (!isStaff && !graduated) {
       alert(t('school.hub.proLocked'));
       return;
     }

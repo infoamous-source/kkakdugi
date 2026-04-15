@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Lock, ExternalLink, Crown } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import { useSchoolProgress } from '../../hooks/useSchoolProgress';
 import { marketingTools } from '../../data/marketing/modules';
 import CountdownBadge from '../../components/school/CountdownBadge';
@@ -16,10 +17,14 @@ const proStudioTools = [
 export default function ProToolsDashboard() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { isGraduated: graduated, isProAccessValid: proValid, proRemainingDays: remainingDays } = useSchoolProgress();
 
-  // 미졸업 -> 허브로 리다이렉트
-  if (!graduated) {
+  // CEO/강사는 모든 제한 우회 (졸업·기간 무관)
+  const isStaff = user?.role === 'ceo' || user?.role === 'instructor';
+
+  // 미졸업 -> 허브로 리다이렉트 (학생만)
+  if (!isStaff && !graduated) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center max-w-md">
@@ -37,8 +42,8 @@ export default function ProToolsDashboard() {
     );
   }
 
-  // 기간 만료
-  if (!proValid) {
+  // 기간 만료 (학생만)
+  if (!isStaff && !proValid) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center max-w-md">

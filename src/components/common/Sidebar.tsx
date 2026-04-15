@@ -148,13 +148,16 @@ export default function Sidebar({ currentTrack }: SidebarProps) {
 
   const handleMarketingProClick = () => {
     if (!user) return;
-    if (!isGraduated) {
-      alert(t('school.hub.proLocked'));
-      return;
-    }
-    if (!isProAccessValid) {
-      alert(t('school.hub.proExpired'));
-      return;
+    // CEO/강사는 모든 제한 우회
+    if (!isInstructor) {
+      if (!isGraduated) {
+        alert(t('school.hub.proLocked'));
+        return;
+      }
+      if (!isProAccessValid) {
+        alert(t('school.hub.proExpired'));
+        return;
+      }
     }
     navigate('/marketing/pro');
   };
