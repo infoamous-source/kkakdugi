@@ -1,111 +1,53 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Download, Copy, CheckCircle, Sparkles } from 'lucide-react';
-import { generateText, isGeminiEnabled } from '../../../services/gemini/geminiClient';
+import { ArrowLeft, Loader2, Download, Copy, CheckCircle, Sparkles, RotateCcw } from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useUserProfile } from '../../../lib/userProfile';
+import { useSchoolProgress } from '../../../hooks/useSchoolProgress';
+import { isGeminiEnabled } from '../../../services/gemini/geminiClient';
+import { generateBrandKit, regenerateSlogans } from '../../../services/gemini/proBrandKitService';
+import type { BrandKitData } from '../../../services/gemini/proBrandKitService';
+import SchoolDataBanner from '../pro/common/SchoolDataBanner';
+import EditableSection from '../pro/common/EditableSection';
+import ColorPickerInput from '../pro/common/ColorPickerInput';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-interface BrandKit {
-  slogans: string[];
-  usp: string;
-  colors: { name: string; hex: string; usage: string }[];
-  fonts: { name: string; usage: string }[];
-  voiceGuide: string;
-}
-
-const MOCK_KIT: BrandKit = {
-  slogans: [
-    '당신의 일상에 특별함을 더하다',
-    '작은 변화, 큰 행복',
-    '매일이 새로운 시작',
-  ],
-  usp: '합리적 가격에 프리미엄 품질을 제공하는 유일한 브랜드. 지속가능한 소재와 한국적 감성을 결합하여 차별화된 경험을 선사합니다.',
-  colors: [
-    { name: '메인 컬러', hex: '#2563eb', usage: '로고, CTA 버튼, 주요 강조' },
-    { name: '서브 컬러', hex: '#f59e0b', usage: '포인트, 배지, 알림' },
-    { name: '배경 컬러', hex: '#f8fafc', usage: '페이지 배경, 카드' },
-    { name: '텍스트 컬러', hex: '#1e293b', usage: '본문, 제목' },
-    { name: '액센트', hex: '#ec4899', usage: '프로모션, 할인 배지' },
-  ],
-  fonts: [
-    { name: 'Pretendard', usage: '본문, UI 텍스트 (가독성 우선)' },
-    { name: 'Noto Serif Korean', usage: '제목, 슬로건 (고급스러운 인상)' },
-  ],
-  voiceGuide: '친근하면서도 신뢰감 있는 톤. 전문 용어보다 쉬운 표현을 사용하되, 지나치게 캐주얼하지 않게 유지합니다. "~해요" 체를 기본으로 하며, 고객을 존중하는 따뜻한 메시지를 전달합니다.',
-};
-
-function parseAIBrandKit(text: string): BrandKit | null {
-  try {
-    const slogans: string[] = [];
-    const colors: BrandKit['colors'] = [];
-    const fonts: BrandKit['fonts'] = [];
-    let usp = '';
-    let voiceGuide = '';
-
-    const lines = text.split('\n');
-    let section = '';
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (trimmed.includes('슬로건') || trimmed.includes('Slogan')) { section = 'slogan'; continue; }
-      if (trimmed.includes('USP') || trimmed.includes('차별화') || trimmed.includes('고유 가치')) { section = 'usp'; continue; }
-      if (trimmed.includes('컬러') || trimmed.includes('Color') || trimmed.includes('팔레트')) { section = 'color'; continue; }
-      if (trimmed.includes('폰트') || trimmed.includes('Font') || trimmed.includes('타이포')) { section = 'font'; continue; }
-      if (trimmed.includes('보이스') || trimmed.includes('Voice') || trimmed.includes('톤앤매너')) { section = 'voice'; continue; }
-
-      if (section === 'slogan' && trimmed.length > 2) {
-        const cleaned = trimmed.replace(/^[-\d.)\s*"]+/, '').replace(/["']$/g, '').trim();
-        if (cleaned) slogans.push(cleaned);
-      }
-      if (section === 'usp' && trimmed.length > 5) {
-        usp += (usp ? ' ' : '') + trimmed.replace(/^[-*]\s*/, '');
-      }
-      if (section === 'color') {
-        const hexMatch = trimmed.match(/#[0-9a-fA-F]{6}/);
-        if (hexMatch) {
-          const namePart = trimmed.split(hexMatch[0])[0].replace(/^[-*\d.)\s]+/, '').trim() || '컬러';
-          const usagePart = trimmed.split(hexMatch[0])[1]?.replace(/^[:\-–\s]+/, '').trim() || '';
-          colors.push({ name: namePart, hex: hexMatch[0], usage: usagePart });
-        }
-      }
-      if (section === 'font' && trimmed.length > 2) {
-        const cleaned = trimmed.replace(/^[-*\d.)\s]+/, '').trim();
-        if (cleaned) {
-          const parts = cleaned.split(/[:\-–]/);
-          fonts.push({ name: parts[0].trim(), usage: parts.slice(1).join('-').trim() || '' });
-        }
-      }
-      if (section === 'voice' && trimmed.length > 3) {
-        voiceGuide += (voiceGuide ? ' ' : '') + trimmed.replace(/^[-*]\s*/, '');
-      }
-    }
-
-    if (slogans.length === 0 && colors.length === 0) return null;
-    return {
-      slogans: slogans.length > 0 ? slogans.slice(0, 3) : MOCK_KIT.slogans,
-      usp: usp || MOCK_KIT.usp,
-      colors: colors.length > 0 ? colors : MOCK_KIT.colors,
-      fonts: fonts.length > 0 ? fonts : MOCK_KIT.fonts,
-      voiceGuide: voiceGuide || MOCK_KIT.voiceGuide,
-    };
-  } catch {
-    return null;
-  }
-}
+const FONT_OPTIONS = ['Pretendard', 'Noto Sans KR', 'Spoqa Han Sans Neo', 'Noto Serif KR', 'IBM Plex Sans KR', 'Wanted Sans'];
 
 export default function BrandKitTool() {
   const navigate = useNavigate();
   const kitRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const profile = useUserProfile();
+  const { progress } = useSchoolProgress();
+  const schoolData = progress?.marketCompassData;
+
   const [brandName, setBrandName] = useState('');
-  const [values, setValues] = useState('');
-  const [targetAudience, setTargetAudience] = useState('');
   const [industry, setIndustry] = useState('');
-  const [kit, setKit] = useState<BrandKit | null>(null);
+  const [target, setTarget] = useState('');
+  const [mood, setMood] = useState('');
+  const [kit, setKit] = useState<BrandKitData | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isMock, setIsMock] = useState(false);
+  const [regeneratingSlogans, setRegenSlogans] = useState(false);
+  const [showSchoolBanner, setShowSchoolBanner] = useState(true);
 
   const aiEnabled = isGeminiEnabled();
+
+  // Prefill from school data (EdgeMaker)
+  useEffect(() => {
+    if (schoolData?.edgeMakerResult) {
+      const r = schoolData.edgeMakerResult;
+      if (!brandName && r.output.brandNames?.[0]) setBrandName(r.output.brandNames[0].name);
+      if (!mood && r.output.brandMood?.tone) setMood(r.output.brandMood.tone);
+    }
+  }, [schoolData]);
+
+  const schoolSummary = schoolData?.edgeMakerResult
+    ? `엣지메이커 USP: "${schoolData.edgeMakerResult.output.usp?.slice(0, 40)}...", 슬로건: "${schoolData.edgeMakerResult.output.slogan?.slice(0, 30)}..."`
+    : '';
 
   const handleGenerate = async () => {
     if (!brandName.trim()) return;
@@ -113,60 +55,49 @@ export default function BrandKitTool() {
     setKit(null);
     setIsMock(false);
 
-    if (aiEnabled) {
-      try {
-        const prompt = `당신은 브랜드 전략 컨설턴트입니다. 아래 브랜드 정보를 바탕으로 브랜드 키트를 생성하세요.
+    const ed = schoolData?.edgeMakerResult?.output;
+    const existingData = ed ? {
+      usp: ed.usp,
+      slogan: ed.slogan,
+      primaryColor: ed.brandMood?.primaryColor,
+      secondaryColor: ed.brandMood?.secondaryColor,
+      tone: ed.brandMood?.tone,
+    } : undefined;
 
-브랜드명: ${brandName}
-핵심 가치: ${values || '미입력'}
-타겟 고객: ${targetAudience || '미입력'}
-업종: ${industry || '미입력'}
-
-다음 형식으로 작성하세요:
-
-## 슬로건 (3개)
-1. "첫 번째 슬로건"
-2. "두 번째 슬로건"
-3. "세 번째 슬로건"
-
-## USP (고유 가치 제안)
-이 브랜드만의 차별화 포인트를 2-3문장으로
-
-## 컬러 팔레트 (5개, 반드시 HEX 코드 포함)
-- 메인 컬러 #XXXXXX - 사용처 설명
-- 서브 컬러 #XXXXXX - 사용처 설명
-- 배경 #XXXXXX - 사용처 설명
-- 텍스트 #XXXXXX - 사용처 설명
-- 액센트 #XXXXXX - 사용처 설명
-
-## 폰트 추천 (2개)
-- 폰트명 - 사용처
-
-## 브랜드 보이스 가이드
-톤앤매너 설명 (3-4문장)
-
-한국어로 작성하세요.`;
-
-        const result = await generateText(prompt);
-        if (result) {
-          const parsed = parseAIBrandKit(result);
-          if (parsed) {
-            setKit(parsed);
-            setLoading(false);
-            return;
-          }
-        }
-      } catch { /* fallback */ }
-    }
-
-    setKit(MOCK_KIT);
-    setIsMock(true);
+    const result = await generateBrandKit({ brandName, industry, target, mood, existingData }, profile);
+    setKit(result.kit);
+    setIsMock(result.isMock);
     setLoading(false);
+  };
+
+  const handleRegenerateSlogans = async () => {
+    if (!kit) return;
+    setRegenSlogans(true);
+    const newSlogans = await regenerateSlogans(kit, brandName, profile);
+    if (newSlogans) {
+      setKit(prev => prev ? { ...prev, slogans: newSlogans } : prev);
+    }
+    setRegenSlogans(false);
+  };
+
+  const handleColorChange = (idx: number, hex: string) => {
+    if (!kit) return;
+    setKit(prev => {
+      if (!prev) return prev;
+      const colors = [...prev.colors];
+      colors[idx] = { ...colors[idx], hex };
+      return { ...prev, colors };
+    });
+  };
+
+  const handleFontChange = (type: 'heading' | 'body', value: string) => {
+    if (!kit) return;
+    setKit(prev => prev ? { ...prev, fonts: { ...prev.fonts, [type]: value } } : prev);
   };
 
   const handleCopy = async () => {
     if (!kit) return;
-    const text = `브랜드: ${brandName}\n\n슬로건:\n${kit.slogans.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nUSP: ${kit.usp}\n\n컬러:\n${kit.colors.map((c) => `${c.name}: ${c.hex} (${c.usage})`).join('\n')}\n\n폰트:\n${kit.fonts.map((f) => `${f.name}: ${f.usage}`).join('\n')}\n\n보이스: ${kit.voiceGuide}`;
+    const text = `브랜드: ${brandName}\n\nUSP: ${kit.usp}\n\n슬로건:\n${kit.slogans.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\n컬러:\n${kit.colors.map(c => `${c.name}: ${c.hex} (${c.usage})`).join('\n')}\n\n폰트: 제목=${kit.fonts.heading}, 본문=${kit.fonts.body}\n\n보이스: ${kit.voiceGuide}`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -197,11 +128,15 @@ export default function BrandKitTool() {
         <div className="bg-gradient-to-r from-purple-700 to-pink-500 rounded-2xl p-5 text-white mb-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-2xl">{'\u{1F3A8}'}</span>
-            <h1 className="text-xl font-bold">브랜드 키트</h1>
+            <h1 className="text-xl font-bold">브랜드 키트 프로</h1>
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
-          <p className="text-purple-100 text-sm">브랜드 아이덴티티를 한 장으로 정리합니다</p>
+          <p className="text-purple-100 text-sm">USP + 슬로건 3개 + 컬러 5색 + 폰트 + 보이스 가이드</p>
         </div>
+
+        {schoolSummary && showSchoolBanner && (
+          <SchoolDataBanner summary={schoolSummary} onDismiss={() => setShowSchoolBanner(false)} />
+        )}
 
         {/* Input Form */}
         <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-6 space-y-4">
@@ -210,20 +145,22 @@ export default function BrandKitTool() {
             <input type="text" value={brandName} onChange={(e) => setBrandName(e.target.value)}
               placeholder="예: 맑은하루, FreshDay" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none text-sm" />
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">핵심 가치 (선택)</label>
-            <input type="text" value={values} onChange={(e) => setValues(e.target.value)}
-              placeholder="예: 자연, 건강, 지속가능성" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none text-sm" />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">업종</label>
+              <input type="text" value={industry} onChange={(e) => setIndustry(e.target.value)}
+                placeholder="예: 건강식품" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none text-sm" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">타겟</label>
+              <input type="text" value={target} onChange={(e) => setTarget(e.target.value)}
+                placeholder="예: 2030 직장인" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none text-sm" />
+            </div>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">타겟 고객 (선택)</label>
-            <input type="text" value={targetAudience} onChange={(e) => setTargetAudience(e.target.value)}
-              placeholder="예: 2030 건강에 관심 있는 직장인" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none text-sm" />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">업종 (선택)</label>
-            <input type="text" value={industry} onChange={(e) => setIndustry(e.target.value)}
-              placeholder="예: 건강식품, 뷰티, IT" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none text-sm" />
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">브랜드 무드</label>
+            <input type="text" value={mood} onChange={(e) => setMood(e.target.value)}
+              placeholder="예: 따뜻한, 모던한, 프리미엄" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none text-sm" />
           </div>
           <button onClick={handleGenerate} disabled={!brandName.trim() || loading}
             className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${brandName.trim() && !loading ? 'bg-purple-600 text-white hover:bg-purple-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
@@ -239,65 +176,99 @@ export default function BrandKitTool() {
                 <p className="text-xs text-yellow-700">AI 미연결: 샘플 브랜드 키트입니다.</p>
               </div>
             )}
-            <div ref={kitRef} className="bg-white rounded-2xl border border-gray-200 p-6 mb-4 space-y-6">
-              <div className="text-center pb-4 border-b border-gray-100">
+
+            <div ref={kitRef} className="space-y-4 mb-4">
+              <div className="bg-white rounded-2xl border border-gray-100 p-5 text-center">
                 <h2 className="text-2xl font-extrabold text-gray-900">{brandName}</h2>
                 <p className="text-xs text-gray-400 mt-1">Brand Identity Kit</p>
               </div>
 
+              {/* USP */}
+              <EditableSection
+                title="USP (고유 가치 제안)"
+                content={kit.usp}
+                onSave={(val) => setKit(prev => prev ? { ...prev, usp: val } : prev)}
+              />
+
               {/* Slogans */}
-              <div>
-                <h3 className="text-sm font-bold text-gray-800 mb-3">슬로건</h3>
+              <div className="bg-white rounded-2xl border border-gray-100 p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-bold text-gray-800 text-sm">슬로건 (3개)</h3>
+                  <button onClick={handleRegenerateSlogans} disabled={regeneratingSlogans}
+                    className="p-1.5 rounded-lg border border-purple-200 hover:bg-purple-50 text-purple-500 disabled:opacity-50" title="슬로건 3개 재생성">
+                    <RotateCcw className={`w-3.5 h-3.5 ${regeneratingSlogans ? 'animate-spin' : ''}`} />
+                  </button>
+                </div>
                 <div className="space-y-2">
                   {kit.slogans.map((s, i) => (
-                    <div key={i} className="bg-gray-50 rounded-xl px-4 py-3 text-center">
-                      <p className="text-sm font-medium text-gray-800">"{s}"</p>
+                    <div key={i} className="bg-gray-50 rounded-xl px-4 py-3">
+                      <input type="text" value={s}
+                        onChange={(e) => {
+                          const newSlogans = [...kit.slogans];
+                          newSlogans[i] = e.target.value;
+                          setKit(prev => prev ? { ...prev, slogans: newSlogans } : prev);
+                        }}
+                        className="w-full bg-transparent text-center text-sm font-medium text-gray-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-300 rounded-lg px-2 py-1" />
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* USP */}
-              <div>
-                <h3 className="text-sm font-bold text-gray-800 mb-2">USP (고유 가치 제안)</h3>
-                <p className="text-sm text-gray-700 bg-blue-50 rounded-xl p-4">{kit.usp}</p>
-              </div>
-
-              {/* Colors */}
-              <div>
-                <h3 className="text-sm font-bold text-gray-800 mb-3">컬러 팔레트</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {/* Colors - 5 Color Pickers */}
+              <div className="bg-white rounded-2xl border border-gray-100 p-5">
+                <h3 className="font-bold text-gray-800 text-sm mb-3">컬러 팔레트 (5색)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {kit.colors.map((c, i) => (
-                    <div key={i} className="rounded-xl overflow-hidden border border-gray-200">
-                      <div className="h-16" style={{ backgroundColor: c.hex }} />
-                      <div className="p-2">
-                        <p className="text-xs font-semibold text-gray-800">{c.name}</p>
-                        <p className="text-[10px] text-gray-500 font-mono">{c.hex}</p>
-                        {c.usage && <p className="text-[10px] text-gray-400 mt-0.5">{c.usage}</p>}
-                      </div>
+                    <div key={i} className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+                      <ColorPickerInput
+                        label={c.name}
+                        color={c.hex}
+                        onChange={(hex) => handleColorChange(i, hex)}
+                      />
+                      <span className="text-[10px] text-gray-400 flex-shrink-0">{c.usage}</span>
                     </div>
+                  ))}
+                </div>
+                {/* Color preview strip */}
+                <div className="flex rounded-lg overflow-hidden mt-3 h-8">
+                  {kit.colors.map((c, i) => (
+                    <div key={i} className="flex-1" style={{ backgroundColor: c.hex }} />
                   ))}
                 </div>
               </div>
 
               {/* Fonts */}
-              <div>
-                <h3 className="text-sm font-bold text-gray-800 mb-2">폰트 추천</h3>
-                <div className="space-y-2">
-                  {kit.fonts.map((f, i) => (
-                    <div key={i} className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
-                      <span className="text-sm font-semibold text-gray-800">{f.name}</span>
-                      <span className="text-xs text-gray-500">{f.usage}</span>
-                    </div>
-                  ))}
+              <div className="bg-white rounded-2xl border border-gray-100 p-5">
+                <h3 className="font-bold text-gray-800 text-sm mb-3">폰트</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">제목 폰트</label>
+                    <select value={kit.fonts.heading} onChange={(e) => handleFontChange('heading', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:border-purple-400 focus:outline-none">
+                      {FONT_OPTIONS.map(f => <option key={f} value={f}>{f}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">본문 폰트</label>
+                    <select value={kit.fonts.body} onChange={(e) => handleFontChange('body', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:border-purple-400 focus:outline-none">
+                      {FONT_OPTIONS.map(f => <option key={f} value={f}>{f}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="mt-3 p-3 bg-gray-50 rounded-xl">
+                  <p className="text-xs text-gray-400 mb-1">미리보기</p>
+                  <p className="text-lg font-bold text-gray-900" style={{ fontFamily: kit.fonts.heading }}>제목 텍스트 Heading</p>
+                  <p className="text-sm text-gray-700" style={{ fontFamily: kit.fonts.body }}>본문 텍스트입니다. Body text sample.</p>
                 </div>
               </div>
 
               {/* Voice Guide */}
-              <div>
-                <h3 className="text-sm font-bold text-gray-800 mb-2">브랜드 보이스 가이드</h3>
-                <p className="text-sm text-gray-700 bg-purple-50 rounded-xl p-4">{kit.voiceGuide}</p>
-              </div>
+              <EditableSection
+                title="브랜드 보이스 가이드"
+                content={kit.voiceGuide}
+                onSave={(val) => setKit(prev => prev ? { ...prev, voiceGuide: val } : prev)}
+              />
             </div>
 
             <div className="flex gap-3">

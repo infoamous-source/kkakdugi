@@ -8,6 +8,7 @@ import { tracks } from '../data/tracks';
 import { useVisibility } from '../contexts/VisibilityContext';
 import { useAuth } from '../contexts/AuthContext';
 import PendingEnrollmentBanner from '../components/enrollment/PendingEnrollmentBanner';
+import AnnouncementBanner from '../components/common/AnnouncementBanner';
 import KkakdugiCharacter from '../components/brand/KkakdugiCharacter';
 import KkakdugiMascot from '../components/brand/KkakdugiMascot';
 import { SchoolPatternBg, PencilIcon, StarIcon } from '../components/brand/SchoolIllustrations';
@@ -59,6 +60,9 @@ export default function GatewayPage() {
 
       {/* Pending Enrollment 알림 배너 */}
       <PendingEnrollmentBanner />
+
+      {/* 공지사항 배너 */}
+      <AnnouncementBanner />
 
       {/* ── 헤더 ── */}
       <header className="relative py-4 px-4 sm:py-6 sm:px-8">

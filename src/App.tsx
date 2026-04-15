@@ -11,6 +11,7 @@ import GatewayPage from './pages/GatewayPage';
 import LoginPage from './pages/LoginPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 import { lazyWithRetry } from './utils/lazyWithRetry';
+import { useApiKeyPool } from './hooks/useApiKeyPool';
 
 // Lazy-loaded pages (lazyWithRetry: 청크 404 시 자동 새로고침)
 const TrackPage = lazyWithRetry(() => import('./pages/TrackPage'));
@@ -49,6 +50,7 @@ const AboutPage = lazyWithRetry(() => import('./pages/AboutPage'));
 const InquiryPage = lazyWithRetry(() => import('./pages/InquiryPage'));
 const ShowcasePage = lazyWithRetry(() => import('./pages/ShowcasePage'));
 const AdminInquiryPage = lazyWithRetry(() => import('./pages/AdminInquiryPage'));
+const AdminAnnouncementsPage = lazyWithRetry(() => import('./pages/AdminAnnouncementsPage'));
 const TermsPage = lazyWithRetry(() => import('./pages/legal/TermsPage'));
 const PrivacyPage = lazyWithRetry(() => import('./pages/legal/PrivacyPage'));
 const MarketResearchTool = lazyWithRetry(() => import('./pages/marketing/pro/MarketResearchTool'));
@@ -57,9 +59,16 @@ const ContentStudioTool = lazyWithRetry(() => import('./pages/marketing/pro/Cont
 const LandingBuilderTool = lazyWithRetry(() => import('./pages/marketing/pro/LandingBuilderTool'));
 const MarketingDashboardTool = lazyWithRetry(() => import('./pages/marketing/pro/MarketingDashboardTool'));
 
+/** Auth 상태에 따라 API 키 풀 초기화 */
+function ApiKeyPoolSync() {
+  useApiKeyPool();
+  return null;
+}
+
 export default function App() {
   return (
     <AuthProvider>
+      <ApiKeyPoolSync />
       <EnrollmentProvider>
       <VisibilityProvider>
       <BrowserRouter>
@@ -80,6 +89,7 @@ export default function App() {
           {/* 1:1 문의 게시판 */}
           <Route path="/inquiry" element={<InquiryPage />} />
           <Route path="/admin/inquiries" element={<AdminInquiryPage />} />
+          <Route path="/admin/announcements" element={<AdminAnnouncementsPage />} />
 
           {/* 조별 발표 쇼케이스 (공개 — 교실 프로젝터용) */}
           <Route path="/showcase" element={<ShowcasePage />} />

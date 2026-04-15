@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { LogOut, Home, Settings, Backpack, Eye, ArrowLeft } from 'lucide-react';
+import { LogOut, Home, Settings, Backpack, Eye, ArrowLeft, Bell } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import type { UserRole } from '../../types/auth';
 
@@ -174,6 +174,17 @@ export default function GlobalLogoutButton() {
               >
                 <Settings className="w-4 h-4" />
                 {t('header.dashboard')}
+              </button>
+            )}
+
+            {/* 공지사항 관리 (강사/CEO만, 학생 모드가 아닐 때) */}
+            {!isStudentMode && (user.role === 'instructor' || user.role === 'ceo') && (
+              <button
+                onClick={() => { setMenuOpen(false); navigate('/admin/announcements'); }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-kk-brown/70 hover:bg-kk-cream/40 transition-colors"
+              >
+                <Bell className="w-4 h-4" />
+                공지사항 관리
               </button>
             )}
 

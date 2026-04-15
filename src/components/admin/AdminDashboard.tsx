@@ -44,9 +44,10 @@ import TeamManagement from './TeamManagement';
 import NotificationSender from './NotificationSender';
 import StudentAIUsageView from './StudentAIUsageView';
 import OrganizationManagement from './OrganizationManagement';
+import ClassReport from '../reports/ClassReport';
 
 // 5-tab consolidated dashboard
-type DashboardTab = 'organizations' | 'students' | 'teams' | 'learning' | 'notifications';
+type DashboardTab = 'organizations' | 'students' | 'teams' | 'learning' | 'notifications' | 'reports';
 type StudentSubTab = 'accounts' | 'enrollment';
 type LearningSubTab = 'progress' | 'content' | 'analytics';
 
@@ -94,6 +95,13 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [apiFilter, setApiFilter] = useState<ApiFilter>('all');
   const [selectedStudent, setSelectedStudent] = useState<RealStudent | null>(null);
+
+  // 수업 보고서 모달
+  const [selectedClassReport, setSelectedClassReport] = useState<{
+    id: string; orgName: string; orgCode: string; title: string;
+    startDate: string; endDate: string; instructorName: string;
+    studentCount: number; teamCount: number; status: string; completionRate: number;
+  } | null>(null);
 
   // 추가배정 모달
   const [assignModal, setAssignModal] = useState<RealStudent | null>(null);
@@ -488,6 +496,7 @@ export default function AdminDashboard() {
           { id: 'teams' as DashboardTab, icon: UsersRound, label: '팀·프로젝트' },
           { id: 'learning' as DashboardTab, icon: GraduationCap, label: '학습 현황' },
           { id: 'notifications' as DashboardTab, icon: Bell, label: '공지' },
+          { id: 'reports' as DashboardTab, icon: FileText, label: '수업 보고서' },
         ]).map(tab => {
           const Icon = tab.icon;
           return (
@@ -1166,6 +1175,68 @@ export default function AdminDashboard() {
           studentId={selectedStudent.id}
           studentName={selectedStudent.name}
           onClose={() => setSelectedStudent(null)}
+        />
+      )}
+
+      {/* Reports Tab */}
+      {activeTab === 'reports' && (
+        <div className="space-y-4">
+          {/* Hardcoded class sessions for this instructor */}
+          {[
+            {
+              id: '1',
+              orgName: '서울글로벌센터',
+              orgCode: 'HUC454',
+              title: '직무역량강화교육 - 예비 마케터 양성과정',
+              startDate: '2026-04-09',
+              endDate: '2026-04-10',
+              instructorName: user?.name || '',
+              studentCount: realtimeStudents.length || 25,
+              teamCount: 5,
+              status: 'completed',
+              completionRate: 80,
+            },
+          ].map(session => (
+            <div
+              key={session.id}
+              className="bg-white rounded-xl border border-gray-100 p-5"
+            >
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium text-blue-600">{session.orgName}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      session.status === 'completed'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-blue-100 text-blue-700'
+                    }`}>
+                      {session.status === 'completed' ? '완료' : '진행 중'}
+                    </span>
+                  </div>
+                  <h3 className="font-semibold text-gray-800 mb-2">{session.title}</h3>
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                    <span>{session.startDate} ~ {session.endDate}</span>
+                    <span>{session.studentCount}명</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedClassReport(session)}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-medium rounded-lg transition-colors"
+                >
+                  <FileText className="w-4 h-4" />
+                  수업 보고서
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Class Report Modal */}
+      {selectedClassReport && (
+        <ClassReport
+          session={selectedClassReport}
+          onClose={() => setSelectedClassReport(null)}
         />
       )}
 

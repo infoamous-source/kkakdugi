@@ -7,14 +7,49 @@ import {
   Settings,
   Download,
   RefreshCw,
+  Calendar,
+  FileText,
+  Wrench,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { ProfileRow } from '../../types/database';
 import OrganizationManagement from './OrganizationManagement';
 import NotificationSender from './NotificationSender';
+import ClassReport from '../reports/ClassReport';
+import DevReport from '../reports/DevReport';
 
-type CeoTab = 'instructors' | 'organizations' | 'students' | 'analytics' | 'settings';
+type CeoTab = 'instructors' | 'organizations' | 'students' | 'analytics' | 'classes' | 'settings';
+
+interface ClassSession {
+  id: string;
+  orgName: string;
+  orgCode: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  instructorName: string;
+  studentCount: number;
+  teamCount: number;
+  status: string;
+  completionRate: number;
+}
+
+const classSessions: ClassSession[] = [
+  {
+    id: '1',
+    orgName: '서울글로벌센터',
+    orgCode: 'HUC454',
+    title: '직무역량강화교육 - 예비 마케터 양성과정',
+    startDate: '2026-04-09',
+    endDate: '2026-04-10',
+    instructorName: '유수인',
+    studentCount: 25,
+    teamCount: 5,
+    status: 'completed',
+    completionRate: 80,
+  },
+];
 
 interface InstructorInfo {
   id: string;
@@ -31,6 +66,8 @@ export default function CeoDashboard() {
   const [instructors, setInstructors] = useState<InstructorInfo[]>([]);
   const [allStudents, setAllStudents] = useState<ProfileRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedClassReport, setSelectedClassReport] = useState<ClassSession | null>(null);
+  const [showDevReport, setShowDevReport] = useState(false);
 
   // Load all instructors and students
   useEffect(() => {
@@ -147,6 +184,7 @@ export default function CeoDashboard() {
           { id: 'organizations' as CeoTab, icon: Building2, label: '기관 관리' },
           { id: 'students' as CeoTab, icon: Users, label: '학생 전체' },
           { id: 'analytics' as CeoTab, icon: BarChart3, label: '학습 데이터' },
+          { id: 'classes' as CeoTab, icon: Calendar, label: '수업 관리' },
           { id: 'settings' as CeoTab, icon: Settings, label: '설정' },
         ]).map(tab => {
           const Icon = tab.icon;
@@ -338,6 +376,81 @@ export default function CeoDashboard() {
         </div>
       )}
 
+      {/* Classes Tab */}
+      {activeTab === 'classes' && (
+        <div className="space-y-4">
+          {classSessions.map(session => (
+            <div
+              key={session.id}
+              className="bg-white rounded-xl border border-gray-100 p-5"
+            >
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium text-blue-600">{session.orgName}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      session.status === 'completed'
+                        ? 'bg-green-100 text-green-700'
+                        : session.status === 'in-progress'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {session.status === 'completed' ? '완료' : session.status === 'in-progress' ? '진행 중' : '예정'}
+                    </span>
+                  </div>
+                  <h3 className="font-semibold text-gray-800 mb-2">{session.title}</h3>
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {session.startDate} ~ {session.endDate}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5" />
+                      {session.studentCount}명
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <GraduationCap className="w-3.5 h-3.5" />
+                      {session.instructorName}
+                    </span>
+                  </div>
+                  {/* Completion progress */}
+                  <div className="mt-3 flex items-center gap-2">
+                    <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden max-w-xs">
+                      <div
+                        className="bg-green-500 h-full rounded-full"
+                        style={{ width: `${session.completionRate}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-gray-500">{session.completionRate}%</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSelectedClassReport(session)}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-medium rounded-lg transition-colors"
+                  >
+                    <FileText className="w-4 h-4" />
+                    수업 보고서
+                  </button>
+                  <button
+                    onClick={() => setShowDevReport(true)}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-medium rounded-lg transition-colors"
+                  >
+                    <Wrench className="w-4 h-4" />
+                    개발 보고서
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+          {classSessions.length === 0 && (
+            <div className="bg-white rounded-xl border border-gray-100 p-12 text-center text-gray-400">
+              등록된 수업이 없습니다
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Settings Tab */}
       {activeTab === 'settings' && (
         <div className="bg-white rounded-xl border border-gray-100 p-6">
@@ -359,6 +472,16 @@ export default function CeoDashboard() {
             </div>
           </div>
         </div>
+      )}
+      {/* Report Modals */}
+      {selectedClassReport && (
+        <ClassReport
+          session={selectedClassReport}
+          onClose={() => setSelectedClassReport(null)}
+        />
+      )}
+      {showDevReport && (
+        <DevReport onClose={() => setShowDevReport(false)} />
       )}
     </div>
   );
