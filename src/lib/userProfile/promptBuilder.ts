@@ -31,6 +31,16 @@ export interface PromptContext {
   outputLength?: number;
   /** 환각 방지 강도 */
   antiHallucination?: 'strict' | 'normal';
+  /**
+   * 한국어+영어 병기 피드백 모드 (2026-04-15)
+   *
+   * true이면 AI가 피드백·코칭·안내를 한국어+영어 병기로 출력한다.
+   * 자소서/이력서 같은 "제출용 본문"에는 쓰지 않고,
+   * 면접 피드백·강점 설명 등 "학생이 이해해야 하는 코칭"에만 사용.
+   *
+   * 예: "결과를 숫자로 말해보세요. (Try to mention specific numbers in your results.)"
+   */
+  bilingualFeedback?: boolean;
 }
 
 /** 기본 가드레일 (모든 도구 공통) */
@@ -151,7 +161,21 @@ export function buildSystemPrompt(
     sections.push('');
   }
 
-  // ─── 9. 도구 특화 지시문 ────────────────────────────
+  // ─── 9. 한국어+영어 병기 피드백 모드 ─────────────────
+  if (context.bilingualFeedback) {
+    sections.push('## 피드백 언어: 한국어 + 영어 병기 (반드시 준수)');
+    sections.push([
+      '이 도구의 출력은 학생을 코칭하는 피드백이다.',
+      '모든 피드백·설명·조언은 반드시 한국어를 먼저 쓰고, 바로 뒤에 영어 번역을 괄호로 병기하라.',
+      '예시: "결과를 숫자로 말해보세요. (Try to mention specific numbers.)"',
+      '예시: "잘한 점: 본인이 한 행동을 구체적으로 말했어요. (Good: You described your own actions specifically.)"',
+      '단, JSON 키 이름은 영어 그대로 두고, 값(value)만 병기하라.',
+      '한국어가 메인이고 영어는 보조임을 잊지 말 것.',
+    ].join(' '));
+    sections.push('');
+  }
+
+  // ─── 10. 도구 특화 지시문 ───────────────────────────
   if (context.extraInstructions) {
     sections.push('## 이 도구 특화 지시사항');
     sections.push(context.extraInstructions);

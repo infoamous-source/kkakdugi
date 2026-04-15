@@ -61,6 +61,7 @@ export async function deriveStrengths(input: {
       'description은 TOPIK 3-4 사용자가 이해할 수 있는 한 줄 설명.',
     ].join(' '),
     antiHallucination: 'normal',
+    bilingualFeedback: true, // 강점 설명은 학생이 이해해야 함
   });
 
   const userPrompt = `
@@ -135,6 +136,7 @@ export async function generateFollowUpQuestion(input: {
       '사용자가 답하기 쉽도록 예시를 한 가지 포함해도 좋다.',
     ].join(' '),
     antiHallucination: 'normal',
+    bilingualFeedback: true, // 후속 질문도 학생 이해용
   });
 
   const userPrompt = `

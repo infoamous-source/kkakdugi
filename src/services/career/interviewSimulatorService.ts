@@ -101,6 +101,7 @@ export async function generatePersonalizedQuestions(input: {
       '출력 JSON 형식: [{ "id": "q_1", "category": "카테고리", "text": "질문" }, ...]',
     ].join(' '),
     antiHallucination: 'normal',
+    bilingualFeedback: false, // 질문 자체는 한국어만 (한국 면접 연습)
   });
 
   const userPrompt = `
@@ -188,6 +189,7 @@ export async function evaluateAnswer(input: {
       '{ "score": 0~100, "strengths": ["잘한 점"], "improvements": ["개선할 점"], "suggestedAnswer": "모범 답변", "overallComment": "전체 코멘트" }',
     ].join(' '),
     antiHallucination: 'normal',
+    bilingualFeedback: true, // 코칭 피드백은 한국어+영어 병기
   });
 
   const userPrompt = `
