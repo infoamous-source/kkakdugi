@@ -189,7 +189,7 @@ export default function BrandKitTool() {
               <div className="space-y-2 mb-5">
                 <div className="p-3 bg-purple-50 rounded-xl">
                   <p className="text-xs font-bold text-purple-700 mb-1">우리 브랜드만의 매력</p>
-                  <p className="text-[11px] text-gray-600 line-clamp-2">{kit.usp.slice(0, 80)}...</p>
+                  <p className="text-[11px] text-gray-600 line-clamp-2">{String(kit.usp || '').slice(0, 80)}...</p>
                 </div>
                 <div className="p-3 bg-gray-50 rounded-xl">
                   <p className="text-xs font-bold text-gray-700 mb-1">슬로건</p>
@@ -220,7 +220,7 @@ export default function BrandKitTool() {
                   {/* USP */}
                   <EditableSection
                     title="우리 브랜드만의 매력 (USP)"
-                    content={kit.usp}
+                    content={typeof kit.usp === 'string' ? kit.usp : JSON.stringify(kit.usp, null, 2)}
                     onSave={(val) => setKit(prev => prev ? { ...prev, usp: val } : prev)}
                   />
 
@@ -306,7 +306,7 @@ export default function BrandKitTool() {
                   {/* Voice Guide */}
                   <EditableSection
                     title="브랜드 말투 가이드"
-                    content={kit.voiceGuide}
+                    content={typeof kit.voiceGuide === 'string' ? kit.voiceGuide : JSON.stringify(kit.voiceGuide, null, 2)}
                     onSave={(val) => setKit(prev => prev ? { ...prev, voiceGuide: val } : prev)}
                   />
                 </div>
