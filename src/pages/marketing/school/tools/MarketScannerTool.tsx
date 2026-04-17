@@ -494,6 +494,30 @@ export default function MarketScannerTool() {
               </div>
             </div>
 
+            {/* 시장 규모 + 네이버 검색 팁 */}
+            {(result.output.marketSize || result.output.naverSearchTip) && (
+              <div className="bg-blue-50 rounded-2xl border border-blue-200 p-4 space-y-2">
+                {result.output.marketSize && (
+                  <div className="flex items-start gap-2">
+                    <span className="text-lg">📊</span>
+                    <div>
+                      <h4 className="font-semibold text-blue-900 text-sm">시장 규모</h4>
+                      <p className="text-sm text-blue-800">{result.output.marketSize}</p>
+                    </div>
+                  </div>
+                )}
+                {result.output.naverSearchTip && (
+                  <div className="flex items-start gap-2">
+                    <span className="text-lg">🔍</span>
+                    <div>
+                      <h4 className="font-semibold text-blue-900 text-sm">직접 확인해보기</h4>
+                      <p className="text-sm text-blue-800">{result.output.naverSearchTip}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* 분석 레포트 */}
             {result.output.analysisReport && (
               <div className="bg-white rounded-2xl border border-gray-200 p-5">
@@ -507,7 +531,11 @@ export default function MarketScannerTool() {
                     field="analysisReport"
                   />
                 </div>
-                <SimpleMarkdown content={result.output.analysisReport} className="text-sm text-gray-700 leading-relaxed bg-kk-bg rounded-xl p-4" />
+                <SimpleMarkdown
+                  content={result.output.analysisReport}
+                  className="text-sm text-gray-700 leading-relaxed"
+                  reportStyle
+                />
               </div>
             )}
 

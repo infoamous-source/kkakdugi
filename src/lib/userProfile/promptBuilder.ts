@@ -45,14 +45,22 @@ export interface PromptContext {
 
 /** 기본 가드레일 (모든 도구 공통) */
 const BASE_GUARDRAILS = [
-  '당신은 깍두기학교의 AI 교육 도우미다.',
-  '대상 사용자는 한국에 사는 외국인 학습자(노동자·유학생·결혼이민 등)이며, 한국어 수준과 배경이 다양하다.',
-  '사용자가 명시적으로 말한 사실·경험 외에는 어떤 정보도 추가·창작·추정하지 말라.',
+  '당신은 깍두기학교의 AI 도우미다.',
+  '사용자의 한국어 수준에 맞춰 설명 난이도를 조절하라.',
   '사용자의 비자 번호, 여권 번호, 외국인등록번호 같은 민감 개인정보는 절대 요청하거나 포함하지 말라.',
-  '법률·의료·세무 조언이 필요한 경우 "전문가와 상담하세요"라고 안내하라.',
   '사자성어, 관용구, 과도한 수사, 낯선 한자어는 피하라.',
   '정중하고 친근한 톤을 유지하라.',
 ];
+
+/** 커리어 도구 전용 가드레일 */
+const CAREER_GUARDRAILS = [
+  '대상 사용자는 한국에 사는 외국인 학습자(노동자·유학생·결혼이민 등)이며, 한국어 수준과 배경이 다양하다.',
+  '사용자가 명시적으로 말한 사실·경험 외에는 어떤 정보도 추가·창작·추정하지 말라.',
+  '법률·의료·세무 조언이 필요한 경우 "전문가와 상담하세요"라고 안내하라.',
+];
+
+/** 마케팅 도구용: 사용자 배경이 아닌 비즈니스 콘텐츠에 집중 */
+const MARKETING_TOOL_NAMES = ['마켓 스캐너', '엣지 메이커', '바이럴 카드 메이커', '퍼펙트 플래너', 'ROAS 진단기', '해시태그 생성기'];
 
 /** 환각 방지 강화 지시문 */
 const ANTI_HALLUCINATION_STRICT = [
@@ -80,8 +88,15 @@ export function buildSystemPrompt(
   );
 
   // ─── 2. 기본 가드레일 ────────────────────────────────
+  const isMarketingTool = MARKETING_TOOL_NAMES.some(n => context.toolName.includes(n));
   sections.push('## 기본 원칙');
   sections.push(...BASE_GUARDRAILS.map((g) => `- ${g}`));
+  if (!isMarketingTool) {
+    sections.push(...CAREER_GUARDRAILS.map((g) => `- ${g}`));
+  } else {
+    sections.push('- 마케팅 도구이므로 비즈니스 콘텐츠에 집중하라. 사용자의 개인 배경(외국인/유학생 등)을 콘텐츠에 반영하지 말라.');
+    sections.push('- 한국 시장 기준의 실전 마케팅 결과물을 생성하라.');
+  }
   sections.push('');
 
   // ─── 3. 환각 방지 (강도 선택) ─────────────────────────
@@ -120,15 +135,15 @@ export function buildSystemPrompt(
       sections.push('');
     }
 
-    // ─── 6. 체류 기간에 따른 내러티브 ───────────────────
-    if (profile.yearsStrategy) {
+    // ─── 6. 체류 기간에 따른 내러티브 (커리어 도구만) ────
+    if (profile.yearsStrategy && !isMarketingTool) {
       sections.push('## 체류 기간 기반 내러티브');
       sections.push(profile.yearsStrategy.aiInstruction);
       sections.push('');
     }
 
-    // ─── 7. 비자별 전략 ────────────────────────────────
-    if (profile.visaStrategy) {
+    // ─── 7. 비자별 전략 (커리어 도구만) ──────────────────
+    if (profile.visaStrategy && !isMarketingTool) {
       sections.push('## 비자 기반 전략');
       sections.push(profile.visaStrategy.aiInstruction);
       if (profile.visaStrategy.emphasisPoints.length > 0) {
@@ -166,9 +181,10 @@ export function buildSystemPrompt(
     sections.push('## 피드백 언어: 한국어 + 영어 병기 (반드시 준수)');
     sections.push([
       '이 도구의 출력은 학생을 코칭하는 피드백이다.',
-      '모든 피드백·설명·조언은 반드시 한국어를 먼저 쓰고, 바로 뒤에 영어 번역을 괄호로 병기하라.',
-      '예시: "결과를 숫자로 말해보세요. (Try to mention specific numbers.)"',
-      '예시: "잘한 점: 본인이 한 행동을 구체적으로 말했어요. (Good: You described your own actions specifically.)"',
+      '모든 피드백·설명·조언은 한국어를 먼저 쓰고, 영어 번역은 다음 줄에 [EN] 태그를 붙여 작성하라.',
+      '예시: "결과를 숫자로 말해보세요.\\n[EN] Try to mention specific numbers."',
+      '예시: "잘한 점: 본인이 한 행동을 구체적으로 말했어요.\\n[EN] Good: You described your own actions specifically."',
+      '[EN] 태그가 붙은 줄은 UI에서 자동으로 작은 글씨 회색으로 렌더링된다.',
       '단, JSON 키 이름은 영어 그대로 두고, 값(value)만 병기하라.',
       '한국어가 메인이고 영어는 보조임을 잊지 말 것.',
     ].join(' '));
