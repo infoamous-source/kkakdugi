@@ -65,17 +65,37 @@ async function fetchPool(orgCode: string): Promise<string[]> {
   // Supabase 미설정 시 빈 배열
   if (!isSupabaseConfigured) return [];
 
-  // Fetch from DB
-  const { data } = await supabase
-    .from('organizations')
-    .select('api_key_pool')
-    .eq('code', orgCode)
-    .maybeSingle();
+  let keys: string[] = [];
 
-  const raw: unknown = data?.api_key_pool;
-  const keys: string[] = Array.isArray(raw)
-    ? (raw as string[]).filter((k) => typeof k === 'string' && k.startsWith('AIza'))
-    : [];
+  if (orgCode === '__CEO_ALL__') {
+    // CEO 전용: 모든 기관의 풀 키를 합쳐서 사용
+    const { data } = await supabase
+      .from('organizations')
+      .select('api_key_pool');
+
+    if (data) {
+      for (const row of data) {
+        const raw: unknown = row.api_key_pool;
+        if (Array.isArray(raw)) {
+          keys.push(...(raw as string[]).filter((k) => typeof k === 'string' && k.startsWith('AIza')));
+        }
+      }
+      // 중복 제거
+      keys = [...new Set(keys)];
+    }
+  } else {
+    // 일반 학생/강사: 자기 기관 풀 키만
+    const { data } = await supabase
+      .from('organizations')
+      .select('api_key_pool')
+      .eq('code', orgCode)
+      .maybeSingle();
+
+    const raw: unknown = data?.api_key_pool;
+    keys = Array.isArray(raw)
+      ? (raw as string[]).filter((k) => typeof k === 'string' && k.startsWith('AIza'))
+      : [];
+  }
 
   // Cache result
   try {

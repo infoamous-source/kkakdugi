@@ -16,11 +16,16 @@ export function useApiKeyPool(): void {
     // 로딩 중에는 캐시를 건드리지 않음 (초기 렌더 시 orgCode 삭제 방지)
     if (isLoading) return;
 
-    if (isAuthenticated && user?.orgCode) {
-      setPoolOrgCode(user.orgCode);
+    if (isAuthenticated && user) {
+      if (user.role === 'ceo') {
+        // CEO는 모든 기관의 풀 키를 합쳐서 사용
+        setPoolOrgCode('__CEO_ALL__');
+      } else if (user.orgCode) {
+        setPoolOrgCode(user.orgCode);
+      }
     } else if (!isAuthenticated) {
       // 명시적 로그아웃 시에만 캐시 정리
       clearPoolCache();
     }
-  }, [isAuthenticated, isLoading, user?.orgCode]);
+  }, [isAuthenticated, isLoading, user?.orgCode, user?.role]);
 }
