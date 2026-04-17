@@ -33,6 +33,7 @@ export async function generateDetailPage(input: {
         extraInstructions: [
           '한국 쿠팡/네이버 스마트스토어 상세페이지 전문 기획자예요.',
           '스크롤을 멈추게 하는 구어체 헤드라인, 실감나는 후기, FOMO(놓침 두려움) 유도.',
+          '각 텍스트 섹션은 요약 3줄 + 상세 15줄 이하. 장황한 반복 금지, 핵심 팩트 위주.',
           input.existingData?.headline ? `학교 기획안 헤드라인: "${input.existingData.headline}". 참고하되 더 강렬하게.` : '',
           input.existingData?.painPoints?.length ? `학교 painPoints: ${input.existingData.painPoints.map(p => p.text).join(', ')}. 참고.` : '',
         ].filter(Boolean).join(' '),

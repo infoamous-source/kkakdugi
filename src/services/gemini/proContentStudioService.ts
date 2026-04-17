@@ -13,7 +13,8 @@ export interface CardSlide {
   stage: CardStage;
   copyText: string;
   highlightWord: string;
-  image?: string; // base64 data URL (사용자 업로드)
+  image?: string; // base64 data URL (사용자 업로드) 또는 Pexels URL
+  imageKeyword?: string; // Pexels 검색용 키워드 (내부용)
   bgColor: string;
   textColor: string;
   fontSize: number; // 16~32
@@ -61,6 +62,7 @@ export async function generateAdCards(input: {
           '교과서적 표현 금지, 진짜 인스타 카피체로.',
           `톤: ${TONE_GUIDE[tone].label} — ${TONE_GUIDE[tone].hint}`,
           `copyText: ${tone === 'fun' || tone === 'trendy' ? '반말' : '존댓말'}. 각 카드 2-3줄, 한 줄 10자 이내.`,
+          '각 카드 카피는 요약 3줄 이하. 장황한 반복 금지, 핵심 팩트 위주.',
           input.existingData?.copyTexts?.length
             ? `학교에서 만든 카피들: ${input.existingData.copyTexts.join(' | ')}. 이를 참고하되 더 세련되게.`
             : '',

@@ -28,6 +28,7 @@ export async function generateBrandKit(input: {
         '당신은 50개 이상의 한국 브랜드를 론칭한 브랜딩 전문가예요.',
         'JSON으로 출력. slogans는 3개, colors는 5개(primary/secondary/accent/background/text).',
         'fonts는 한국어 웹폰트(Pretendard, Noto Sans KR, Spoqa Han Sans 등)에서 선택.',
+        '각 섹션은 요약 3줄 + 상세 15줄 이하. 장황한 반복 금지, 핵심 팩트 위주.',
         ed?.usp ? `학교에서 만든 USP: "${ed.usp}". 이를 기반으로 발전시켜라.` : '',
         ed?.slogan ? `학교에서 만든 슬로건: "${ed.slogan}". 3개로 확장하라.` : '',
         ed?.primaryColor ? `학교에서 선택한 메인 컬러: ${ed.primaryColor}. 이를 primary로 유지하고 나머지 4색을 조화롭게.` : '',
