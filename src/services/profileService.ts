@@ -123,7 +123,7 @@ export async function getInstructorNameByCode(code: string): Promise<string | nu
   return profile?.name || null;
 }
 
-/** Gemini API 키 저장 */
+/** Gemini API 키 저장 + 기관 풀에 자동 추가 */
 export async function saveGeminiApiKey(userId: string, apiKey: string): Promise<boolean> {
   const { error } = await supabase
     .from('profiles')
@@ -134,11 +134,18 @@ export async function saveGeminiApiKey(userId: string, apiKey: string): Promise<
     console.error('Save API key error:', error.message);
     return false;
   }
+
+  // 기관 풀에 자동 추가 (학생의 org_code로 기관 찾아서 api_key_pool에 push)
+  addKeyToOrgPool(userId, apiKey).catch(() => {});
+
   return true;
 }
 
-/** 강사: 학생 API 키 초기화 (키 값은 노출하지 않음) */
+/** 강사: 학생 API 키 초기화 + 기관 풀에서 제거 */
 export async function resetStudentApiKey(studentId: string): Promise<boolean> {
+  // 먼저 기존 키 조회 (풀에서 제거용)
+  const oldKey = await getGeminiApiKey(studentId);
+
   const { error } = await supabase
     .from('profiles')
     .update({ gemini_api_key: null, updated_at: new Date().toISOString() })
@@ -148,7 +155,70 @@ export async function resetStudentApiKey(studentId: string): Promise<boolean> {
     console.error('Reset student API key error:', error.message);
     return false;
   }
+
+  // 기관 풀에서 제거
+  if (oldKey) {
+    removeKeyFromOrgPool(studentId, oldKey).catch(() => {});
+  }
+
   return true;
+}
+
+/** 학생의 기관 풀에 API 키 추가 (중복 방지) */
+async function addKeyToOrgPool(userId: string, apiKey: string): Promise<void> {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('org_code')
+    .eq('id', userId)
+    .single();
+
+  const orgCode = profile?.org_code;
+  if (!orgCode) return;
+
+  const { data: org } = await supabase
+    .from('organizations')
+    .select('id, api_key_pool')
+    .eq('code', orgCode)
+    .maybeSingle();
+
+  if (!org) return;
+
+  const pool: string[] = Array.isArray(org.api_key_pool) ? org.api_key_pool : [];
+  if (pool.includes(apiKey)) return; // 이미 있음
+
+  await supabase
+    .from('organizations')
+    .update({ api_key_pool: [...pool, apiKey] })
+    .eq('id', org.id);
+}
+
+/** 학생의 기관 풀에서 API 키 제거 */
+async function removeKeyFromOrgPool(userId: string, apiKey: string): Promise<void> {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('org_code')
+    .eq('id', userId)
+    .single();
+
+  const orgCode = profile?.org_code;
+  if (!orgCode) return;
+
+  const { data: org } = await supabase
+    .from('organizations')
+    .select('id, api_key_pool')
+    .eq('code', orgCode)
+    .maybeSingle();
+
+  if (!org) return;
+
+  const pool: string[] = Array.isArray(org.api_key_pool) ? org.api_key_pool : [];
+  const filtered = pool.filter(k => k !== apiKey);
+  if (filtered.length === pool.length) return; // 변경 없음
+
+  await supabase
+    .from('organizations')
+    .update({ api_key_pool: filtered })
+    .eq('id', org.id);
 }
 
 /** Gemini API 키 조회 */
