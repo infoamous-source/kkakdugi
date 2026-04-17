@@ -29,6 +29,11 @@ import {
   updateClassSession,
   deleteClassSession,
 } from '../../services/classSessionService';
+import {
+  getActiveAlerts,
+  resolveAlert,
+  type SystemAlert,
+} from '../../services/systemAlertService';
 import OrganizationManagement from './OrganizationManagement';
 import TeamManagement from './TeamManagement';
 import ClassReport from '../reports/ClassReport';
@@ -104,6 +109,9 @@ export default function CeoDashboard() {
           {user?.name}님 환영합니다 &bull; 전체 현황을 관리합니다
         </p>
       </div>
+
+      {/* Alert Panel */}
+      <AlertPanel userId={user?.id || ''} />
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -266,6 +274,73 @@ export default function CeoDashboard() {
       {showDevReport && (
         <DevReport onClose={() => setShowDevReport(false)} />
       )}
+    </div>
+  );
+}
+
+
+// ═══════════════════════════════════════════════
+// 긴급 알림 패널
+// ═══════════════════════════════════════════════
+
+function AlertPanel({ userId }: { userId: string }) {
+  const [alerts, setAlerts] = useState<SystemAlert[]>([]);
+
+  useEffect(() => {
+    getActiveAlerts().then(setAlerts);
+    const interval = setInterval(() => {
+      getActiveAlerts().then(setAlerts);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleResolve = async (id: string) => {
+    await resolveAlert(id, userId);
+    setAlerts(prev => prev.filter(a => a.id !== id));
+  };
+
+  if (alerts.length === 0) return null;
+
+  const critical = alerts.filter(a => a.severity === 'critical');
+
+  return (
+    <div className="mb-6">
+      <div className={`rounded-xl border-2 p-4 ${
+        critical.length > 0 ? 'bg-red-50 border-red-300' : 'bg-amber-50 border-amber-300'
+      }`}>
+        <h3 className="font-bold text-sm flex items-center gap-2 mb-3">
+          긴급 알림 ({alerts.length}건)
+          {critical.length > 0 && (
+            <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+              {critical.length} Critical
+            </span>
+          )}
+        </h3>
+        <div className="space-y-2">
+          {alerts.map(a => (
+            <div key={a.id} className={`flex items-start justify-between p-3 rounded-lg ${
+              a.severity === 'critical' ? 'bg-red-100' : a.severity === 'warning' ? 'bg-amber-100' : 'bg-blue-100'
+            }`}>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-mono bg-white/60 px-1.5 py-0.5 rounded">{a.type}</span>
+                  <span className="font-medium text-sm">{a.title}</span>
+                  <span className="text-[10px] text-gray-500">
+                    {new Date(a.created_at).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1 line-clamp-2">{a.description}</p>
+              </div>
+              <button
+                onClick={() => handleResolve(a.id)}
+                className="text-xs px-3 py-1.5 bg-white rounded-lg hover:bg-gray-50 shrink-0 ml-3 font-medium"
+              >
+                해결 완료
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

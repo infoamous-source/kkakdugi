@@ -16,6 +16,13 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error) {
     console.error('[ErrorBoundary]', error);
+    import('../../services/systemAlertService').then(({ sendSystemAlert }) => {
+      sendSystemAlert('blank_screen', 'warning',
+        '앱 에러 발생 (빈 화면)',
+        `ErrorBoundary 캐치: ${error.message}`,
+        { stack: error.stack?.slice(0, 500) },
+      );
+    }).catch(() => {});
   }
 
   render() {

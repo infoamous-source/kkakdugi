@@ -275,5 +275,15 @@ export async function generateText(prompt: string): Promise<string | null> {
   }
 
   console.error('[Gemini] 모든 모델 실패 — Mock 폴백으로 전환');
+
+  // CEO 긴급 알림: 모든 모델 실패 시 자동 보고
+  import('../systemAlertService').then(({ sendSystemAlert }) => {
+    sendSystemAlert('api_quota', 'critical',
+      'Gemini API 전체 실패',
+      `모든 모델(${MODEL_FALLBACK_CHAIN.join(' → ')}) 실패. Mock 폴백 전환됨.`,
+      { models: MODEL_FALLBACK_CHAIN, startModel },
+    );
+  }).catch(() => {});
+
   return null;
 }
