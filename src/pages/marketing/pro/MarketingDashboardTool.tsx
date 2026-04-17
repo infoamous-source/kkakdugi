@@ -8,6 +8,7 @@ import { isGeminiEnabled } from '../../../services/gemini/geminiClient';
 import { generateDashboardAnalysis } from '../../../services/gemini/proDashboardService';
 import SchoolDataBanner from '../pro/common/SchoolDataBanner';
 import EditableSection from '../pro/common/EditableSection';
+import DashboardReportView from '../pro/common/DashboardReportView';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -390,20 +391,18 @@ export default function MarketingDashboardTool() {
                   <p className="text-[11px] text-gray-600 line-clamp-2">{analysis.replace(/\*\*/g, '').slice(0, 100)}...</p>
                 </div>
                 <button
-                  onClick={() => setShowFullReport(!showFullReport)}
+                  onClick={() => setShowFullReport(true)}
                   className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-emerald-700 to-teal-600 text-white rounded-xl text-base font-bold hover:from-emerald-600 hover:to-teal-500 transition-all shadow-lg mb-3"
                 >
                   <FileText className="w-5 h-5" />
-                  {showFullReport ? '레포트 접기' : '자세한 레포트 보기'}
-                  <ChevronDown className={`w-5 h-5 transition-transform ${showFullReport ? 'rotate-180' : ''}`} />
+                  자세한 레포트 보기
                 </button>
                 {showFullReport && (
-                  <EditableSection
-                    title="AI 분석 리포트"
-                    content={analysis}
-                    onSave={(val) => setAnalysis(val)}
-                    onRegenerate={handleAnalyze}
-                    isRegenerating={loading}
+                  <DashboardReportView
+                    analysis={analysis}
+                    entries={validEntries.map(e => ({ month: e.month, spend: Number(e.spend), revenue: Number(e.revenue) }))}
+                    goalROAS={goalROAS}
+                    onClose={() => setShowFullReport(false)}
                   />
                 )}
               </>
