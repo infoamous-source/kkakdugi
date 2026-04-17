@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Download, Copy, CheckCircle, Sparkles, TrendingUp, Users, Target, Shield, Lightbulb, Map } from 'lucide-react';
+import { ArrowLeft, Loader2, Download, Copy, CheckCircle, Sparkles, TrendingUp, Users, Target, Shield, Lightbulb, Map, FileText, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useUserProfile } from '../../../lib/userProfile';
 import { useSchoolProgress } from '../../../hooks/useSchoolProgress';
@@ -39,6 +39,7 @@ export default function MarketResearchTool() {
   const [isMock, setIsMock] = useState(false);
   const [regeneratingKey, setRegeneratingKey] = useState<string | null>(null);
   const [showSchoolBanner, setShowSchoolBanner] = useState(true);
+  const [showFullReport, setShowFullReport] = useState(false);
 
   const aiEnabled = isGeminiEnabled();
 
@@ -221,39 +222,72 @@ export default function MarketResearchTool() {
               </div>
             )}
 
-            <div ref={reportRef} className="space-y-3 mb-4">
-              <div className="bg-white rounded-2xl border border-gray-100 p-4 mb-2">
+            {/* 요약 카드 */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <FileText className="w-5 h-5 text-gray-700" />
                 <h2 className="text-lg font-bold text-gray-900">시장 리서치 리포트</h2>
-                <p className="text-xs text-gray-400 mt-1">키워드: {keywords} | 생성일: {new Date().toLocaleDateString('ko-KR')}</p>
+              </div>
+              <p className="text-xs text-gray-400 mb-4">키워드: {keywords} | 생성일: {new Date().toLocaleDateString('ko-KR')}</p>
+
+              {/* 요약 미리보기 — 각 섹션 제목만 */}
+              <div className="grid grid-cols-2 gap-2 mb-5">
+                {(Object.keys(SECTION_META) as Array<keyof MarketResearchReport>).map(key => {
+                  const meta = SECTION_META[key];
+                  const preview = sectionToString(key).replace(/\*\*/g, '').slice(0, 50);
+                  return (
+                    <div key={key} className={`p-3 rounded-xl bg-gray-50 ${meta.color}`}>
+                      <p className="text-xs font-bold text-gray-700 mb-1">{meta.title}</p>
+                      <p className="text-[11px] text-gray-500 line-clamp-2">{preview}...</p>
+                    </div>
+                  );
+                })}
               </div>
 
-              {(Object.keys(SECTION_META) as Array<keyof MarketResearchReport>).map(key => {
-                const meta = SECTION_META[key];
-                return (
-                  <div key={key}>
-                    <EditableSection
-                      title={meta.title}
-                      content={sectionToString(key)}
-                      onSave={(val) => handleSave(key, val)}
-                      onRegenerate={() => handleRegenerate(key)}
-                      isRegenerating={regeneratingKey === key}
-                      className={meta.color}
-                    />
-                  </div>
-                );
-              })}
+              {/* 자세한 레포트 보기 버튼 */}
+              <button
+                onClick={() => setShowFullReport(!showFullReport)}
+                className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-xl text-base font-bold hover:from-gray-800 hover:to-gray-600 transition-all shadow-lg"
+              >
+                <FileText className="w-5 h-5" />
+                {showFullReport ? '레포트 접기' : '자세한 레포트 보기'}
+                <ChevronDown className={`w-5 h-5 transition-transform ${showFullReport ? 'rotate-180' : ''}`} />
+              </button>
             </div>
 
-            <div className="flex gap-3">
-              <button onClick={handleCopy}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
-                {copied ? <><CheckCircle className="w-4 h-4" /> 복사됨</> : <><Copy className="w-4 h-4" /> 텍스트 복사</>}
-              </button>
-              <button onClick={handleExportPDF}
-                className="flex-1 flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg">
-                <Download className="w-5 h-5" /> PDF 리포트 다운로드
-              </button>
-            </div>
+            {/* 자세한 레포트 (펼침) */}
+            {showFullReport && (
+              <>
+                <div ref={reportRef} className="space-y-3 mb-4">
+                  {(Object.keys(SECTION_META) as Array<keyof MarketResearchReport>).map(key => {
+                    const meta = SECTION_META[key];
+                    return (
+                      <div key={key}>
+                        <EditableSection
+                          title={meta.title}
+                          content={sectionToString(key)}
+                          onSave={(val) => handleSave(key, val)}
+                          onRegenerate={() => handleRegenerate(key)}
+                          isRegenerating={regeneratingKey === key}
+                          className={meta.color}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="flex gap-3">
+                  <button onClick={handleCopy}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
+                    {copied ? <><CheckCircle className="w-4 h-4" /> 복사됨</> : <><Copy className="w-4 h-4" /> 텍스트 복사</>}
+                  </button>
+                  <button onClick={handleExportPDF}
+                    className="flex-1 flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg">
+                    <Download className="w-5 h-5" /> PDF 리포트 다운로드
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

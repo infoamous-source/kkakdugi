@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Download, Sparkles, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Download, Sparkles, Plus, Trash2, FileText, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useUserProfile } from '../../../lib/userProfile';
 import { useSchoolProgress } from '../../../hooks/useSchoolProgress';
@@ -40,6 +40,7 @@ export default function MarketingDashboardTool() {
   const [loading, setLoading] = useState(false);
   const [chartType, setChartType] = useState<ChartType>('bar');
   const [showSchoolBanner, setShowSchoolBanner] = useState(true);
+  const [showFullReport, setShowFullReport] = useState(false);
 
   const aiEnabled = isGeminiEnabled();
 
@@ -382,13 +383,30 @@ export default function MarketingDashboardTool() {
                 {loading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> 분석하고 있어요...</span> : 'AI에게 분석 & 조언 받기'}
               </button>
             ) : (
-              <EditableSection
-                title="AI 분석 리포트"
-                content={analysis}
-                onSave={(val) => setAnalysis(val)}
-                onRegenerate={handleAnalyze}
-                isRegenerating={loading}
-              />
+              <>
+                {/* 요약 + 자세한 레포트 보기 */}
+                <div className="bg-white rounded-2xl border border-gray-200 p-4 mb-3">
+                  <p className="text-xs font-bold text-emerald-700 mb-1">AI 분석 완료</p>
+                  <p className="text-[11px] text-gray-600 line-clamp-2">{analysis.replace(/\*\*/g, '').slice(0, 100)}...</p>
+                </div>
+                <button
+                  onClick={() => setShowFullReport(!showFullReport)}
+                  className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-emerald-700 to-teal-600 text-white rounded-xl text-base font-bold hover:from-emerald-600 hover:to-teal-500 transition-all shadow-lg mb-3"
+                >
+                  <FileText className="w-5 h-5" />
+                  {showFullReport ? '레포트 접기' : '자세한 레포트 보기'}
+                  <ChevronDown className={`w-5 h-5 transition-transform ${showFullReport ? 'rotate-180' : ''}`} />
+                </button>
+                {showFullReport && (
+                  <EditableSection
+                    title="AI 분석 리포트"
+                    content={analysis}
+                    onSave={(val) => setAnalysis(val)}
+                    onRegenerate={handleAnalyze}
+                    isRegenerating={loading}
+                  />
+                )}
+              </>
             )}
           </div>
         )}
