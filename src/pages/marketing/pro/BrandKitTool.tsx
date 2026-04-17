@@ -15,6 +15,24 @@ import jsPDF from 'jspdf';
 
 const FONT_OPTIONS = ['Pretendard', 'Noto Sans KR', 'Spoqa Han Sans Neo', 'Noto Serif KR', 'IBM Plex Sans KR', 'Wanted Sans'];
 
+/** AI가 객체로 반환할 때 읽기 좋은 텍스트로 변환 */
+function toReadableText(val: unknown): string {
+  if (typeof val === 'string') return val;
+  if (!val) return '';
+  if (typeof val === 'object') {
+    const obj = val as Record<string, unknown>;
+    // {summary, details} 패턴
+    if (obj.summary || obj.details) {
+      return [obj.summary, obj.details].filter(Boolean).join('\n\n');
+    }
+    // 일반 객체 — key: value 형태로
+    return Object.entries(obj)
+      .map(([k, v]) => typeof v === 'string' ? `**${k}**: ${v}` : `**${k}**: ${JSON.stringify(v)}`)
+      .join('\n');
+  }
+  return String(val);
+}
+
 export default function BrandKitTool() {
   const navigate = useNavigate();
   const kitRef = useRef<HTMLDivElement>(null);
@@ -189,7 +207,7 @@ export default function BrandKitTool() {
               <div className="space-y-2 mb-5">
                 <div className="p-3 bg-purple-50 rounded-xl">
                   <p className="text-xs font-bold text-purple-700 mb-1">우리 브랜드만의 매력</p>
-                  <p className="text-[11px] text-gray-600 line-clamp-2">{String(kit.usp || '').slice(0, 80)}...</p>
+                  <p className="text-[11px] text-gray-600 line-clamp-2">{toReadableText(kit.usp).slice(0, 80)}...</p>
                 </div>
                 <div className="p-3 bg-gray-50 rounded-xl">
                   <p className="text-xs font-bold text-gray-700 mb-1">슬로건</p>
@@ -220,7 +238,7 @@ export default function BrandKitTool() {
                   {/* USP */}
                   <EditableSection
                     title="우리 브랜드만의 매력 (USP)"
-                    content={typeof kit.usp === 'string' ? kit.usp : JSON.stringify(kit.usp, null, 2)}
+                    content={toReadableText(kit.usp)}
                     onSave={(val) => setKit(prev => prev ? { ...prev, usp: val } : prev)}
                   />
 
@@ -306,7 +324,7 @@ export default function BrandKitTool() {
                   {/* Voice Guide */}
                   <EditableSection
                     title="브랜드 말투 가이드"
-                    content={typeof kit.voiceGuide === 'string' ? kit.voiceGuide : JSON.stringify(kit.voiceGuide, null, 2)}
+                    content={toReadableText(kit.voiceGuide)}
                     onSave={(val) => setKit(prev => prev ? { ...prev, voiceGuide: val } : prev)}
                   />
                 </div>
