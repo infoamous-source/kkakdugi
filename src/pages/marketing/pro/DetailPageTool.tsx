@@ -264,7 +264,7 @@ export default function DetailPageTool() {
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
           <p className="text-red-100 text-sm">쿠팡/스마트스토어 상세페이지 스타일</p>
-          <p className="text-red-200 text-xs mt-1">학교 퍼펙트플래너 공식 + 인라인 편집 + 이미지 삽입 + PDF 내보내기</p>
+          <p className="text-red-200 text-xs mt-1">인라인 편집 + 이미지 삽입 + PDF 내보내기</p>
         </div>
 
         {schoolSummary && showSchoolBanner && (
@@ -299,10 +299,7 @@ export default function DetailPageTool() {
           </div>
 
           <div className="p-3 bg-red-50 border border-red-100 rounded-xl">
-            <p className="text-xs text-red-700 font-medium mb-1">퍼펙트플래너 공식 자동 적용</p>
-            <p className="text-[11px] text-red-600">
-              상품타이틀 - 별점 - 카운트다운 - 어그로한줄 - 헤드라인 - painPoints - 3가지약속 - 후기 - CTA
-            </p>
+            <p className="text-xs text-red-700 font-medium">학교에서 배운 마케팅 규칙이 자동 적용돼요</p>
           </div>
 
           <button onClick={handleGenerate} disabled={!productName.trim() || loading}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Pencil, RotateCcw, Check, X } from 'lucide-react';
+import { SimpleMarkdown } from '@/components/common/SimpleMarkdown';
 
 interface Props {
   title: string;
@@ -98,10 +99,10 @@ export default function EditableSection({
           onChange={(e) => setDraft(e.target.value)}
           className="w-full min-h-[120px] px-3 py-2 text-sm border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
         />
+      ) : content ? (
+        <SimpleMarkdown content={content} className="text-sm text-gray-700 leading-relaxed" reportStyle />
       ) : (
-        <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-          {content || <span className="text-gray-400 italic">아직 내용이 없어요</span>}
-        </div>
+        <div className="text-sm text-gray-400 italic">아직 내용이 없어요</div>
       )}
     </div>
   );

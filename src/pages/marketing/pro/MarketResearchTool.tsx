@@ -12,13 +12,13 @@ import EditableSection from '../pro/common/EditableSection';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-const SECTION_META: Record<keyof MarketResearchReport, { title: string; icon: typeof TrendingUp }> = {
-  marketSize: { title: '시장 규모', icon: TrendingUp },
-  competitors: { title: '경쟁사 분석', icon: Users },
-  swot: { title: 'SWOT 분석', icon: Shield },
-  opportunities: { title: '기회 영역', icon: Lightbulb },
-  targetPersona: { title: '타겟 페르소나', icon: Target },
-  entryStrategy: { title: '진입 전략', icon: Map },
+const SECTION_META: Record<keyof MarketResearchReport, { title: string; icon: typeof TrendingUp; color: string }> = {
+  marketSize: { title: '📊 시장 규모', icon: TrendingUp, color: 'border-l-4 border-l-blue-500' },
+  competitors: { title: '🏢 경쟁사 분석', icon: Users, color: 'border-l-4 border-l-red-500' },
+  swot: { title: '🛡️ SWOT 분석', icon: Shield, color: 'border-l-4 border-l-purple-500' },
+  opportunities: { title: '💡 기회 영역', icon: Lightbulb, color: 'border-l-4 border-l-amber-500' },
+  targetPersona: { title: '🎯 타겟 페르소나', icon: Target, color: 'border-l-4 border-l-emerald-500' },
+  entryStrategy: { title: '🗺️ 진입 전략', icon: Map, color: 'border-l-4 border-l-indigo-500' },
 };
 
 export default function MarketResearchTool() {
@@ -92,18 +92,42 @@ export default function MarketResearchTool() {
   const sectionToString = (key: keyof MarketResearchReport): string => {
     if (!report) return '';
     const val = report[key];
-    if (typeof val === 'string') return val;
+    if (typeof val === 'string') {
+      // 긴 문자열을 문장 단위로 분리해서 번호 리스트로 변환
+      const sentences = val.split(/(?<=[.!?。])\s+/).filter(s => s.trim().length > 5);
+      if (sentences.length > 3) {
+        return `**요약**\n${sentences.slice(0, 2).join(' ')}\n\n` +
+          sentences.slice(2).map((s, i) => `${i + 1}. ${s.trim()}`).join('\n');
+      }
+      return val;
+    }
     if (Array.isArray(val)) {
       if (typeof val[0] === 'string') return (val as string[]).join('\n');
       return (val as Array<{ name: string; strengths: string; weaknesses: string; positioning: string }>)
-        .map(c => `${c.name} | 강점: ${c.strengths} | 약점: ${c.weaknesses} | 포지셔닝: ${c.positioning}`)
-        .join('\n');
+        .map(c => `**${c.name}**\n강점: ${c.strengths}\n약점: ${c.weaknesses}\n포지셔닝: ${c.positioning}`)
+        .join('\n\n');
     }
     if (key === 'swot') {
       const s = val as MarketResearchReport['swot'];
-      return `강점: ${s.strengths.join(', ')}\n약점: ${s.weaknesses.join(', ')}\n기회: ${s.opportunities.join(', ')}\n위협: ${s.threats.join(', ')}`;
+      return `**강점**\n${s.strengths.join('\n')}\n\n**약점**\n${s.weaknesses.join('\n')}\n\n**기회**\n${s.opportunities.join('\n')}\n\n**위협**\n${s.threats.join('\n')}`;
     }
-    return JSON.stringify(val, null, 2);
+    // 객체형 데이터를 읽기 좋게 변환
+    if (typeof val === 'object' && val !== null) {
+      const obj = val as Record<string, unknown>;
+      return Object.entries(obj).map(([k, v]) => {
+        if (Array.isArray(v)) {
+          return `**${k}**\n${(v as Array<Record<string, string>>).map(item => {
+            if (typeof item === 'string') return `- ${item}`;
+            return Object.entries(item).map(([ik, iv]) => `${ik}: ${iv}`).join(' / ');
+          }).join('\n')}`;
+        }
+        if (typeof v === 'object' && v !== null) {
+          return `**${k}**\n${Object.entries(v as Record<string, string>).map(([ik, iv]) => `${ik}: ${iv}`).join('\n')}`;
+        }
+        return `**${k}**: ${v}`;
+      }).join('\n\n');
+    }
+    return String(val);
   };
 
   const handleCopy = async () => {
@@ -205,18 +229,15 @@ export default function MarketResearchTool() {
 
               {(Object.keys(SECTION_META) as Array<keyof MarketResearchReport>).map(key => {
                 const meta = SECTION_META[key];
-                const Icon = meta.icon;
                 return (
-                  <div key={key} className="relative">
-                    <div className="absolute left-5 top-5 text-gray-300">
-                      <Icon className="w-4 h-4" />
-                    </div>
+                  <div key={key}>
                     <EditableSection
-                      title={`  ${meta.title}`}
+                      title={meta.title}
                       content={sectionToString(key)}
                       onSave={(val) => handleSave(key, val)}
                       onRegenerate={() => handleRegenerate(key)}
                       isRegenerating={regeneratingKey === key}
+                      className={meta.color}
                     />
                   </div>
                 );

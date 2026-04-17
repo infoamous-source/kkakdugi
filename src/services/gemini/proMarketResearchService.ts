@@ -36,7 +36,28 @@ export async function generateMarketResearch(input: {
       ].filter(Boolean).join(' '),
     }) : '';
 
-    const userPrompt = `키워드: ${input.keyword}\n타겟: ${input.targetAge || '전체'} ${input.targetGender || '전체'}\n상품유형: ${input.itemType || '일반'}\n\nJSON 출력: { "marketSize": "이 시장의 한국 내 추정 규모를 수치로 제시 (예: '연간 약 500억 원, 전년 대비 15% 성장'). 모르면 간접 지표(월 검색량 등) 활용. 요약 3줄 + 상세 15줄 이하. 장황한 반복 금지, 핵심 팩트 위주.", "competitors": [{"name":"실제 브랜드명 (가상 이름 절대 금지. 확실한 브랜드가 없으면 '네이버 스마트스토어 상위 셀러'처럼 플랫폼+순위로 표현)","strengths":"핵심 강점만","weaknesses":"핵심 약점만","positioning":"포지셔닝"}], "swot": {"strengths":[],"weaknesses":[],"opportunities":[],"threats":[]}, "opportunities": ["기회1"], "targetPersona": "타겟 상세. 요약 3줄 이하.", "entryStrategy": "진입 전략. 요약 3줄 + 상세 15줄 이하. 장황한 반복 금지." }`;
+    const userPrompt = `키워드: ${input.keyword}
+타겟: ${input.targetAge || '전체'} ${input.targetGender || '전체'}
+상품유형: ${input.itemType || '일반'}
+
+아래 JSON 형식으로 응답 (다른 텍스트 없이 JSON만):
+{
+  "marketSize": "한 줄 요약 + 수치. 예: '연간 약 500억 원, 전년 대비 15% 성장. 네이버 월 검색량 약 5만건.'",
+  "competitors": [
+    {"name":"실제 브랜드명","strengths":"강점 1줄","weaknesses":"약점 1줄","positioning":"포지셔닝 1줄"}
+  ],
+  "swot": {"strengths":["항목1","항목2","항목3"],"weaknesses":["항목1","항목2"],"opportunities":["항목1","항목2"],"threats":["항목1","항목2"]},
+  "opportunities": ["기회1 (1줄)", "기회2 (1줄)", "기회3 (1줄)"],
+  "targetPersona": "타겟 페르소나 3줄 이내. 연령/성별/라이프스타일/구매동기를 간결하게.",
+  "entryStrategy": "진입 전략 핵심 포인트 3~5줄. 번호 매겨서. 각 포인트 1줄씩."
+}
+
+규칙:
+- 각 섹션은 핵심만 간결하게. 장문 금지.
+- competitors 3곳. 가상 이름("A사") 절대 금지. 모르면 "네이버 스마트스토어 상위 셀러"로.
+- SWOT 각 항목 2~3개, 한 줄씩.
+- opportunities 3개, 각 한 줄.
+- entryStrategy는 번호 리스트 3~5개.`;
 
     try {
       const text = await generateText(systemPrompt ? `${systemPrompt}\n\n---\n\n${userPrompt}` : userPrompt);

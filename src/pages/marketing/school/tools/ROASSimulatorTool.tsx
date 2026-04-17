@@ -81,7 +81,7 @@ export default function ROASSimulatorTool() {
   useEffect(() => {
     if (!user) return;
     const prev = progress?.simulationResult;
-    if (prev?.input && prev?.output) {
+    if (prev?.input && prev?.output && prev.output.status && prev.output.prescription) {
       setAdSpendStr(String(prev.input.adSpend));
       setRevenueStr(String(prev.input.revenue));
       setAdChannel(prev.input.adChannel);
@@ -335,7 +335,7 @@ export default function ROASSimulatorTool() {
 
             {/* 큰 한 줄 처방 */}
             {(() => {
-              const theme = STATUS_THEME[output.status];
+              const theme = STATUS_THEME[output.status] || STATUS_THEME.breakeven;
               return (
                 <div className={`mt-2 ${theme.bg} border-2 ${theme.border} rounded-2xl p-5 text-center`}>
                   <div className={`text-[20px] font-black ${theme.headText} leading-tight whitespace-pre-line`}>

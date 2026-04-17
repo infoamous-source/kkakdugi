@@ -25,17 +25,19 @@ interface PoolCache {
 
 // ─── Org code storage (set by auth flow) ────────────────
 
-/** 로그인 시 호출 — orgCode를 sessionStorage에 저장 */
+/** 로그인 시 호출 — orgCode를 sessionStorage + localStorage에 저장 */
 export function setPoolOrgCode(orgCode: string): void {
-  try {
-    sessionStorage.setItem(ORG_CODE_KEY, orgCode.toUpperCase());
-  } catch { /* ignore */ }
+  const upper = orgCode.toUpperCase();
+  try { sessionStorage.setItem(ORG_CODE_KEY, upper); } catch { /* ignore */ }
+  try { localStorage.setItem(ORG_CODE_KEY, upper); } catch { /* ignore */ }
 }
 
 /** 현재 사용자의 orgCode 조회 */
 export function getPoolOrgCode(): string | null {
   try {
-    return sessionStorage.getItem(ORG_CODE_KEY) || null;
+    return sessionStorage.getItem(ORG_CODE_KEY)
+      || localStorage.getItem(ORG_CODE_KEY)
+      || null;
   } catch {
     return null;
   }
@@ -125,5 +127,8 @@ export function clearPoolCache(): void {
     sessionStorage.removeItem(POOL_CACHE_KEY);
     sessionStorage.removeItem(POOL_INDEX_KEY);
     sessionStorage.removeItem(ORG_CODE_KEY);
+  } catch { /* ignore */ }
+  try {
+    localStorage.removeItem(ORG_CODE_KEY);
   } catch { /* ignore */ }
 }

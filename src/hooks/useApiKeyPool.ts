@@ -10,13 +10,17 @@ import { useAuth } from '../contexts/AuthContext';
 import { setPoolOrgCode, clearPoolCache } from '../services/gemini/apiKeyPool';
 
 export function useApiKeyPool(): void {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
+    // 로딩 중에는 캐시를 건드리지 않음 (초기 렌더 시 orgCode 삭제 방지)
+    if (isLoading) return;
+
     if (isAuthenticated && user?.orgCode) {
       setPoolOrgCode(user.orgCode);
-    } else {
+    } else if (!isAuthenticated) {
+      // 명시적 로그아웃 시에만 캐시 정리
       clearPoolCache();
     }
-  }, [isAuthenticated, user?.orgCode]);
+  }, [isAuthenticated, isLoading, user?.orgCode]);
 }

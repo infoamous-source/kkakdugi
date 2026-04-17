@@ -22,15 +22,22 @@ const STEP_BADGE_COLOR = '#FF6B35';
 export function ViralCardTemplate({ slide, index, productName, imageUrl, fallbackGradient }: Props) {
   const copyLines = slide.copyText.split('\n');
 
+  // 텍스트 길이에 따라 폰트 크기 자동 조절
+  const totalChars = copyLines.join('').length;
+  const autoSize = totalChars > 30 ? 16 : totalChars > 20 ? 18 : 20;
+
   const renderCopy = (color: string, fontSize: number) => (
     <div
       style={{
-        fontSize,
+        fontSize: Math.min(fontSize, autoSize),
         fontWeight: 900,
         color,
-        lineHeight: 1.1,
+        lineHeight: 1.15,
         letterSpacing: '-0.5px',
         fontFamily: "'Black Han Sans','Pretendard',sans-serif",
+        overflow: 'hidden',
+        maxHeight: '110px',
+        wordBreak: 'keep-all',
       }}
     >
       {copyLines.map((line, i) => {

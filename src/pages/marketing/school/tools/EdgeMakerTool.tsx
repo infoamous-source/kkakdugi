@@ -522,7 +522,7 @@ export default function EdgeMakerTool() {
                     field="brandingReport"
                   />
                 </div>
-                <SimpleMarkdown content={result.output.brandingReport} className="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-xl p-4" />
+                <SimpleMarkdown content={result.output.brandingReport} className="text-sm text-gray-700 leading-relaxed" reportStyle />
               </div>
             )}
 

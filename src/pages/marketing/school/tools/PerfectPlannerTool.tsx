@@ -466,8 +466,8 @@ function DetailPagePreview({ plan, productName }: { plan: DetailPagePlan; produc
   useEffect(() => {
     if (!productName) return;
     import('../../../../services/pexelsService').then(({ searchPexelsImage }) => {
-      searchPexelsImage(productName).then(u => u && setMainImg(u));
-      searchPexelsImage(productName + ' premium').then(u => u && setSubImg(u));
+      searchPexelsImage(productName + ' product').then(u => u && setMainImg(u));
+      searchPexelsImage(productName + ' lifestyle healthy').then(u => u && setSubImg(u));
     }).catch(() => {});
   }, [productName]);
 

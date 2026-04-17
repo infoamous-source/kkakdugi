@@ -77,8 +77,13 @@ export function clearGeminiConnection(): void {
 
 export function isGeminiEnabled(): boolean {
   try {
-    // P0-7: console.debug 제거 — 디버그 로그에서 키 상태가 노출될 수 있음
-    return localStorage.getItem(CONNECTED_STORAGE) === 'true' && !!getStoredApiKey();
+    // 1) 개인 키가 있으면 OK
+    if (localStorage.getItem(CONNECTED_STORAGE) === 'true' && !!getStoredApiKey()) return true;
+    // 2) 기관 풀 키가 있으면 OK (orgCode가 설정돼 있으면 풀 키 사용 가능)
+    const orgCode = sessionStorage.getItem('kkakdugi-user-org-code')
+      || localStorage.getItem('kkakdugi-user-org-code');
+    if (orgCode) return true;
+    return false;
   } catch {
     return false;
   }
@@ -93,6 +98,44 @@ export function getGeminiClient(overrideKey?: string): GoogleGenerativeAI | null
   } catch {
     return null;
   }
+}
+
+/**
+ * 모델 fallback 체인 — 첫 번째 모델이 차단되면 다음 모델로 자동 전환
+ * 4/9 gemini-2.5-flash 무예고 차단 사고 재발 방지
+ */
+export const MODEL_FALLBACK_CHAIN = [
+  'gemini-2.5-flash-lite',
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+];
+
+const MODEL_CACHE_KEY = 'kkakdugi-gemini-working-model';
+
+/** 마지막으로 작동한 모델을 기억 (세션 동안 유지) */
+export function getCachedModel(): string {
+  try {
+    const cached = sessionStorage.getItem(MODEL_CACHE_KEY);
+    if (cached && MODEL_FALLBACK_CHAIN.includes(cached)) return cached;
+  } catch { /* ignore */ }
+  return MODEL_FALLBACK_CHAIN[0];
+}
+
+function cacheModel(model: string): void {
+  try { sessionStorage.setItem(MODEL_CACHE_KEY, model); } catch { /* ignore */ }
+}
+
+/** 모델 자체가 존재하지 않거나 비활성화된 에러인지 판별 */
+function isModelUnavailableError(err: unknown): boolean {
+  const msg = String(err).toLowerCase();
+  return (
+    msg.includes('not found') ||
+    msg.includes('not available') ||
+    msg.includes('deprecated') ||
+    msg.includes('does not exist') ||
+    (msg.includes('404') && !msg.includes('quota') && !msg.includes('rate'))
+  );
 }
 
 export function getGeminiModel(modelName: string = 'gemini-2.5-flash-lite', overrideKey?: string) {
@@ -117,8 +160,8 @@ export function getGeminiModel(modelName: string = 'gemini-2.5-flash-lite', over
 const GENERATE_TIMEOUT_MS = 30_000;
 const MAX_RETRIES = 2;
 
-async function generateTextOnce(prompt: string, timeoutMs: number, apiKey?: string): Promise<string | null> {
-  const model = getGeminiModel(undefined, apiKey);
+async function generateTextOnce(prompt: string, timeoutMs: number, apiKey?: string, modelName?: string): Promise<string | null> {
+  const model = getGeminiModel(modelName, apiKey);
   if (!model) return null;
 
   return await Promise.race<string | null>([
@@ -140,16 +183,18 @@ function isQuotaError(err: unknown): boolean {
 }
 
 /** 단일 키로 재시도 로직 (지수 백오프) */
-async function tryWithKey(prompt: string, apiKey: string): Promise<string | null> {
+async function tryWithKey(prompt: string, apiKey: string, modelName?: string): Promise<string | null> {
   let lastErr: unknown = null;
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const text = await generateTextOnce(prompt, GENERATE_TIMEOUT_MS, apiKey);
+      const text = await generateTextOnce(prompt, GENERATE_TIMEOUT_MS, apiKey, modelName);
       if (text) return text;
     } catch (err) {
       lastErr = err;
       // quota 에러면 이 키로 재시도해도 무의미 — 즉시 포기
       if (isQuotaError(err)) throw err;
+      // 모델 자체 문제면 키 바꿔도 무의미 — 즉시 상위로 던짐
+      if (isModelUnavailableError(err)) throw err;
       // 그 외 에러는 지수 백오프 후 재시도
       if (attempt < MAX_RETRIES) {
         const backoff = 500 * Math.pow(3, attempt) - 500;
@@ -161,9 +206,10 @@ async function tryWithKey(prompt: string, apiKey: string): Promise<string | null
   return null;
 }
 
-const MAX_POOL_ATTEMPTS = 3; // 풀에서 최대 3개 키까지 시도
+/** 특정 모델로 풀 키 → 개인 키 순으로 시도 */
+const MAX_POOL_ATTEMPTS = 3;
 
-export async function generateText(prompt: string): Promise<string | null> {
+async function tryWithAllKeys(prompt: string, modelName: string): Promise<string | null> {
   // 1) 풀 키로 시도 (최대 MAX_POOL_ATTEMPTS개 키)
   for (let i = 0; i < MAX_POOL_ATTEMPTS; i++) {
     let poolKey: string | null = null;
@@ -171,18 +217,17 @@ export async function generateText(prompt: string): Promise<string | null> {
       poolKey = await getPooledApiKey();
     } catch { /* pool fetch 실패 — 무시 */ }
 
-    if (!poolKey) break; // 풀이 비었으면 개인 키로 폴백
+    if (!poolKey) break;
 
     try {
-      const text = await tryWithKey(prompt, poolKey);
+      const text = await tryWithKey(prompt, poolKey, modelName);
       if (text) return text;
     } catch (err) {
+      if (isModelUnavailableError(err)) throw err; // 모델 문제 → 상위로
       if (isQuotaError(err)) {
-        // 이 키는 quota 소진 — 다음 키로 전환
         skipToNextKey();
         continue;
       }
-      // quota 아닌 에러면 개인 키로 폴백
       break;
     }
   }
@@ -191,10 +236,44 @@ export async function generateText(prompt: string): Promise<string | null> {
   const personalKey = getStoredApiKey();
   if (!personalKey) return null;
 
-  try {
-    return await tryWithKey(prompt, personalKey);
-  } catch (err) {
-    console.error('[Gemini] Text generation failed after retries:', err);
-    return null;
+  return await tryWithKey(prompt, personalKey, modelName);
+}
+
+/**
+ * Gemini API로 텍스트 생성 (모델 fallback 포함)
+ *
+ * 작동 순서:
+ * 1. 마지막으로 성공한 모델부터 시작
+ * 2. 풀 키 → 개인 키 순으로 시도
+ * 3. 모델 자체가 차단/삭제되면 다음 모델로 자동 전환
+ * 4. 모든 모델·모든 키 실패 시 null 반환 → 호출부에서 Mock 폴백
+ */
+export async function generateText(prompt: string): Promise<string | null> {
+  const startModel = getCachedModel();
+  const startIdx = MODEL_FALLBACK_CHAIN.indexOf(startModel);
+
+  for (let mi = startIdx; mi < MODEL_FALLBACK_CHAIN.length; mi++) {
+    const modelName = MODEL_FALLBACK_CHAIN[mi];
+
+    try {
+      const text = await tryWithAllKeys(prompt, modelName);
+      if (text) {
+        if (mi !== startIdx) {
+          console.warn(`[Gemini] 모델 전환: ${startModel} → ${modelName}`);
+        }
+        cacheModel(modelName);
+        return text;
+      }
+    } catch (err) {
+      if (isModelUnavailableError(err)) {
+        console.warn(`[Gemini] ${modelName} 사용 불가, 다음 모델 시도...`);
+        continue;
+      }
+      console.error(`[Gemini] ${modelName} 실패:`, err);
+      break;
+    }
   }
+
+  console.error('[Gemini] 모든 모델 실패 — Mock 폴백으로 전환');
+  return null;
 }

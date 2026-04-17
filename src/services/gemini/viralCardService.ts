@@ -65,7 +65,7 @@ export async function generateViralCards(
             extraInstructions: [
               '인스타그램 카드뉴스 100만 팔로워 바이럴 전문가예요.',
               '교과서적 표현 금지, 진짜 인스타 카피체로.',
-              `copyText: ${tone === 'spicy' ? '반말' : '존댓말'}. 각 카드 2-3줄, 한 줄 10자 이내.`,
+              `copyText: ${tone === 'spicy' ? '반말' : '존댓말'}. 각 카드 2줄, 한 줄 8자 이내. 절대 길게 쓰지 말 것.`,
             ].join(' '),
           })
         : '';
@@ -86,7 +86,7 @@ export async function generateViralCards(
 {
   "slides": [
     {
-      "copyText": "2-3줄. 한 줄 10자 이내. 강렬하게. (줄바꿈 \\n 사용)",
+      "copyText": "2줄. 한 줄 8자 이내. 짧고 강렬하게. (줄바꿈 \\n 사용)",
       "highlightWord": "copyText 중 노란색으로 강조할 단어 1개 (선택)",
       "imageKeyword": "Pexels 검색용 짧은 영어 키워드 3-5단어 (예: 'morning coffee cafe')"
     },

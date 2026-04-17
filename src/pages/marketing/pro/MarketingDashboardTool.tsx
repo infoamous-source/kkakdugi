@@ -207,20 +207,24 @@ export default function MarketingDashboardTool() {
           </div>
           <div className="space-y-3">
             {entries.map((entry, idx) => (
-              <div key={idx} className="grid grid-cols-[100px_1fr_1fr_100px_32px] gap-2 items-center">
-                <input type="month" value={entry.month} onChange={(e) => updateEntry(idx, 'month', e.target.value)}
-                  className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:border-emerald-400 focus:outline-none" />
-                <input type="number" value={entry.adSpend || ''} onChange={(e) => updateEntry(idx, 'adSpend', Number(e.target.value))}
-                  placeholder="광고비" className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:border-emerald-400 focus:outline-none" />
-                <input type="number" value={entry.revenue || ''} onChange={(e) => updateEntry(idx, 'revenue', Number(e.target.value))}
-                  placeholder="매출" className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:border-emerald-400 focus:outline-none" />
-                <select value={entry.channel} onChange={(e) => updateEntry(idx, 'channel', e.target.value)}
-                  className="px-1 py-1.5 border border-gray-200 rounded-lg text-xs focus:border-emerald-400 focus:outline-none">
-                  {CHANNELS.map(ch => <option key={ch} value={ch}>{ch}</option>)}
-                </select>
-                <button onClick={() => removeEntry(idx)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
-                  <Trash2 className="w-4 h-4" />
-                </button>
+              <div key={idx} className="bg-gray-50 rounded-xl p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <input type="text" value={entry.month} onChange={(e) => updateEntry(idx, 'month', e.target.value)}
+                    placeholder="예: 2026-01" className="flex-1 min-w-0 px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:border-emerald-400 focus:outline-none" />
+                  <select value={entry.channel} onChange={(e) => updateEntry(idx, 'channel', e.target.value)}
+                    className="w-24 px-1 py-1.5 border border-gray-200 rounded-lg text-xs focus:border-emerald-400 focus:outline-none">
+                    {CHANNELS.map(ch => <option key={ch} value={ch}>{ch}</option>)}
+                  </select>
+                  <button onClick={() => removeEntry(idx)} className="p-1 text-gray-400 hover:text-red-500 transition-colors shrink-0">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="number" value={entry.adSpend || ''} onChange={(e) => updateEntry(idx, 'adSpend', Number(e.target.value))}
+                    placeholder="광고비" className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:border-emerald-400 focus:outline-none" />
+                  <input type="number" value={entry.revenue || ''} onChange={(e) => updateEntry(idx, 'revenue', Number(e.target.value))}
+                    placeholder="매출" className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:border-emerald-400 focus:outline-none" />
+                </div>
               </div>
             ))}
           </div>
@@ -253,12 +257,12 @@ export default function MarketingDashboardTool() {
             {bestMonth && worstMonth && (
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">
-                  <p className="text-[10px] text-emerald-600 font-semibold mb-1">BEST MONTH</p>
+                  <p className="text-[10px] text-emerald-600 font-semibold mb-1">최고 성과</p>
                   <p className="text-sm font-bold text-gray-900">{bestMonth.month}</p>
                   <p className="text-xs text-gray-500">ROAS {calcROAS(bestMonth)}x | {bestMonth.channel}</p>
                 </div>
                 <div className="bg-red-50 rounded-xl border border-red-200 p-4">
-                  <p className="text-[10px] text-red-600 font-semibold mb-1">WORST MONTH</p>
+                  <p className="text-[10px] text-red-600 font-semibold mb-1">개선 필요</p>
                   <p className="text-sm font-bold text-gray-900">{worstMonth.month}</p>
                   <p className="text-xs text-gray-500">ROAS {calcROAS(worstMonth)}x | {worstMonth.channel}</p>
                 </div>

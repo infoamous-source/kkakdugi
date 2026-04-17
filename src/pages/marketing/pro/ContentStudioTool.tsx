@@ -163,7 +163,7 @@ export default function ContentStudioTool() {
             <h1 className="text-xl font-bold">콘텐츠 스튜디오 프로</h1>
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
-          <p className="text-pink-100 text-sm">HOOK-EMPATHY-SOLUTION-ACTION 공식 + 사진 업로드 + 인라인 편집</p>
+          <p className="text-pink-100 text-sm">AI 자동 카피 생성 + 사진 업로드 + 인라인 편집</p>
         </div>
 
         {schoolSummary && showSchoolBanner && (
@@ -226,10 +226,7 @@ export default function ContentStudioTool() {
 
           {/* Marketing Formula Hint */}
           <div className="p-3 bg-pink-50 border border-pink-100 rounded-xl">
-            <p className="text-xs text-pink-700 font-medium mb-1">바이럴카드 공식 자동 적용</p>
-            <p className="text-[11px] text-pink-600">
-              HOOK (시선잡기) - EMPATHY (공감) - SOLUTION (해결) - ACTION (행동) 4단계
-            </p>
+            <p className="text-xs text-pink-700 font-medium">학교에서 배운 마케팅 규칙이 자동 적용돼요</p>
           </div>
 
           <button onClick={handleGenerate} disabled={!productName.trim() || loading}
@@ -291,17 +288,30 @@ export default function ContentStudioTool() {
                     )}
                     <div className="absolute inset-0" style={{ backgroundColor: `rgba(0,0,0,${card.overlayOpacity})` }} />
                     <div
-                      className="relative z-10 text-center px-6 font-bold leading-relaxed"
+                      className="relative z-10 text-center px-6"
                       style={{
-                        fontSize: `${card.fontSize}px`,
+                        fontWeight: 900,
+                        lineHeight: 1.15,
+                        letterSpacing: '-0.5px',
+                        fontFamily: "'Black Han Sans','Pretendard',sans-serif",
+                        fontSize: `${Math.min(card.fontSize, card.copyText.length > 30 ? 18 : 22)}px`,
                         color: card.textColor,
-                        textShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                        textShadow: '0 2px 12px rgba(0,0,0,0.7), 0 0 4px rgba(0,0,0,0.3)',
+                        overflow: 'hidden',
+                        maxHeight: '70%',
                       }}
                       contentEditable
                       suppressContentEditableWarning
                       onBlur={(e) => handleEditCopy(idx, e.currentTarget.textContent || '')}
                     >
-                      {card.copyText}
+                      {card.copyText.split('\n').map((line, li) => {
+                        const hi = card.highlightWord;
+                        if (hi && line.includes(hi)) {
+                          const [before, ...rest] = line.split(hi);
+                          return <div key={li}>{before}<span style={{ color: '#FBBF24' }}>{hi}</span>{rest.join(hi)}</div>;
+                        }
+                        return <div key={li}>{line}</div>;
+                      })}
                     </div>
 
                     {/* Image Upload Overlay */}

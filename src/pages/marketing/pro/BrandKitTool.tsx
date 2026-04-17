@@ -217,15 +217,22 @@ export default function BrandKitTool() {
               {/* Colors - 5 Color Pickers */}
               <div className="bg-white rounded-2xl border border-gray-100 p-5">
                 <h3 className="font-bold text-gray-800 text-sm mb-3">컬러 팔레트 (5색)</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-2">
                   {kit.colors.map((c, i) => (
-                    <div key={i} className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+                    <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-xl p-2.5 overflow-hidden">
+                      <div className="w-8 h-8 rounded-lg shrink-0 border border-gray-200" style={{ backgroundColor: c.hex }} />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-semibold text-gray-700 truncate">{c.name}</span>
+                          <span className="text-[10px] text-gray-400 shrink-0">{c.hex}</span>
+                        </div>
+                        <p className="text-[10px] text-gray-400 truncate">{c.usage}</p>
+                      </div>
                       <ColorPickerInput
-                        label={c.name}
+                        label=""
                         color={c.hex}
                         onChange={(hex) => handleColorChange(i, hex)}
                       />
-                      <span className="text-[10px] text-gray-400 flex-shrink-0">{c.usage}</span>
                     </div>
                   ))}
                 </div>

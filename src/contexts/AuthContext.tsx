@@ -85,10 +85,12 @@ function sessionToUser(su: SupabaseUser): User {
 
 /** Supabase에 키가 있고 localStorage에 없으면 복원 */
 function syncGeminiKey(profile: ProfileRow | null): void {
-  if (!profile?.gemini_api_key) return;
+  if (!profile?.gemini_api_key) {
+    console.warn('[Auth] syncGeminiKey: 프로필에 API 키 없음 (gemini_api_key =', profile?.gemini_api_key === null ? 'null' : 'undefined', ')');
+    return;
+  }
   if (getStoredApiKey()) return; // 이미 로컬에 있으면 skip
   restoreGeminiConnection(profile.gemini_api_key);
-  // P0-7: 민감 정보 디버그 로그 제거
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
