@@ -132,3 +132,19 @@ export interface InstructorSettingsRow {
   settings: Record<string, unknown>;
   updated_at: string;
 }
+
+export interface ClassSessionRow {
+  id: string;
+  org_name: string;
+  org_code: string;
+  title: string;
+  start_date: string;
+  end_date: string;
+  instructor_name: string;
+  instructor_id: string | null;
+  status: 'upcoming' | 'in-progress' | 'completed';
+  notes: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
