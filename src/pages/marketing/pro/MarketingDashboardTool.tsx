@@ -160,7 +160,7 @@ export default function MarketingDashboardTool() {
             <h1 className="text-xl font-bold">마케팅 대시보드 프로</h1>
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
-          <p className="text-emerald-100 text-sm">목표 ROAS 설정 + 차트 타입 토글 + AI 심화 분석</p>
+          <p className="text-emerald-100 text-sm">광고비 대비 매출을 한눈에 보고, AI가 개선점을 알려줘요</p>
         </div>
 
         {schoolSummary && showSchoolBanner && (
@@ -172,7 +172,7 @@ export default function MarketingDashboardTool() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-bold text-gray-800">목표 ROAS</h3>
-              <p className="text-xs text-gray-400">목표 대비 달성률을 추적합니다</p>
+              <p className="text-xs text-gray-400">목표를 얼마나 달성했는지 보여줘요</p>
             </div>
             <div className="flex items-center gap-2">
               <input type="number" value={goalROAS} min={1} max={20} step={0.5}
@@ -379,11 +379,11 @@ export default function MarketingDashboardTool() {
             {!analysis ? (
               <button onClick={handleAnalyze} disabled={loading}
                 className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${!loading ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
-                {loading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> 분석 중...</span> : 'AI 심화 분석 & 추천 받기'}
+                {loading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> 분석하고 있어요...</span> : 'AI에게 분석 & 조언 받기'}
               </button>
             ) : (
               <EditableSection
-                title="AI 심화 분석 리포트"
+                title="AI 분석 리포트"
                 content={analysis}
                 onSave={(val) => setAnalysis(val)}
                 onRegenerate={handleAnalyze}
@@ -396,8 +396,8 @@ export default function MarketingDashboardTool() {
         {/* Export */}
         {validEntries.length > 0 && (
           <button onClick={handleExportPDF}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors">
-            <Download className="w-4 h-4" /> 월간 리포트 PDF
+            className="w-full flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg">
+            <Download className="w-5 h-5" /> 월간 리포트 PDF 저장
           </button>
         )}
       </div>

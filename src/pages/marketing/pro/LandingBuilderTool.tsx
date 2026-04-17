@@ -197,8 +197,8 @@ export default function LandingBuilderTool() {
             <h1 className="text-xl font-bold">랜딩페이지 프로</h1>
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
-          <p className="text-blue-100 text-sm">학교에서 만든 상세페이지를 실제 랜딩페이지로 업그레이드</p>
-          <p className="text-blue-200 text-xs mt-1">섹션 추가/삭제/순서변경 · 이미지 업로드 · CTA 편집 · 반응형 프리뷰</p>
+          <p className="text-blue-100 text-sm">학교에서 만든 상세페이지를 진짜 홈페이지처럼 업그레이드해요</p>
+          <p className="text-blue-200 text-xs mt-1">내용 추가/삭제/순서 바꾸기 · 사진 넣기 · 구매 버튼 편집 · 미리보기</p>
         </div>
 
         {schoolSummary && showSchoolBanner && (
@@ -240,9 +240,9 @@ export default function LandingBuilderTool() {
 
           {/* 마케팅 규칙 힌트 */}
           <div className="p-3 bg-purple-50 border border-purple-100 rounded-xl">
-            <p className="text-xs text-purple-700 font-medium mb-1">💡 프로 팁: 학교에서 배운 마케팅 규칙이 자동 적용돼요</p>
+            <p className="text-xs text-purple-700 font-medium mb-1">💡 학교에서 배운 마케팅 규칙이 자동 적용돼요</p>
             <p className="text-[11px] text-purple-600">
-              어그로 한 줄 (B형/C형) · painPoints "~한 사람!" · 3가지 약속 · 실감 후기 · 구어체 헤드라인
+              눈길 끄는 첫 문장 · 고객의 고민 · 3가지 약속 · 진짜 후기 · 친근한 말투
             </p>
           </div>
 
@@ -257,7 +257,7 @@ export default function LandingBuilderTool() {
           <div>
             {isMock && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2 mb-4">
-                <p className="text-xs text-yellow-700">AI 미연결: 샘플 랜딩페이지입니다. AI를 연결하면 입력한 정보에 맞는 진짜 상세페이지가 나와요.</p>
+                <p className="text-xs text-yellow-700">지금은 예시 랜딩페이지예요. AI가 연결되면 내 상품에 맞는 진짜 페이지가 나와요!</p>
               </div>
             )}
 
@@ -431,8 +431,8 @@ export default function LandingBuilderTool() {
                 <Sparkles className="w-4 h-4" /> 다시 생성
               </button>
               <button onClick={handleExportPDF}
-                className="flex items-center justify-center gap-2 py-3 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors">
-                <Download className="w-4 h-4" /> 포트폴리오 PDF
+                className="flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg">
+                <Download className="w-5 h-5" /> PDF로 저장하기
               </button>
             </div>
           </div>

@@ -163,7 +163,7 @@ export default function ContentStudioTool() {
             <h1 className="text-xl font-bold">콘텐츠 스튜디오 프로</h1>
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
-          <p className="text-pink-100 text-sm">AI 자동 카피 생성 + 사진 업로드 + 인라인 편집</p>
+          <p className="text-pink-100 text-sm">AI가 광고 문구를 만들고, 사진도 넣고, 직접 수정할 수 있어요</p>
         </div>
 
         {schoolSummary && showSchoolBanner && (
@@ -179,7 +179,7 @@ export default function ContentStudioTool() {
                 placeholder="예: 수제 그래놀라" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-pink-400 focus:outline-none text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">타겟 (선택)</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">고객 (선택)</label>
               <input type="text" value={target} onChange={(e) => setTarget(e.target.value)}
                 placeholder="예: 건강을 챙기는 2030" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-pink-400 focus:outline-none text-sm" />
             </div>
@@ -240,15 +240,15 @@ export default function ContentStudioTool() {
           <div>
             {isMock && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2 mb-4">
-                <p className="text-xs text-yellow-700">AI 미연결: 샘플 카드입니다. AI를 연결하면 입력에 맞는 카드가 나와요.</p>
+                <p className="text-xs text-yellow-700">지금은 예시 카드예요. AI가 연결되면 내 상품에 맞는 진짜 카드가 나와요!</p>
               </div>
             )}
 
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-bold text-gray-800">생성된 카드 ({cards.length}장)</h3>
               <button onClick={handleExportAll}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-semibold hover:bg-gray-800 transition-colors">
-                <Download className="w-3 h-3" /> 전체 다운로드
+                className="flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-bold hover:bg-gray-800 transition-colors shadow">
+                <Download className="w-4 h-4" /> 전체 다운로드
               </button>
             </div>
 
@@ -381,8 +381,8 @@ export default function ContentStudioTool() {
                 <Sparkles className="w-4 h-4" /> 전체 재생성
               </button>
               <button onClick={handleExportAll}
-                className="flex items-center justify-center gap-2 py-3 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors">
-                <Download className="w-4 h-4" /> 전체 PNG 다운로드
+                className="flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg">
+                <Download className="w-5 h-5" /> 전체 PNG 저장
               </button>
             </div>
           </div>

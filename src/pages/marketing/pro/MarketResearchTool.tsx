@@ -174,7 +174,7 @@ export default function MarketResearchTool() {
             <h1 className="text-xl font-bold">시장 리서치 프로</h1>
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
-          <p className="text-gray-300 text-sm">6섹션 심화 분석: 시장규모 / 경쟁사 / SWOT / 기회 / 타겟 / 전략</p>
+          <p className="text-gray-300 text-sm">내 시장을 6가지로 분석해요: 시장 크기 / 경쟁 브랜드 / 강점·약점 / 기회 / 고객 / 전략</p>
         </div>
 
         {schoolSummary && showSchoolBanner && (
@@ -184,19 +184,19 @@ export default function MarketResearchTool() {
         {/* Input Form */}
         <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-6 space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">키워드 / 업종 *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">내 상품이나 업종 *</label>
             <input type="text" value={keywords} onChange={(e) => setKeywords(e.target.value)}
               placeholder="예: 비건 화장품, 펫푸드, 온라인 교육"
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-sm" />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">타겟 연령</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">고객 나이</label>
               <input type="text" value={targetAge} onChange={(e) => setTargetAge(e.target.value)}
                 placeholder="예: 2030" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">타겟 성별</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">고객 성별</label>
               <input type="text" value={targetGender} onChange={(e) => setTargetGender(e.target.value)}
                 placeholder="예: 여성" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-sm" />
             </div>
@@ -208,7 +208,7 @@ export default function MarketResearchTool() {
           </div>
           <button onClick={handleGenerate} disabled={!keywords.trim() || loading}
             className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${keywords.trim() && !loading ? 'bg-gray-900 text-white hover:bg-gray-800' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
-            {loading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> 6섹션 분석 중...</span> : '심화 리서치 리포트 생성'}
+            {loading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> 분석하고 있어요...</span> : '시장 분석 리포트 만들기'}
           </button>
         </div>
 
@@ -217,7 +217,7 @@ export default function MarketResearchTool() {
           <div>
             {isMock && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2 mb-4">
-                <p className="text-xs text-yellow-700">AI 미연결 상태: 샘플 리포트입니다. AI 연결 후 맞춤 리포트를 받을 수 있습니다.</p>
+                <p className="text-xs text-yellow-700">지금은 예시 리포트예요. AI가 연결되면 내 상품에 맞는 진짜 리포트가 나와요!</p>
               </div>
             )}
 
@@ -250,8 +250,8 @@ export default function MarketResearchTool() {
                 {copied ? <><CheckCircle className="w-4 h-4" /> 복사됨</> : <><Copy className="w-4 h-4" /> 텍스트 복사</>}
               </button>
               <button onClick={handleExportPDF}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors">
-                <Download className="w-4 h-4" /> PDF 리포트 다운로드
+                className="flex-1 flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg">
+                <Download className="w-5 h-5" /> PDF 리포트 다운로드
               </button>
             </div>
           </div>

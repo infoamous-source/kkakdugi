@@ -263,8 +263,8 @@ export default function DetailPageTool() {
             <h1 className="text-xl font-bold">상세페이지 프로</h1>
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
-          <p className="text-red-100 text-sm">쿠팡/스마트스토어 상세페이지 스타일</p>
-          <p className="text-red-200 text-xs mt-1">인라인 편집 + 이미지 삽입 + PDF 내보내기</p>
+          <p className="text-red-100 text-sm">쿠팡/스마트스토어에 올릴 수 있는 상세페이지를 만들어요</p>
+          <p className="text-red-200 text-xs mt-1">글자 수정 + 사진 넣기 + PDF 저장 가능</p>
         </div>
 
         {schoolSummary && showSchoolBanner && (
@@ -313,7 +313,7 @@ export default function DetailPageTool() {
           <div>
             {isMock && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2 mb-4">
-                <p className="text-xs text-yellow-700">AI 미연결: 샘플 상세페이지입니다. AI를 연결하면 입력에 맞는 진짜 상세페이지가 나와요.</p>
+                <p className="text-xs text-yellow-700">지금은 예시 상세페이지예요. AI가 연결되면 내 상품에 맞는 진짜 상세페이지가 나와요!</p>
               </div>
             )}
 
@@ -553,8 +553,8 @@ export default function DetailPageTool() {
                 <Sparkles className="w-4 h-4" /> 다시 생성
               </button>
               <button onClick={handleExportPDF}
-                className="flex items-center justify-center gap-2 py-3 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors">
-                <Download className="w-4 h-4" /> PDF 다운로드
+                className="flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg">
+                <Download className="w-5 h-5" /> PDF로 저장하기
               </button>
             </div>
           </div>

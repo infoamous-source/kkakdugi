@@ -131,7 +131,7 @@ export default function BrandKitTool() {
             <h1 className="text-xl font-bold">브랜드 키트 프로</h1>
             {aiEnabled && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI</span>}
           </div>
-          <p className="text-purple-100 text-sm">USP + 슬로건 3개 + 컬러 5색 + 폰트 + 보이스 가이드</p>
+          <p className="text-purple-100 text-sm">내 브랜드만의 매력 문장 + 슬로건 + 색상 + 글꼴을 한번에 만들어요</p>
         </div>
 
         {schoolSummary && showSchoolBanner && (
@@ -152,13 +152,13 @@ export default function BrandKitTool() {
                 placeholder="예: 건강식품" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">타겟</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">고객</label>
               <input type="text" value={target} onChange={(e) => setTarget(e.target.value)}
                 placeholder="예: 2030 직장인" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none text-sm" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">브랜드 무드</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">브랜드 느낌</label>
             <input type="text" value={mood} onChange={(e) => setMood(e.target.value)}
               placeholder="예: 따뜻한, 모던한, 프리미엄" className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none text-sm" />
           </div>
@@ -173,7 +173,7 @@ export default function BrandKitTool() {
           <div>
             {isMock && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2 mb-4">
-                <p className="text-xs text-yellow-700">AI 미연결: 샘플 브랜드 키트입니다.</p>
+                <p className="text-xs text-yellow-700">지금은 예시 브랜드 키트예요. AI가 연결되면 내 브랜드에 맞는 진짜 키트가 나와요!</p>
               </div>
             )}
 
@@ -185,7 +185,7 @@ export default function BrandKitTool() {
 
               {/* USP */}
               <EditableSection
-                title="USP (고유 가치 제안)"
+                title="우리 브랜드만의 매력 (USP)"
                 content={kit.usp}
                 onSave={(val) => setKit(prev => prev ? { ...prev, usp: val } : prev)}
               />
@@ -272,7 +272,7 @@ export default function BrandKitTool() {
 
               {/* Voice Guide */}
               <EditableSection
-                title="브랜드 보이스 가이드"
+                title="브랜드 말투 가이드"
                 content={kit.voiceGuide}
                 onSave={(val) => setKit(prev => prev ? { ...prev, voiceGuide: val } : prev)}
               />
@@ -284,8 +284,8 @@ export default function BrandKitTool() {
                 {copied ? <><CheckCircle className="w-4 h-4" /> 복사됨</> : <><Copy className="w-4 h-4" /> 텍스트 복사</>}
               </button>
               <button onClick={handleExportPDF}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700 transition-colors">
-                <Download className="w-4 h-4" /> 브랜드 키트 PDF
+                className="flex-1 flex items-center justify-center gap-2 py-4 bg-purple-600 text-white rounded-xl text-base font-bold hover:bg-purple-700 transition-colors shadow-lg">
+                <Download className="w-5 h-5" /> 브랜드 키트 PDF 저장
               </button>
             </div>
           </div>

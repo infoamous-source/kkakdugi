@@ -10,6 +10,8 @@ import {
   ClipboardCopy,
   Download,
   Users,
+  CheckSquare,
+  Square,
 } from 'lucide-react';
 import {
   type IdeaItem,
@@ -48,6 +50,7 @@ export default function IdeaBox({ userId }: IdeaBoxProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [bulkCopied, setBulkCopied] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'personal' | 'team'>('personal');
   const [teamInfo, setTeamInfo] = useState<{ teamId: string; teamName: string } | null>(null);
   const [teamIdeas, setTeamIdeas] = useState<TeamIdea[]>([]);
@@ -95,6 +98,27 @@ export default function IdeaBox({ userId }: IdeaBoxProps) {
     }
   };
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredItems.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredItems.map(i => i.id)));
+    }
+  };
+
+  const getSelectedItems = () => {
+    if (selectedIds.size === 0) return filteredItems;
+    return filteredItems.filter(i => selectedIds.has(i.id));
+  };
+
   const buildAllText = (itemList: typeof items) => {
     return itemList.map(item =>
       `[${getTypeLabel(item.type)}] ${item.title}\n${item.content}`
@@ -103,7 +127,7 @@ export default function IdeaBox({ userId }: IdeaBoxProps) {
 
   const handleBulkCopy = async () => {
     try {
-      await navigator.clipboard.writeText(buildAllText(filteredItems));
+      await navigator.clipboard.writeText(buildAllText(getSelectedItems()));
       setBulkCopied(true);
       setTimeout(() => setBulkCopied(false), 2000);
     } catch {
@@ -117,7 +141,7 @@ export default function IdeaBox({ userId }: IdeaBoxProps) {
   };
 
   const handleExportTxt = () => {
-    const text = buildAllText(filteredItems);
+    const text = buildAllText(getSelectedItems());
     const blob = new Blob(['\uFEFF' + text], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -228,15 +252,15 @@ export default function IdeaBox({ userId }: IdeaBoxProps) {
               <button
                 onClick={handleBulkCopy}
                 className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
-                title="전체 복사"
+                title={selectedIds.size > 0 ? '선택한 것만 복사' : '전체 복사'}
               >
                 {bulkCopied ? <Check className="w-3 h-3 text-green-500" /> : <ClipboardCopy className="w-3 h-3" />}
-                {bulkCopied ? '복사됨' : '전체 복사'}
+                {bulkCopied ? '복사됨' : selectedIds.size > 0 ? `${selectedIds.size}개 복사` : '전체 복사'}
               </button>
               <button
                 onClick={handleExportTxt}
                 className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                title="TXT 내보내기"
+                title="TXT 저장"
               >
                 <Download className="w-3 h-3" />
                 TXT
@@ -244,7 +268,7 @@ export default function IdeaBox({ userId }: IdeaBoxProps) {
               <button
                 onClick={handleExportPdf}
                 className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-                title="PDF 내보내기"
+                title="PDF 저장"
               >
                 <Download className="w-3 h-3" />
                 PDF
@@ -371,13 +395,32 @@ export default function IdeaBox({ userId }: IdeaBoxProps) {
         </div>
       ) : (
         <div id="idea-box-list" className="space-y-3">
+          {/* 전체 선택 */}
+          <div className="flex items-center gap-2 px-1">
+            <button onClick={toggleSelectAll} className="flex items-center gap-2 text-sm text-gray-500 hover:text-purple-600 transition-colors">
+              {selectedIds.size === filteredItems.length && filteredItems.length > 0
+                ? <CheckSquare className="w-4 h-4 text-purple-600" />
+                : <Square className="w-4 h-4" />}
+              {selectedIds.size > 0 ? `${selectedIds.size}개 선택됨` : '전체 선택'}
+            </button>
+            {selectedIds.size > 0 && (
+              <button onClick={() => setSelectedIds(new Set())} className="text-xs text-gray-400 hover:text-gray-600">
+                선택 해제
+              </button>
+            )}
+          </div>
           {filteredItems.map(item => (
             <div
               key={item.id}
-              className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-sm transition-shadow"
+              className={`bg-white border rounded-xl p-4 hover:shadow-sm transition-shadow ${selectedIds.has(item.id) ? 'border-purple-300 bg-purple-50/30' : 'border-gray-200'}`}
             >
               {/* 아이템 헤더 */}
               <div className="flex items-start gap-3">
+                <button onClick={() => toggleSelect(item.id)} className="mt-0.5 shrink-0">
+                  {selectedIds.has(item.id)
+                    ? <CheckSquare className="w-5 h-5 text-purple-600" />
+                    : <Square className="w-5 h-5 text-gray-300 hover:text-gray-500" />}
+                </button>
                 <span className="text-xl">{ideaTypeIcons[item.type]}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
