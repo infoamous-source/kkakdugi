@@ -56,12 +56,15 @@
   }
   .screenshots.single { grid-template-columns: 1fr; }
   .screenshots img {
-    width: 100%; max-width: 100%; height: 360px; border-radius: 12px; border: 1px solid #e5e7eb;
+    width: 100%; border-radius: 12px; border: 1px solid #e5e7eb;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    object-fit: cover; object-position: top;
+    object-fit: contain;
   }
-  .screenshots.single img {
-    height: 420px;
+  .screenshots.single {
+    grid-template-columns: 1fr 1fr;
+  }
+  .screenshots.single > div:only-child {
+    grid-column: 1;
   }
   .screenshots > div {
     overflow: hidden;
@@ -120,10 +123,14 @@
       <li>결과 확인! — 내 마케팅 유형이 나와요</li>
     </ol>
   </div>
-  <div class="screenshots single">
+  <div class="screenshots">
     <div>
-      <img src="../screenshots-tools-check/01_적성검사.png" alt="적성검사">
-      <p class="caption">적성검사 화면</p>
+      <img src="school_01_적성검사_질문.png" alt="적성검사 질문">
+      <p class="caption">질문에 답하는 화면</p>
+    </div>
+    <div>
+      <img src="school_01_적성검사_결과.png" alt="적성검사 결과">
+      <p class="caption">내 마케팅 유형 결과</p>
     </div>
   </div>
 </div>
@@ -257,8 +264,8 @@
 <div class="tool-card" style="text-align:center; background: linear-gradient(135deg, #fef3c7, #fde68a);">
   <h3 style="justify-content:center;">🎓 수료증</h3>
   <p class="tool-desc">6교시를 모두 마치면 수료증을 받을 수 있어요!</p>
-  <div class="screenshots single" style="max-width:300px; margin:16px auto 0;">
-    <img src="../screenshots-vegan-cookie/cert_lizzy.png" alt="수료증" style="border-radius:16px;">
+  <div style="text-align:center; margin:20px auto 0;">
+    <img src="../screenshots-vegan-cookie/cert_lizzy.png" alt="수료증" style="width:400px; max-width:90%; border-radius:16px; border:1px solid #e5e7eb; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
   </div>
 </div>
 

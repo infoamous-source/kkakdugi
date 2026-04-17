@@ -9,6 +9,7 @@ import { generateMarketResearch, regenerateSection } from '../../../services/gem
 import type { MarketResearchReport } from '../../../services/gemini/proMarketResearchService';
 import SchoolDataBanner from '../pro/common/SchoolDataBanner';
 import EditableSection from '../pro/common/EditableSection';
+import MarketResearchReportView from '../pro/common/MarketResearchReportView';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -246,47 +247,27 @@ export default function MarketResearchTool() {
 
               {/* 자세한 레포트 보기 버튼 */}
               <button
-                onClick={() => setShowFullReport(!showFullReport)}
+                onClick={() => setShowFullReport(true)}
                 className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-xl text-base font-bold hover:from-gray-800 hover:to-gray-600 transition-all shadow-lg"
               >
                 <FileText className="w-5 h-5" />
-                {showFullReport ? '레포트 접기' : '자세한 레포트 보기'}
-                <ChevronDown className={`w-5 h-5 transition-transform ${showFullReport ? 'rotate-180' : ''}`} />
+                자세한 레포트 보기
+              </button>
+
+              {/* 텍스트 복사 */}
+              <button onClick={handleCopy}
+                className="w-full flex items-center justify-center gap-2 py-2.5 mt-3 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
+                {copied ? <><CheckCircle className="w-4 h-4" /> 복사됨</> : <><Copy className="w-4 h-4" /> 텍스트 복사</>}
               </button>
             </div>
 
-            {/* 자세한 레포트 (펼침) */}
+            {/* 자세한 레포트 뷰 (풀스크린 오버레이) */}
             {showFullReport && (
-              <>
-                <div ref={reportRef} className="space-y-3 mb-4">
-                  {(Object.keys(SECTION_META) as Array<keyof MarketResearchReport>).map(key => {
-                    const meta = SECTION_META[key];
-                    return (
-                      <div key={key}>
-                        <EditableSection
-                          title={meta.title}
-                          content={sectionToString(key)}
-                          onSave={(val) => handleSave(key, val)}
-                          onRegenerate={() => handleRegenerate(key)}
-                          isRegenerating={regeneratingKey === key}
-                          className={meta.color}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="flex gap-3">
-                  <button onClick={handleCopy}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
-                    {copied ? <><CheckCircle className="w-4 h-4" /> 복사됨</> : <><Copy className="w-4 h-4" /> 텍스트 복사</>}
-                  </button>
-                  <button onClick={handleExportPDF}
-                    className="flex-1 flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg">
-                    <Download className="w-5 h-5" /> PDF 리포트 다운로드
-                  </button>
-                </div>
-              </>
+              <MarketResearchReportView
+                report={report}
+                keyword={keywords}
+                onClose={() => setShowFullReport(false)}
+              />
             )}
           </div>
         )}
