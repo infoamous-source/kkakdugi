@@ -47,6 +47,8 @@ const RegisterCompletePage = lazyWithRetry(() => import('./pages/RegisterComplet
 const CareerResumeBuilderPage = lazyWithRetry(() => import('./pages/career/ResumeBuilderPage'));
 const CareerKResumePage = lazyWithRetry(() => import('./pages/career/KResumePage'));
 const CareerInterviewSimulatorPage = lazyWithRetry(() => import('./pages/career/InterviewSimulatorPage'));
+const CareerJobSearchGuidePage = lazyWithRetry(() => import('./pages/career/JobSearchGuidePage'));
+const CareerWorkplaceMannerPage = lazyWithRetry(() => import('./pages/career/WorkplaceMannerPage'));
 const AboutPage = lazyWithRetry(() => import('./pages/AboutPage'));
 const InquiryPage = lazyWithRetry(() => import('./pages/InquiryPage'));
 const ShowcasePage = lazyWithRetry(() => import('./pages/ShowcasePage'));
@@ -166,10 +168,12 @@ export default function App() {
             <Route path="/marketing/modules/:moduleId" element={<MarketingModuleDetailPage />} />
             <Route path="/marketing/tools/:toolId" element={<MarketingToolRouter />} />
 
-            {/* 커리어학과 — 자소서 빌더 / K-이력서 / 면접 시뮬레이터 */}
+            {/* 커리어학과 — 자소서 빌더 / K-이력서 / 면접 시뮬레이터 / 취업정보 */}
             <Route path="/career/resume-builder" element={<CareerResumeBuilderPage />} />
             <Route path="/career/k-resume" element={<CareerKResumePage />} />
             <Route path="/career/interview" element={<CareerInterviewSimulatorPage />} />
+            <Route path="/career/job-search" element={<CareerJobSearchGuidePage />} />
+            <Route path="/career/workplace-manner" element={<CareerWorkplaceMannerPage />} />
 
             {/* 내 프로필 */}
             <Route path="/profile" element={<ProfilePage />} />

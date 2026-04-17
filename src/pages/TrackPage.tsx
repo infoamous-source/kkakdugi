@@ -88,8 +88,16 @@ function ModuleCard({ module, trackId, trackColor, completionRate = 0 }: ModuleC
         navigate('/career/interview');
         return;
       }
-      // cr-03, cr-04: 아직 구현 안 됨
-      alert('이 수업은 곧 준비될 거예요! 지금은 이력서·면접 수업을 눌러보세요.');
+      // cr-03: 구직 활동 (취업 정보)
+      if (module.id === 'cr-03') {
+        navigate('/career/job-search');
+        return;
+      }
+      // cr-04: 직장 생활 (비즈니스 매너)
+      if (module.id === 'cr-04') {
+        navigate('/career/workplace-manner');
+        return;
+      }
       return;
     }
   };

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Mic,
+  MicOff,
   Loader2,
   Sparkles,
   CheckCircle2,
@@ -11,10 +12,12 @@ import {
   ArrowRight,
   RotateCcw,
   Trophy,
+  Download,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUserProfile } from '../../lib/userProfile';
 import { useResumeBuilderSession } from '../../hooks/useResumeBuilderSession';
+import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
 import {
   generatePersonalizedQuestions,
   evaluateAnswer,
@@ -48,6 +51,16 @@ export default function InterviewSimulatorPage() {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [started, setStarted] = useState(false);
+  const stt = useSpeechRecognition();
+  const pdfRef = useRef<HTMLDivElement>(null);
+
+  // STT 음성 → 텍스트 동기화
+  useEffect(() => {
+    if (stt.transcript) {
+      setCurrentAnswer(prev => prev + stt.transcript);
+      stt.reset();
+    }
+  }, [stt.transcript]);
 
   // 질문 세트 로딩 (start 클릭 시)
   const handleStart = async () => {
@@ -82,6 +95,7 @@ export default function InterviewSimulatorPage() {
 
   const handleSubmitAnswer = async () => {
     if (!profile || !questions[currentIdx] || currentAnswer.trim().length === 0) return;
+    if (stt.isListening) stt.stop();
     setIsEvaluating(true);
     setError(null);
     try {
@@ -254,8 +268,24 @@ export default function InterviewSimulatorPage() {
                 rows={6}
                 className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none mb-2"
               />
+              {stt.isSupported && (
+                <div className="flex items-center gap-2 mb-2">
+                  <button
+                    type="button"
+                    onClick={() => stt.isListening ? stt.stop() : stt.start()}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                      stt.isListening
+                        ? 'bg-red-500 text-white animate-pulse'
+                        : 'bg-purple-50 text-purple-700 hover:bg-purple-100'
+                    }`}
+                  >
+                    {stt.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                    {stt.isListening ? '듣고 있어요... (탭하면 멈춤)' : '마이크로 말하기'}
+                  </button>
+                </div>
+              )}
               <p className="text-[11px] text-gray-400 mb-4">
-                💡 짧아도 괜찮아요. 솔직한 답변이 가장 좋은 답변이에요.
+                💡 짧아도 괜찮아요. 솔직한 답변이 가장 좋은 답변이에요.{stt.isSupported ? ' 마이크 버튼으로 말해도 돼요.' : ''}
               </p>
               <button
                 type="button"
@@ -284,7 +314,7 @@ export default function InterviewSimulatorPage() {
 
       {/* 완료 */}
       {isFinished && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 text-center">
+        <div ref={pdfRef} className="bg-white rounded-2xl border border-gray-100 p-6 text-center">
           <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">면접 연습 완료!</h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -297,21 +327,33 @@ export default function InterviewSimulatorPage() {
           <p className="text-xs text-gray-500 mb-4">
             꾸준히 연습하면 실제 면접에서 자연스럽게 답할 수 있어요!
           </p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={handleRestart}
               className="py-3 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 flex items-center justify-center gap-1.5"
             >
               <RotateCcw className="w-4 h-4" />
-              다시 연습
+              다시
+            </button>
+            <button
+              type="button"
+              onClick={async () => {
+                if (!pdfRef.current) return;
+                const { exportToPdf } = await import('../../lib/pdfExport');
+                await exportToPdf(pdfRef.current, `면접연습_결과_${new Date().toISOString().slice(0, 10)}.pdf`);
+              }}
+              className="py-3 border border-purple-200 text-purple-700 rounded-xl text-sm font-medium hover:bg-purple-50 flex items-center justify-center gap-1.5"
+            >
+              <Download className="w-4 h-4" />
+              PDF
             </button>
             <button
               type="button"
               onClick={() => navigate('/track/career')}
               className="py-3 bg-purple-600 text-white rounded-xl text-sm font-medium hover:bg-purple-700"
             >
-              학과로 돌아가기
+              학과로
             </button>
           </div>
         </div>
