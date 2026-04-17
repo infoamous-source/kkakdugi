@@ -11,7 +11,6 @@ const proStudioTools = [
   { id: 'brand-kit', name: '브랜드 키트', desc: '로고 컨셉 + 컬러 팔레트 + 브랜드 가이드라인', icon: '\u{1F3A8}', route: '/marketing/pro/studio/brand-kit' },
   { id: 'content-studio', name: '콘텐츠 스튜디오', desc: '사진 업로드 + 텍스트 편집 + 멀티 사이즈', icon: '\u{1F4F1}', route: '/marketing/pro/studio/content-studio' },
   { id: 'detail-page', name: '상세페이지 프로', desc: '쿠팡/스마트스토어 상세페이지 + 이미지 삽입 + PDF', icon: '\u{1F4E6}', route: '/marketing/pro/studio/detail-page' },
-  { id: 'landing-builder', name: '랜딩페이지 빌더', desc: '섹션 편집 + 사진 업로드 + 포트폴리오 PDF', icon: '\u{1F6D2}', route: '/marketing/pro/studio/landing-builder' },
   { id: 'marketing-dashboard', name: '마케팅 대시보드', desc: '월별 ROAS + 채널별 비교 + 월간 리포트', icon: '\u{1F4C8}', route: '/marketing/pro/studio/marketing-dashboard' },
 ];
 
