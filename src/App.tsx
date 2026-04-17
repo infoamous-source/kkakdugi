@@ -5,6 +5,7 @@ import { EnrollmentProvider } from './contexts/EnrollmentContext';
 import { VisibilityProvider } from './contexts/VisibilityContext';
 import MainLayout from './components/common/MainLayout';
 import GlobalLogoutButton from './components/common/GlobalLogoutButton';
+import SirenButton from './components/common/SirenButton';
 import LoadingSkeleton from './components/common/LoadingSkeleton';
 import PageTransition from './components/common/PageTransition';
 import GatewayPage from './pages/GatewayPage';
@@ -74,6 +75,7 @@ export default function App() {
       <VisibilityProvider>
       <BrowserRouter>
         <GlobalLogoutButton />
+        <SirenButton />
         <Suspense fallback={<LoadingSkeleton />}>
         <PageTransition>
         <Routes>
