@@ -16,7 +16,7 @@ export async function exportToPdf(
   options?: {
     /** 배경색 (기본: 흰색) */
     backgroundColor?: string;
-    /** 스케일 (기본: 2, 레티나 대응) */
+    /** 스케일 (기본: 1.5 — 너무 크면 캔버스 OOM으로 실패) */
     scale?: number;
     /** A4 페이지 여백 mm (기본: 10) */
     margin?: number;
@@ -27,9 +27,14 @@ export async function exportToPdf(
 
   const {
     backgroundColor = '#ffffff',
-    scale = 2,
+    scale = 1.5,
     margin = 10,
   } = options ?? {};
+
+  // 캡처 전 폰트 로딩 완료 대기 (한국어 폰트 깨짐 방지)
+  if (typeof document !== 'undefined' && document.fonts?.ready) {
+    try { await document.fonts.ready; } catch { /* 폰트 API 미지원 환경은 무시 */ }
+  }
 
   // 1. DOM → 캔버스
   const canvas = await html2canvas(element, {

@@ -12,8 +12,7 @@ import { generateLandingSections } from '../../../services/gemini/proLandingServ
 import type { LandingSection, SectionType } from '../../../services/gemini/proLandingService';
 import SchoolDataBanner from '../pro/common/SchoolDataBanner';
 import EditableSection from '../pro/common/EditableSection';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { exportToPdf } from '../../../lib/pdfExport';
 
 type PreviewSize = 'mobile' | 'tablet' | 'desktop';
 const PREVIEW_WIDTHS: Record<PreviewSize, number> = { mobile: 340, tablet: 540, desktop: 720 };
@@ -163,23 +162,18 @@ export default function LandingBuilderTool() {
     }
   };
 
+  const [exportingPdf, setExportingPdf] = useState(false);
   const handleExportPDF = async () => {
-    if (!previewRef.current) return;
+    if (!previewRef.current || exportingPdf) return;
+    setExportingPdf(true);
     try {
-      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      let y = 0;
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      while (y < pdfHeight) {
-        if (y > 0) pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, -y, pdfWidth, pdfHeight);
-        y += pageHeight;
-      }
-      pdf.save(`landing-${productName}.pdf`);
-    } catch { /* ignore */ }
+      await exportToPdf(previewRef.current, `랜딩페이지_${productName || 'untitled'}_${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      console.error('PDF export failed:', err);
+      alert('PDF가 만들어지지 않았어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setExportingPdf(false);
+    }
   };
 
   const previewWidth = PREVIEW_WIDTHS[previewSize];
@@ -430,9 +424,9 @@ export default function LandingBuilderTool() {
                 className="flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50">
                 <Sparkles className="w-4 h-4" /> 다시 생성
               </button>
-              <button onClick={handleExportPDF}
-                className="flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg">
-                <Download className="w-5 h-5" /> PDF로 저장하기
+              <button onClick={handleExportPDF} disabled={exportingPdf}
+                className="flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg disabled:opacity-50">
+                {exportingPdf ? <><Loader2 className="w-5 h-5 animate-spin" /> 만드는 중...</> : <><Download className="w-5 h-5" /> PDF로 저장하기</>}
               </button>
             </div>
           </div>

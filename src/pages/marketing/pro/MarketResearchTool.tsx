@@ -10,8 +10,6 @@ import type { MarketResearchReport } from '../../../services/gemini/proMarketRes
 import SchoolDataBanner from '../pro/common/SchoolDataBanner';
 import EditableSection from '../pro/common/EditableSection';
 import MarketResearchReportView from '../pro/common/MarketResearchReportView';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 const SECTION_META: Record<keyof MarketResearchReport, { title: string; icon: typeof TrendingUp; color: string }> = {
   marketSize: { title: '📊 시장 규모', icon: TrendingUp, color: 'border-l-4 border-l-blue-500' },
@@ -144,24 +142,7 @@ export default function MarketResearchTool() {
     } catch { /* ignore */ }
   };
 
-  const handleExportPDF = async () => {
-    if (!reportRef.current) return;
-    try {
-      const canvas = await html2canvas(reportRef.current, { scale: 2, useCORS: true });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      let y = 0;
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      while (y < pdfHeight) {
-        if (y > 0) pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, -y, pdfWidth, pdfHeight);
-        y += pageHeight;
-      }
-      pdf.save('market-research-report.pdf');
-    } catch { /* ignore */ }
-  };
+  // PDF export 핸들러는 미사용 — PDF는 MarketResearchReportView 안의 버튼에서 처리
 
   return (
     <div className="min-h-screen bg-gray-50">

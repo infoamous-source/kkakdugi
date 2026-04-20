@@ -9,8 +9,7 @@ import { generateDashboardAnalysis } from '../../../services/gemini/proDashboard
 import SchoolDataBanner from '../pro/common/SchoolDataBanner';
 import EditableSection from '../pro/common/EditableSection';
 import DashboardReportView from '../pro/common/DashboardReportView';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { exportToPdf } from '../../../lib/pdfExport';
 
 interface MonthlyData {
   month: string;
@@ -128,23 +127,18 @@ export default function MarketingDashboardTool() {
     setLoading(false);
   };
 
+  const [exportingPdf, setExportingPdf] = useState(false);
   const handleExportPDF = async () => {
-    if (!reportRef.current) return;
+    if (!reportRef.current || exportingPdf) return;
+    setExportingPdf(true);
     try {
-      const canvas = await html2canvas(reportRef.current, { scale: 2, useCORS: true });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      let y = 0;
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      while (y < pdfHeight) {
-        if (y > 0) pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, -y, pdfWidth, pdfHeight);
-        y += pageHeight;
-      }
-      pdf.save('marketing-dashboard-report.pdf');
-    } catch { /* ignore */ }
+      await exportToPdf(reportRef.current, `마케팅대시보드_${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      console.error('PDF export failed:', err);
+      alert('PDF가 만들어지지 않았어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setExportingPdf(false);
+    }
   };
 
   const formatWon = (n: number) => n.toLocaleString() + '원';
@@ -412,9 +406,9 @@ export default function MarketingDashboardTool() {
 
         {/* Export */}
         {validEntries.length > 0 && (
-          <button onClick={handleExportPDF}
-            className="w-full flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg">
-            <Download className="w-5 h-5" /> 월간 리포트 PDF 저장
+          <button onClick={handleExportPDF} disabled={exportingPdf}
+            className="w-full flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl text-base font-bold hover:bg-gray-800 transition-colors shadow-lg disabled:opacity-50">
+            {exportingPdf ? <><Loader2 className="w-5 h-5 animate-spin" /> 만드는 중...</> : <><Download className="w-5 h-5" /> 월간 리포트 PDF 저장</>}
           </button>
         )}
       </div>

@@ -11,8 +11,6 @@ import SchoolDataBanner from '../pro/common/SchoolDataBanner';
 import EditableSection from '../pro/common/EditableSection';
 import ColorPickerInput from '../pro/common/ColorPickerInput';
 import BrandKitReportView from '../pro/common/BrandKitReportView';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 const FONT_OPTIONS = ['Pretendard', 'Noto Sans KR', 'Spoqa Han Sans Neo', 'Noto Serif KR', 'IBM Plex Sans KR', 'Wanted Sans'];
 
@@ -125,18 +123,7 @@ export default function BrandKitTool() {
     } catch { /* ignore */ }
   };
 
-  const handleExportPDF = async () => {
-    if (!kitRef.current) return;
-    try {
-      const canvas = await html2canvas(kitRef.current, { scale: 2, useCORS: true });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`brand-kit-${brandName}.pdf`);
-    } catch { /* ignore */ }
-  };
+  // PDF export 핸들러는 미사용 — PDF는 BrandKitReportView 안의 버튼에서 처리
 
   return (
     <div className="min-h-screen bg-gray-50">

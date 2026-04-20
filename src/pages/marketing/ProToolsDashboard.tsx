@@ -18,13 +18,24 @@ export default function ProToolsDashboard() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isGraduated: graduated, isProAccessValid: proValid, proRemainingDays: remainingDays } = useSchoolProgress();
+  const { isGraduated: graduated, isProAccessValid: proValid, proRemainingDays: remainingDays, isLoading } = useSchoolProgress();
 
   // CEO/강사는 모든 제한 우회 (졸업·기간 무관)
   const isStaff = user?.role === 'ceo' || user?.role === 'instructor';
 
-  // 미졸업 -> 허브로 리다이렉트 (학생만)
-  if (!isStaff && !graduated) {
+  // 진행 데이터 로딩 중이면 빈 화면 (깜빡임 방지)
+  // 로딩 끝나기 전에 graduated=false 디폴트로 "미졸업" 화면이 잠깐 뜨던 문제 해결
+  if (!isStaff && isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // 미졸업 + 기관 권한도 없음 -> 허브로 리다이렉트 (학생만)
+  // proValid는 (졸업 && 만료 전) || (HUC454 같은 기관 권한)을 모두 확인함
+  if (!isStaff && !proValid && !graduated) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center max-w-md">
@@ -42,8 +53,8 @@ export default function ProToolsDashboard() {
     );
   }
 
-  // 기간 만료 (학생만)
-  if (!isStaff && !proValid) {
+  // 졸업했지만 기간 만료 (학생만 — HUC454 등 기관 권한 있으면 proValid가 true라 통과)
+  if (!isStaff && graduated && !proValid) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center max-w-md">

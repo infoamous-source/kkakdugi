@@ -1,8 +1,7 @@
-import { useRef } from 'react';
-import { Download, X } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Download, X, Loader2 } from 'lucide-react';
 import type { BrandKitData } from '../../../../services/gemini/proBrandKitService';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { exportToPdf } from '../../../../lib/pdfExport';
 
 interface Props {
   kit: BrandKitData;
@@ -23,36 +22,18 @@ function toText(val: unknown): string {
 
 export default function BrandKitReportView({ kit, brandName, onClose }: Props) {
   const reportRef = useRef<HTMLDivElement>(null);
+  const [exporting, setExporting] = useState(false);
 
   const handleExportPDF = async () => {
-    if (!reportRef.current) return;
+    if (!reportRef.current || exporting) return;
+    setExporting(true);
     try {
-      const canvas = await html2canvas(reportRef.current, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
-      const pdfHeight = pdf.internal.pageSize.getHeight() - 20;
-      const imgRatio = canvas.height / canvas.width;
-      const imgW = pdfWidth;
-      const imgH = imgW * imgRatio;
-      let srcY = 0;
-      const sliceH = (pdfHeight / imgH) * canvas.height;
-      let page = 0;
-      while (srcY < canvas.height) {
-        if (page > 0) pdf.addPage();
-        const sliceCanvas = document.createElement('canvas');
-        sliceCanvas.width = canvas.width;
-        sliceCanvas.height = Math.min(sliceH, canvas.height - srcY);
-        const ctx = sliceCanvas.getContext('2d')!;
-        ctx.drawImage(canvas, 0, srcY, canvas.width, sliceCanvas.height, 0, 0, canvas.width, sliceCanvas.height);
-        const sliceData = sliceCanvas.toDataURL('image/png');
-        const sliceImgH = (sliceCanvas.height / canvas.width) * imgW;
-        pdf.addImage(sliceData, 'PNG', 10, 10, imgW, sliceImgH);
-        srcY += sliceH;
-        page++;
-      }
-      pdf.save(`브랜드키트_${brandName}_${new Date().toISOString().slice(0, 10)}.pdf`);
+      await exportToPdf(reportRef.current, `브랜드키트_${brandName}_${new Date().toISOString().slice(0, 10)}.pdf`);
     } catch (err) {
       console.error('PDF export failed:', err);
+      alert('PDF가 만들어지지 않았어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -63,9 +44,9 @@ export default function BrandKitReportView({ kit, brandName, onClose }: Props) {
         <button onClick={onClose} className="flex items-center gap-1 text-gray-500 hover:text-gray-800 text-sm font-medium">
           <X className="w-5 h-5" /> 닫기
         </button>
-        <button onClick={handleExportPDF}
-          className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-bold hover:bg-purple-700 shadow-lg">
-          <Download className="w-4 h-4" /> PDF 저장
+        <button onClick={handleExportPDF} disabled={exporting}
+          className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-bold hover:bg-purple-700 shadow-lg disabled:opacity-50">
+          {exporting ? <><Loader2 className="w-4 h-4 animate-spin" /> 만드는 중...</> : <><Download className="w-4 h-4" /> PDF 저장</>}
         </button>
       </div>
 
