@@ -173,8 +173,8 @@ export default function MarketingDashboardTool() {
         <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-gray-800">목표 ROAS</h3>
-              <p className="text-xs text-gray-400">목표를 얼마나 달성했는지 보여줘요</p>
+              <h3 className="text-sm font-bold text-gray-800">목표 ROAS (광고 효율)</h3>
+              <p className="text-xs text-gray-400">광고비 1원당 매출 몇 배를 목표로 할지 정해요. 예: 3 = 광고비 1원으로 3원 매출</p>
             </div>
             <div className="flex items-center gap-2">
               <input type="number" value={goalROAS} min={1} max={20} step={0.5}

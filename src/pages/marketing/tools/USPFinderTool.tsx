@@ -105,7 +105,7 @@ export default function USPFinderTool() {
       <div className="bg-gradient-to-r from-[#1e3a8a] to-[#3b82f6] rounded-2xl p-4 md:p-6 text-white mb-6">
         <div className="flex items-center gap-3 mb-2">
           <Target className="w-6 h-6 md:w-8 md:h-8" />
-          <h1 className="text-xl md:text-2xl font-bold">{t('marketing.tools.uspFinder.title', 'USP 파인더')}</h1>
+          <h1 className="text-xl md:text-2xl font-bold">{t('marketing.tools.uspFinder.title', 'USP 파인더 (우리만의 매력 찾기)')}</h1>
         </div>
         <p className="text-blue-100">{t('marketing.tools.uspFinder.description', '나만의 특별한 장점을 찾아보세요')}</p>
       </div>

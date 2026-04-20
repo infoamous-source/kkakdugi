@@ -16,9 +16,9 @@ import jsPDF from 'jspdf';
 const SECTION_META: Record<keyof MarketResearchReport, { title: string; icon: typeof TrendingUp; color: string }> = {
   marketSize: { title: '📊 시장 규모', icon: TrendingUp, color: 'border-l-4 border-l-blue-500' },
   competitors: { title: '🏢 경쟁사 분석', icon: Users, color: 'border-l-4 border-l-red-500' },
-  swot: { title: '🛡️ SWOT 분석', icon: Shield, color: 'border-l-4 border-l-purple-500' },
+  swot: { title: '🛡️ SWOT 분석 (강점·약점·기회·위협)', icon: Shield, color: 'border-l-4 border-l-purple-500' },
   opportunities: { title: '💡 기회 영역', icon: Lightbulb, color: 'border-l-4 border-l-amber-500' },
-  targetPersona: { title: '🎯 타겟 페르소나', icon: Target, color: 'border-l-4 border-l-emerald-500' },
+  targetPersona: { title: '🎯 타겟 페르소나 (우리 고객)', icon: Target, color: 'border-l-4 border-l-emerald-500' },
   entryStrategy: { title: '🗺️ 진입 전략', icon: Map, color: 'border-l-4 border-l-indigo-500' },
 };
 

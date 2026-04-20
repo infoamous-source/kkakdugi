@@ -234,7 +234,7 @@ export default function ROICalculatorTool() {
 
           {/* Industry Benchmarks */}
           <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-5">
-            <h3 className="text-sm font-bold text-gray-800 mb-4">산업별 평균 ROAS 비교</h3>
+            <h3 className="text-sm font-bold text-gray-800 mb-4">산업별 평균 ROAS (광고 효율) 비교</h3>
             <div className="space-y-3">
               {benchmarks.map((benchmark) => {
                 const userRoas = result.roas;

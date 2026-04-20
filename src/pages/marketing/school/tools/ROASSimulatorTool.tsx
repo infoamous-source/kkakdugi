@@ -319,7 +319,7 @@ export default function ROASSimulatorTool() {
             {/* 큰 ROAS 숫자 */}
             <div className="text-center py-5 px-3 bg-gray-50 rounded-2xl border border-gray-200">
               <div className="text-[11px] text-gray-500 font-semibold tracking-widest">
-                ━━━ ROAS ━━━
+                ━━━ ROAS (광고 효율) ━━━
               </div>
               <div className="text-[54px] font-black text-gray-900 leading-none mt-2">
                 {output.roas}

@@ -182,7 +182,7 @@ export default function PersonaMakerTool() {
       <div className="bg-gradient-to-r from-[#1e3a8a] to-[#3b82f6] rounded-2xl p-4 md:p-6 text-white mb-6">
         <div className="flex items-center gap-3 mb-2">
           <UserCircle className="w-6 h-6 md:w-8 md:h-8" />
-          <h1 className="text-xl md:text-2xl font-bold">{t('marketing.tools.personaMaker.title', '페르소나 메이커')}</h1>
+          <h1 className="text-xl md:text-2xl font-bold">{t('marketing.tools.personaMaker.title', '페르소나 메이커 (우리 고객 그리기)')}</h1>
         </div>
         <p className="text-blue-100">{t('marketing.tools.personaMaker.description', '타겟 고객을 구체적인 인물로 만들어보세요')}</p>
       </div>
