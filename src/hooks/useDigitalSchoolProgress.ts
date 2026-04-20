@@ -126,14 +126,13 @@ export function useDigitalSchoolProgress() {
   );
 
   const graduate = useCallback(
-    async (review: string) => {
+    async () => {
       const now = new Date();
       await updateProgress((prev) => ({
         ...prev,
         graduation: {
           isGraduated: true,
           graduatedAt: now.toISOString(),
-          review,
         },
       }));
     },
@@ -142,11 +141,6 @@ export function useDigitalSchoolProgress() {
 
   const isGraduated = useMemo(
     () => progress?.graduation.isGraduated ?? false,
-    [progress],
-  );
-
-  const graduationReview = useMemo(
-    () => progress?.graduation.review,
     [progress],
   );
 
@@ -191,7 +185,6 @@ export function useDigitalSchoolProgress() {
     canGraduate,
     graduate,
     isGraduated,
-    graduationReview,
 
     // Checklist
     saveChecklistResult,

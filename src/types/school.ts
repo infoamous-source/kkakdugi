@@ -25,7 +25,6 @@ export interface StampProgress {
 export interface GraduationStatus {
   isGraduated: boolean;
   graduatedAt?: string;      // ISO date string
-  review?: string;           // "선생님께 한마디"
   proExpiresAt?: string;     // Pro 도구 만료일 (졸업 후 30일)
 }
 

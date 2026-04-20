@@ -4,7 +4,6 @@ import {
   GraduationCap,
   Search,
   Clock,
-  MessageSquare,
   Users,
   Plus,
   RotateCcw,
@@ -15,7 +14,6 @@ import { TOTAL_PERIODS } from '../../types/school';
 export default function SchoolManagement() {
   const { t } = useTranslation('common');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeSection, setActiveSection] = useState<'reviews' | 'students'>('students');
   const [extensionDays, setExtensionDays] = useState(30);
   const [resetTarget, setResetTarget] = useState<string | null>(null);
 
@@ -32,7 +30,6 @@ export default function SchoolManagement() {
       totalPeriods: TOTAL_PERIODS,
       isGraduated: d.progress.graduation.isGraduated,
       graduatedAt: d.progress.graduation.graduatedAt,
-      review: d.progress.graduation.review,
       proExpiresAt: d.progress.graduation.proExpiresAt,
       hasAptitude: !!d.progress.aptitudeResult,
       hasSimulation: !!d.progress.simulationResult,
@@ -47,7 +44,6 @@ export default function SchoolManagement() {
   });
 
   const graduatedStudents = filteredData.filter((d) => d.isGraduated);
-  const reviewStudents = allData.filter((d) => d.review);
 
   const handleExtendPro = async (userId: string) => {
     await extendProAccess(userId, extensionDays);
@@ -71,7 +67,7 @@ export default function SchoolManagement() {
   return (
     <div className="space-y-6">
       {/* 통계 카드 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
@@ -94,48 +90,10 @@ export default function SchoolManagement() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-              <MessageSquare className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-800">{reviewStudents.length}</p>
-              <p className="text-xs text-gray-500">{t('school.admin.totalReviews')}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 섹션 탭 */}
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
-        <button
-          onClick={() => setActiveSection('students')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex-1 justify-center ${
-            activeSection === 'students'
-              ? 'bg-white text-gray-800 shadow-sm'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          진행 현황
-        </button>
-        <button
-          onClick={() => setActiveSection('reviews')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex-1 justify-center ${
-            activeSection === 'reviews'
-              ? 'bg-white text-gray-800 shadow-sm'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          <MessageSquare className="w-4 h-4" />
-          {t('school.admin.reviewsSection')}
-        </button>
       </div>
 
       {/* 학생 목록 */}
-      {activeSection === 'students' && (
-        <div className="bg-white rounded-xl border border-gray-100">
+      <div className="bg-white rounded-xl border border-gray-100">
           <div className="p-5 border-b border-gray-100">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-semibold text-gray-800">{t('school.admin.enrolledStudents')}</h3>
@@ -217,32 +175,7 @@ export default function SchoolManagement() {
             )}
           </div>
         </div>
-      )}
 
-      {/* 졸업 후기 */}
-      {activeSection === 'reviews' && (
-        <div className="space-y-4">
-          {reviewStudents.length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-100 p-12 text-center text-gray-400">
-              {t('school.admin.noReviews')}
-            </div>
-          ) : (
-            reviewStudents.map((student) => (
-              <div key={student.userId} className="bg-white rounded-xl border border-gray-100 p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-gray-600">{student.studentName || '이름 없음'} <span className="text-xs text-gray-400">{student.studentEmail}</span></span>
-                  <span className="text-xs text-gray-400">
-                    {student.graduatedAt && new Date(student.graduatedAt).toLocaleDateString('ko-KR')}
-                  </span>
-                </div>
-                <p className="text-gray-800 text-sm leading-relaxed bg-gray-50 rounded-lg p-4">
-                  "{student.review}"
-                </p>
-              </div>
-            ))
-          )}
-        </div>
-      )}
       {/* 초기화 확인 모달 */}
       {resetTarget && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

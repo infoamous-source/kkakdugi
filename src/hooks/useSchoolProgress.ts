@@ -18,6 +18,7 @@ import type {
   SimulationResult,
 } from '../types/school';
 import { SCHOOL_CURRICULUM, PRO_DURATION_DAYS } from '../types/school';
+import { hasOrgProAccess, getOrgProExpiry } from '../lib/orgProAccess';
 
 // ─── Auto-repair: 결과 데이터는 있는데 stamp가 false인 경우 보정 ───
 
@@ -192,7 +193,7 @@ export function useSchoolProgress() {
   );
 
   const graduate = useCallback(
-    async (review: string) => {
+    async () => {
       const now = new Date();
       const expiresAt = new Date(now);
       expiresAt.setDate(expiresAt.getDate() + PRO_DURATION_DAYS);
@@ -202,7 +203,6 @@ export function useSchoolProgress() {
         graduation: {
           isGraduated: true,
           graduatedAt: now.toISOString(),
-          review,
           proExpiresAt: expiresAt.toISOString(),
         },
       }));
@@ -215,23 +215,27 @@ export function useSchoolProgress() {
     [progress],
   );
 
+  const orgCode = user?.orgCode;
+
   const isProAccessValid = useMemo(() => {
+    if (hasOrgProAccess(orgCode)) return true;
     if (!progress?.graduation.isGraduated || !progress.graduation.proExpiresAt) {
       return false;
     }
     return new Date() < new Date(progress.graduation.proExpiresAt);
-  }, [progress]);
+  }, [progress, orgCode]);
 
   const proRemainingDays = useMemo(() => {
-    if (!progress?.graduation.proExpiresAt) return 0;
-    const diff = new Date(progress.graduation.proExpiresAt).getTime() - Date.now();
+    const orgExpiry = getOrgProExpiry(orgCode);
+    const personalExpiry = progress?.graduation.proExpiresAt
+      ? new Date(progress.graduation.proExpiresAt)
+      : null;
+    const candidates = [orgExpiry, personalExpiry].filter((d): d is Date => d !== null);
+    if (candidates.length === 0) return 0;
+    const latest = candidates.reduce((a, b) => (a > b ? a : b));
+    const diff = latest.getTime() - Date.now();
     return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  }, [progress]);
-
-  const graduationReview = useMemo(
-    () => progress?.graduation.review,
-    [progress],
-  );
+  }, [progress, orgCode]);
 
   // ─── Aptitude ───
 
@@ -357,7 +361,6 @@ export function useSchoolProgress() {
     isGraduated,
     isProAccessValid,
     proRemainingDays,
-    graduationReview,
 
     // Aptitude
     saveAptitudeResult,

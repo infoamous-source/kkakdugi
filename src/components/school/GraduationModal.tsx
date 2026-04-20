@@ -198,7 +198,6 @@ export default function GraduationModal({
   const { graduate: doGraduate } = useSchoolProgress();
   const [step, setStep] = useState<Step>('ceremony');
   const [capFlying, setCapFlying] = useState(false);
-  const [review, setReview] = useState('');
   const [showCertificate, setShowCertificate] = useState(false);
   const [graduated, setGraduated] = useState(false);
 
@@ -225,9 +224,9 @@ export default function GraduationModal({
 
   const handleGraduate = useCallback(async () => {
     if (graduated) return;
-    await doGraduate(review.trim());
+    await doGraduate();
     setGraduated(true);
-  }, [review, graduated, doGraduate]);
+  }, [graduated, doGraduate]);
 
   const handleGoToPro = () => {
     handleGraduate();
@@ -316,7 +315,7 @@ export default function GraduationModal({
           {/* Certificate button */}
           <button
             onClick={handleGetCertificate}
-            className="w-full p-4 border-2 border-amber-300 bg-amber-50 rounded-2xl text-left hover:bg-amber-100 transition-colors mb-5"
+            className="w-full p-4 border-2 border-amber-300 bg-amber-50 rounded-2xl text-left hover:bg-amber-100 transition-colors"
           >
             <div className="flex items-center gap-3">
               <GraduationCap className="w-6 h-6 text-amber-600 flex-shrink-0" />
@@ -325,21 +324,6 @@ export default function GraduationModal({
               </span>
             </div>
           </button>
-
-          {/* Review textarea */}
-          <div className="border-t border-gray-100 pt-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              선생님께 한마디
-            </label>
-            <textarea
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-              placeholder="감사 인사나 소감을 남겨주세요 (선택)"
-              className="w-full h-24 p-3 border border-gray-200 rounded-xl text-sm resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              maxLength={500}
-            />
-            <p className="text-xs text-gray-400 text-right mt-1">{review.length}/500</p>
-          </div>
         </div>
       </div>
     </div>
