@@ -155,7 +155,12 @@ export interface DetailPagePlan {
   reviewCount: number;         // 2341
   countdownLabel: string;      // "⏰ 오늘 자정 종료까지"
   countdownValue: string;      // "06:23:41"
-  attentionLine: { type: AttentionType; text: string }; // 어그로 한 줄 (\n 허용)
+  attentionLine: {
+    type: AttentionType;       // 현재 활성 스타일
+    text: string;              // 활성 텍스트 (하위호환용)
+    bText?: string;            // B형(호기심) 카피 — 토글로 즉시 전환
+    cText?: string;            // C형(사회적 증거) 카피 — 토글로 즉시 전환
+  };
   headlinePrefix: string;      // "잠깐, 혹시"
   headline: string;            // "3분이면\n카페가\n우리집?!" (\n 허용)
   headlineHighlight: string;   // "우리집?!" (노란색 하이라이트 단어)

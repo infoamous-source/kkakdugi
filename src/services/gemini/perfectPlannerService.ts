@@ -23,19 +23,17 @@ export async function generateSalesPlan(
       if (text) {
         const parsed = safeParseJSON(text);
         if (parsed?.detailPage && parsed?.liveScript) {
-          // attentionLine type 보정
-          if (
-            !parsed.detailPage.attentionLine ||
-            (parsed.detailPage.attentionLine.type !== 'B' &&
-              parsed.detailPage.attentionLine.type !== 'C')
-          ) {
-            parsed.detailPage.attentionLine = {
-              type: (Math.random() > 0.5 ? 'B' : 'C') as AttentionType,
-              text:
-                parsed.detailPage.attentionLine?.text ||
-                '✋ 스크롤 내리기 전에\n이것만 보고 가세요',
-            };
-          }
+          // attentionLine 보정 — bText/cText 둘 다 보장
+          const al = parsed.detailPage.attentionLine || {};
+          const bText = al.bText || (al.type === 'B' ? al.text : null) || '✋ 스크롤 내리기 전에\n이것만 보고 가세요';
+          const cText = al.cText || (al.type === 'C' ? al.text : null) || '이미 2,341명이 선택한 이유 ↓';
+          const type: AttentionType = al.type === 'C' ? 'C' : 'B';
+          parsed.detailPage.attentionLine = {
+            type,
+            text: type === 'B' ? bText : cText,
+            bText,
+            cText,
+          };
           return { result: parsed, isMock: false };
         }
       }
@@ -90,15 +88,15 @@ attentionLine.type은 "B" 또는 "C" 중 랜덤으로 선택하세요.
     "reviewCount": 2000~5000 사이 숫자,
     "countdownLabel": "⏰ 오늘 자정 종료까지",
     "countdownValue": "06:23:41",
-    "attentionLine": { "type": "B 또는 C", "text": "한 줄 카피 (줄바꿈 \\n 1개 허용)" },
+    "attentionLine": { "type": "B", "text": "B와 같은 카피", "bText": "호기심 자극 한 줄", "cText": "숫자·증거 한 줄" },
     "headlinePrefix": "잠깐, 혹시 같은 짧은 prefix",
     "headline": "스크롤을 멈추게 하는 구체적 한 줄 카피 (줄바꿈 \\n 허용, 최대 3줄)",
     "headlineHighlight": "headline 중 강조할 단어 (예: '우리집?!')",
-    "painPointsTitle": "😩 혹시 이런 분\\n아니세요?",
+    "painPointsTitle": "😩 혹시 이런\\n고민이 있으셨나요?",
     "painPoints": [
-      { "emoji": "☕", "text": "~한 사람! 형태의 불만 1 (\\n 1개 허용)" },
-      { "emoji": "🤢", "text": "~한 사람! 형태의 불만 2" },
-      { "emoji": "💸", "text": "~한 사람! 형태의 불만 3" }
+      { "emoji": "☕", "text": "~해요/~걱정돼요 같은 고민 말투 (\\n 1개 허용). 예: '아침마다 피곤해요'" },
+      { "emoji": "🤢", "text": "고민 말투 한 줄. 예: '건강이 걱정돼요'" },
+      { "emoji": "💸", "text": "고민 말투 한 줄. 예: '효과 없는 제품에 지쳤어요'" }
     ],
     "solutionPrefix": "그래서 만들었어요",
     "solutionHeadline": "해결 헤드라인 (\\n 1개 허용, 최대 2줄)",
@@ -174,7 +172,9 @@ attentionLine.type은 "B" 또는 "C" 중 랜덤으로 선택하세요.
 }
 
 # 작성 규칙 (반드시 지켜!)
-- painPoints는 반드시 "~한 사람!" 형태 (마지막에 느낌표)
+- painPoints는 반드시 고객이 직접 말하는 고민 말투("~해요/~걱정돼요/~지쳤어요"). "~한 사람!"·명령형 금지
+- painPointsTitle은 항상 "혹시 이런 고민이 있으셨나요?"류의 공감형 질문
+- attentionLine은 bText(호기심), cText(숫자·증거) 두 가지 모두 작성. text 필드에는 bText와 동일하게
 - headline은 구어체, 캐주얼
 - reviews는 실감나는 구체적 상황 포함
 - features의 colorKey는 amber/green/blue 순서로
@@ -202,13 +202,22 @@ function getMockSalesPlan(input: PerfectPlannerInput): PerfectPlannerResult['out
   const originalPrice = 30000;
   const salePrice = Math.round((originalPrice * (100 - discountPercent)) / 100);
 
-  const attentionPool: { type: AttentionType; text: string }[] = [
-    { type: 'B', text: '✋ 스크롤 내리기 전에\n이것만 보고 가세요' },
-    { type: 'B', text: '🙈 지금 안 보면\n후회할지도 몰라요' },
-    { type: 'C', text: '이미 2,341명이 선택한 이유 ↓' },
-    { type: 'C', text: '만족도 98%, 재구매율 67% 🔥' },
+  const bTextPool = [
+    '✋ 스크롤 내리기 전에\n이것만 보고 가세요',
+    '🙈 지금 안 보면\n후회할지도 몰라요',
   ];
-  const attentionLine = attentionPool[Math.floor(Math.random() * attentionPool.length)];
+  const cTextPool = [
+    '이미 2,341명이 선택한 이유 ↓',
+    '만족도 98%, 재구매율 67% 🔥',
+  ];
+  const bText = bTextPool[Math.floor(Math.random() * bTextPool.length)];
+  const cText = cTextPool[Math.floor(Math.random() * cTextPool.length)];
+  const attentionLine: DetailPagePlan['attentionLine'] = {
+    type: 'B' as AttentionType,
+    text: bText,
+    bText,
+    cText,
+  };
 
   const detailPage: DetailPagePlan = {
     productTitle: `[오늘만 ${discountPercent}% 특가] ${productName}`,
@@ -224,11 +233,11 @@ function getMockSalesPlan(input: PerfectPlannerInput): PerfectPlannerResult['out
     headlinePrefix: '잠깐, 혹시',
     headline: `${productName}\n지금 시작하세요!`,
     headlineHighlight: productName,
-    painPointsTitle: '😩 혹시 이런 분\n아니세요?',
+    painPointsTitle: '😩 혹시 이런\n고민이 있으셨나요?',
     painPoints: [
-      { emoji: '😫', text: `${customer}인데\n좋은 것을 못 찾는 사람!` },
-      { emoji: '🤔', text: `${strength}\n해보고 싶은 사람!` },
-      { emoji: '💸', text: '돈은 아끼면서\n좋은 건 누리고 싶은 사람!' },
+      { emoji: '😫', text: `${customer}인데\n좋은 걸 찾기 어려워요` },
+      { emoji: '🤔', text: `${strength}\n시도해보고 싶어요` },
+      { emoji: '💸', text: '돈은 아끼면서\n좋은 건 누리고 싶어요' },
     ],
     solutionPrefix: '그래서 만들었어요',
     solutionHeadline: `${productName}으로\n바로 해결!`,

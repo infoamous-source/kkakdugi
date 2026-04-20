@@ -171,11 +171,24 @@ export default function DetailPageTool() {
   }, []);
 
   // --- Attention Toggle ---
+  // B형(호기심)/C형(숫자·증거) 카피 두 개를 미리 보유하고 토글 시 둘을 교체
   const toggleAttentionType = useCallback(() => {
     setDetailPage(prev => {
       if (!prev) return prev;
-      const newType = prev.attentionLine.type === 'B' ? 'C' : 'B';
-      return { ...prev, attentionLine: { ...prev.attentionLine, type: newType } };
+      const al = prev.attentionLine;
+      const newType = al.type === 'B' ? 'C' : 'B';
+      // bText/cText 없으면 현재 text를 양쪽에 깔아둠 (구버전 데이터 호환)
+      const bText = al.bText ?? (al.type === 'B' ? al.text : '스크롤 내리기 전에\n이것만 보고 가세요');
+      const cText = al.cText ?? (al.type === 'C' ? al.text : '이미 2,341명이 선택한 이유');
+      return {
+        ...prev,
+        attentionLine: {
+          type: newType,
+          text: newType === 'B' ? bText : cText,
+          bText,
+          cText,
+        },
+      };
     });
   }, []);
 
@@ -383,7 +396,15 @@ export default function DetailPageTool() {
                   <div
                     className="text-white font-bold text-lg leading-snug whitespace-pre-line"
                     contentEditable suppressContentEditableWarning
-                    onBlur={(e) => updateField('attentionLine', { ...dp.attentionLine, text: e.currentTarget.textContent || '' })}
+                    onBlur={(e) => {
+                      const newText = e.currentTarget.textContent || '';
+                      updateField('attentionLine', {
+                        ...dp.attentionLine,
+                        text: newText,
+                        bText: dp.attentionLine.type === 'B' ? newText : dp.attentionLine.bText,
+                        cText: dp.attentionLine.type === 'C' ? newText : dp.attentionLine.cText,
+                      });
+                    }}
                   >
                     {dp.attentionLine.text}
                   </div>

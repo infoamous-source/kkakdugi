@@ -46,9 +46,10 @@ export async function generateDetailPage(input: {
 - 오늘의 특별 혜택: ${input.offers || '특별 할인'}
 
 # 어그로 한 줄 규칙
-attentionLine.type은 "B" 또는 "C" 중 랜덤 선택.
-- B형 (어그로형): 호기심 자극 한 줄
-- C형 (사회적 증거형): 숫자/증거 한 줄
+attentionLine은 두 가지 스타일 카피를 모두 생성하라.
+- bText (호기심 자극형): 궁금증을 유발하는 한 줄. 예: "스크롤 내리기 전에\n이것만 보고 가세요"
+- cText (숫자·증거형): 구체적 숫자나 사회적 증거 한 줄. 예: "이미 2,341명이 선택한 이유"
+type은 "B"로 시작 (학생이 토글 버튼으로 바꿀 수 있음).
 
 # 응답 형식 (JSON만)
 {
@@ -61,15 +62,15 @@ attentionLine.type은 "B" 또는 "C" 중 랜덤 선택.
   "reviewCount": 2000~5000,
   "countdownLabel": "오늘 자정 종료까지",
   "countdownValue": "06:23:41",
-  "attentionLine": { "type": "B or C", "text": "한 줄 카피" },
+  "attentionLine": { "type": "B", "text": "B와 같은 카피", "bText": "호기심 자극 한 줄", "cText": "숫자·증거 한 줄" },
   "headlinePrefix": "잠깐, 혹시",
   "headline": "구어체 헤드라인 (\\n 허용, 최대 3줄)",
   "headlineHighlight": "강조 단어",
-  "painPointsTitle": "혹시 이런 분\\n아니세요?",
+  "painPointsTitle": "혹시 이런\\n고민이 있으셨나요?",
   "painPoints": [
-    { "emoji": "이모지", "text": "~한 사람! 형태" },
-    { "emoji": "이모지", "text": "~한 사람!" },
-    { "emoji": "이모지", "text": "~한 사람!" }
+    { "emoji": "이모지", "text": "~해요/~걱정돼요 같은 고민 말투. 예: '아침마다 피곤해요'" },
+    { "emoji": "이모지", "text": "고민 말투 한 줄. 예: '건강이 걱정돼요'" },
+    { "emoji": "이모지", "text": "고민 말투 한 줄. 예: '효과 없는 제품에 지쳤어요'" }
   ],
   "solutionPrefix": "그래서 만들었어요",
   "solutionHeadline": "해결 헤드라인",
@@ -89,7 +90,9 @@ attentionLine.type은 "B" 또는 "C" 중 랜덤 선택.
 }
 
 # 작성 규칙
-- painPoints는 반드시 "~한 사람!" 형태
+- painPoints는 반드시 고객이 직접 말하는 고민 말투("~해요/~걱정돼요/~지쳤어요"). "~한 사람!"·명령형 금지
+- painPointsTitle은 항상 "혹시 이런 고민이 있으셨나요?"류의 공감형 질문
+- attentionLine은 bText(호기심), cText(숫자·증거) 두 가지 모두 작성. text 필드에는 bText와 동일하게
 - headline은 구어체, 캐주얼
 - reviews는 실감나는 구체적 상황 포함
 - features의 colorKey는 amber/green/blue 순서
@@ -103,13 +106,17 @@ attentionLine.type은 "B" 또는 "C" 중 랜덤 선택.
         // detailPage 래핑 처리
         if (parsed?.detailPage) parsed = parsed.detailPage;
         if (parsed?.productTitle && parsed?.painPoints) {
-          // attentionLine 보정
-          if (!parsed.attentionLine || (parsed.attentionLine.type !== 'B' && parsed.attentionLine.type !== 'C')) {
-            parsed.attentionLine = {
-              type: (Math.random() > 0.5 ? 'B' : 'C') as AttentionType,
-              text: parsed.attentionLine?.text || '스크롤 내리기 전에\n이것만 보고 가세요',
-            };
-          }
+          // attentionLine 보정 — bText/cText 둘 다 보장
+          const al = parsed.attentionLine || {};
+          const bText = al.bText || (al.type === 'B' ? al.text : null) || '스크롤 내리기 전에\n이것만 보고 가세요';
+          const cText = al.cText || (al.type === 'C' ? al.text : null) || '이미 2,341명이 선택한 이유';
+          const type: AttentionType = al.type === 'C' ? 'C' : 'B';
+          parsed.attentionLine = {
+            type,
+            text: type === 'B' ? bText : cText,
+            bText,
+            cText,
+          };
           return { detailPage: parsed as DetailPagePlan, isMock: false };
         }
       }
@@ -169,10 +176,8 @@ function getMockDetailPage(input: {
   const originalPrice = 39900;
   const salePrice = Math.round((originalPrice * (100 - discountPercent)) / 100);
 
-  const attentionPool: { type: AttentionType; text: string }[] = [
-    { type: 'B', text: 'スクロール 내리기 전에\n이것만 보고 가세요' },
-    { type: 'C', text: '이미 2,341명이 선택한 이유' },
-  ];
+  const bText = '스크롤 내리기 전에\n이것만 보고 가세요';
+  const cText = '이미 2,341명이 선택한 이유';
 
   return {
     productTitle: `[오늘만 ${discountPercent}% 특가] ${productName}`,
@@ -184,15 +189,15 @@ function getMockDetailPage(input: {
     reviewCount: 2341,
     countdownLabel: '오늘 자정 종료까지',
     countdownValue: '06:23:41',
-    attentionLine: attentionPool[Math.floor(Math.random() * attentionPool.length)],
+    attentionLine: { type: 'B' as AttentionType, text: bText, bText, cText },
     headlinePrefix: '잠깐, 혹시',
     headline: `${productName}\n지금 시작하세요!`,
     headlineHighlight: productName,
-    painPointsTitle: '혹시 이런 분\n아니세요?',
+    painPointsTitle: '혹시 이런\n고민이 있으셨나요?',
     painPoints: [
-      { emoji: '😫', text: `${customer}인데\n좋은 것을 못 찾는 사람!` },
-      { emoji: '🤔', text: `${strength}\n해보고 싶은 사람!` },
-      { emoji: '💸', text: '돈은 아끼면서\n좋은 건 누리고 싶은 사람!' },
+      { emoji: '😫', text: `${customer}인데\n좋은 걸 찾기 어려워요` },
+      { emoji: '🤔', text: `${strength}\n시도해보고 싶어요` },
+      { emoji: '💸', text: '돈은 아끼면서\n좋은 건 누리고 싶어요' },
     ],
     solutionPrefix: '그래서 만들었어요',
     solutionHeadline: `${productName}으로\n바로 해결!`,
