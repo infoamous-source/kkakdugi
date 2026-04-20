@@ -28,9 +28,10 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
-      <div className="ml-64 transition-all duration-300">
+      {/* 모바일: ml-0, 태블릿/PC: ml-64 (사이드바 너비) */}
+      <div className="ml-0 md:ml-64 transition-all duration-300">
         <TopHeader />
-        <main className="p-6">
+        <main className="p-4 md:p-6">
           <AdminDashboard />
         </main>
       </div>
