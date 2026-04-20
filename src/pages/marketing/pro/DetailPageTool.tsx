@@ -239,9 +239,9 @@ export default function DetailPageTool() {
 
   // Image insert button
   const renderImageInsertButton = (sectionIndex: number) => (
-    <div className="flex justify-center py-2">
-      <label className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-blue-50 text-gray-500 hover:text-blue-600 rounded-lg cursor-pointer text-[11px] font-medium transition-colors">
-        <Plus className="w-3 h-3" /> 이미지 추가
+    <div className="flex justify-center py-3">
+      <label className="flex items-center gap-2 px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl cursor-pointer text-sm font-bold shadow-md hover:shadow-lg transition-all">
+        <Plus className="w-4 h-4" /> 이미지 추가
         <input type="file" accept="image/*" className="hidden" onChange={(e) => handleInsertImage(sectionIndex, e)} />
       </label>
     </div>
@@ -376,8 +376,9 @@ export default function DetailPageTool() {
                 {/* 6. Attention Line */}
                 <div className="px-4 py-4 bg-gray-900 text-center">
                   <button onClick={toggleAttentionType}
-                    className="text-[10px] text-gray-400 mb-1 hover:text-gray-300">
-                    [{dp.attentionLine.type}형] 클릭하여 전환
+                    className="text-[11px] text-gray-400 mb-2 hover:text-white inline-flex items-center gap-1 px-2 py-0.5 rounded-md hover:bg-white/10 transition-colors"
+                    title="호기심 자극형 ↔ 숫자·증거형 카피로 바꿔봐요">
+                    🔄 다른 스타일로 바꾸기
                   </button>
                   <div
                     className="text-white font-bold text-lg leading-snug whitespace-pre-line"
