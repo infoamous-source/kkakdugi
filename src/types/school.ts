@@ -65,6 +65,8 @@ export interface MarketScannerResult {
     competitors: CompetitorInfo[];
     painPoints: string[];
     analysisReport?: string;
+    marketSize?: string;
+    naverSearchTip?: string;
   };
 }
 

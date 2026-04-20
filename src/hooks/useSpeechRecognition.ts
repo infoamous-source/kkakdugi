@@ -27,7 +27,7 @@ export function useSpeechRecognition(): SpeechRecognitionState {
 
   const isSupported = SpeechRecognitionAPI !== null;
 
-  const recognitionRef = useRef<InstanceType<typeof SpeechRecognitionAPI> | null>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
 

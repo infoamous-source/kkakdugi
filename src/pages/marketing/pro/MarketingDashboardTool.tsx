@@ -394,7 +394,7 @@ export default function MarketingDashboardTool() {
                 {showFullReport && (
                   <DashboardReportView
                     analysis={analysis}
-                    entries={validEntries.map(e => ({ month: e.month, spend: Number(e.spend), revenue: Number(e.revenue) }))}
+                    entries={validEntries.map(e => ({ month: e.month, spend: Number(e.adSpend), revenue: Number(e.revenue) }))}
                     goalROAS={goalROAS}
                     onClose={() => setShowFullReport(false)}
                   />
