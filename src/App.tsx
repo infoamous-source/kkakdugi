@@ -59,7 +59,8 @@ const PrivacyPage = lazyWithRetry(() => import('./pages/legal/PrivacyPage'));
 const MarketResearchTool = lazyWithRetry(() => import('./pages/marketing/pro/MarketResearchTool'));
 const BrandKitTool = lazyWithRetry(() => import('./pages/marketing/pro/BrandKitTool'));
 const ContentStudioTool = lazyWithRetry(() => import('./pages/marketing/pro/ContentStudioTool'));
-const LandingBuilderTool = lazyWithRetry(() => import('./pages/marketing/pro/LandingBuilderTool'));
+// 랜딩빌더 도구는 비활성화됨 (대표님 결정 2026-04-20). 다시 켤 때 import + Route 복원.
+// const LandingBuilderTool = lazyWithRetry(() => import('./pages/marketing/pro/LandingBuilderTool'));
 const MarketingDashboardTool = lazyWithRetry(() => import('./pages/marketing/pro/MarketingDashboardTool'));
 const DetailPageTool = lazyWithRetry(() => import('./pages/marketing/pro/DetailPageTool'));
 
@@ -122,7 +123,7 @@ export default function App() {
           <Route path="/marketing/pro/studio/brand-kit" element={<BrandKitTool />} />
           <Route path="/marketing/pro/studio/content-studio" element={<ContentStudioTool />} />
           <Route path="/marketing/pro/studio/detail-page" element={<DetailPageTool />} />
-          <Route path="/marketing/pro/studio/landing-builder" element={<LandingBuilderTool />} />
+          {/* <Route path="/marketing/pro/studio/landing-builder" element={<LandingBuilderTool />} /> — 비활성화됨 */}
           <Route path="/marketing/pro/studio/marketing-dashboard" element={<MarketingDashboardTool />} />
           <Route path="/marketing/school/ai-setup" element={<AISetupPage />} />
 
