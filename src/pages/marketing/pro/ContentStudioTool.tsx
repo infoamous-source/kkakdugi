@@ -9,7 +9,7 @@ import { useUserProfile } from '../../../lib/userProfile';
 import { useSchoolProgress } from '../../../hooks/useSchoolProgress';
 import { isGeminiEnabled } from '../../../services/gemini/geminiClient';
 import {
-  generateAdCards, regenerateCardCopy, STAGE_LABELS,
+  generateAdCards, regenerateCardCopy,
   type CardSlide, type AdTone,
 } from '../../../services/gemini/proContentStudioService';
 import SchoolDataBanner from '../pro/common/SchoolDataBanner';
@@ -255,10 +255,10 @@ export default function ContentStudioTool() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {cards.map((card, idx) => (
                 <div key={card.id} className="space-y-3">
-                  {/* Stage Label */}
+                  {/* Card Number */}
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-pink-600 uppercase tracking-wider">
-                      {idx + 1}. {STAGE_LABELS[card.stage]}
+                      {idx + 1}번 카드
                     </span>
                     <div className="flex items-center gap-1">
                       <button onClick={() => handleRegenCard(idx)} disabled={regenIdx === idx}

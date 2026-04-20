@@ -22,6 +22,7 @@ export interface CardSlide {
 }
 
 const STAGE_ORDER: CardStage[] = ['hook', 'empathy', 'solution', 'action', 'extra', 'extra'];
+// 학생에게는 노출 안 됨 — AI 프롬프트 내부 용도로만 사용
 const STAGE_LABELS: Record<CardStage, string> = {
   hook: 'HOOK (시선잡기)',
   empathy: 'EMPATHY (공감)',
@@ -29,8 +30,6 @@ const STAGE_LABELS: Record<CardStage, string> = {
   action: 'ACTION (행동)',
   extra: 'EXTRA',
 };
-
-export { STAGE_LABELS };
 
 const TONE_GUIDE: Record<AdTone, { label: string; hint: string }> = {
   emotional: { label: '감성', hint: '존댓말/따뜻함. "당신을 위해", "힘들었죠?" 같은 감정 연결형 카피.' },
