@@ -23,6 +23,7 @@ export const supabase = createClient(
     auth: {
       flowType: 'pkce',
       autoRefreshToken: true,
+      persistSession: true,        // localStorage에 세션 저장 (브라우저 닫아도 유지)
       detectSessionInUrl: true,
     },
   },

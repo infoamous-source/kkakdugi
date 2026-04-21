@@ -201,8 +201,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ user: null, isAuthenticated: false, isLoading: false });
   }, []);
 
-  // P0-5: 15분 무활동 자동 로그아웃 (공용 기기 안전 장치)
-  const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
+  // P0-5: 무활동 자동 로그아웃
+  // - 학생: 15분 (공용 기기·학원 PC 안전 장치)
+  // - CEO·강사: 8시간 (본인 기기에서 종일 업무용, 점심·회의로 자리 비워도 세션 유지)
+  const role = state.user?.role;
+  const IDLE_TIMEOUT_MS = role === 'ceo' || role === 'instructor'
+    ? 8 * 60 * 60 * 1000  // 8시간
+    : 15 * 60 * 1000;     // 15분
   useEffect(() => {
     if (!state.isAuthenticated) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
