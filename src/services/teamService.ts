@@ -17,6 +17,12 @@ export async function createClassroomGroup(
   orgCode: string,
   track: string,
   classroomName: string,
+  contract?: {
+    startDate?: string | null;
+    endDate?: string | null;
+    contractDays?: number | null;
+    contractUntil?: string | null;
+  },
 ): Promise<ClassroomGroup | null> {
   const { data, error } = await supabase
     .from('classroom_groups')
@@ -25,6 +31,10 @@ export async function createClassroomGroup(
       org_code: orgCode,
       track,
       classroom_name: classroomName,
+      start_date: contract?.startDate ?? null,
+      end_date: contract?.endDate ?? null,
+      contract_days: contract?.contractDays ?? null,
+      contract_until: contract?.contractUntil ?? null,
     })
     .select()
     .single();
@@ -34,6 +44,25 @@ export async function createClassroomGroup(
     return null;
   }
   return data as ClassroomGroup;
+}
+
+/** 교실 정보 수정 (계약·일정 포함) */
+export async function updateClassroomGroup(
+  groupId: string,
+  updates: Partial<Pick<ClassroomGroup,
+    'classroom_name' | 'start_date' | 'end_date' | 'contract_days' | 'contract_until'
+  >>,
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('classroom_groups')
+    .update(updates)
+    .eq('id', groupId);
+
+  if (error) {
+    console.error('Update classroom group error:', error.message);
+    return false;
+  }
+  return true;
 }
 
 /** 강사의 교실 목록 조회 */
@@ -431,4 +460,60 @@ export async function getStudentAssignmentsBatch(
   });
 
   return result;
+}
+
+/**
+ * 학생이 속한 교실들의 계약 기반 프로도구 만료일 계산.
+ *
+ * 한 교실의 만료일 = MAX(end_date + contract_days, contract_until)
+ * 학생의 최종 만료일 = 학생이 속한 모든 교실의 만료일 중 가장 늦은 날
+ *
+ * end_date 또는 contract_days가 없는 교실은 무시.
+ * 활성 멤버(status='active')만 카운트.
+ */
+export async function getStudentContractExpiry(userId: string): Promise<Date | null> {
+  const { data, error } = await supabase
+    .from('classroom_members')
+    .select('classroom_groups!inner(end_date, contract_days, contract_until)')
+    .eq('user_id', userId)
+    .eq('status', 'active');
+
+  if (error) {
+    console.error('Get student contract expiry error:', error.message);
+    return null;
+  }
+
+  let latest: Date | null = null;
+
+  (data ?? []).forEach((row: Record<string, unknown>) => {
+    const cg = row.classroom_groups as {
+      end_date?: string | null;
+      contract_days?: number | null;
+      contract_until?: string | null;
+    };
+    const candidates: Date[] = [];
+
+    if (cg.end_date && typeof cg.contract_days === 'number') {
+      const end = new Date(String(cg.end_date).slice(0, 10));
+      end.setDate(end.getDate() + cg.contract_days);
+      // 종료일 자정까지 사용 가능하도록 +1일 (end_date 그날 23:59:59까지)
+      // 실제 비교 시 endOfDay 처리는 호출자에서
+      candidates.push(end);
+    }
+    if (cg.contract_until) {
+      candidates.push(new Date(String(cg.contract_until).slice(0, 10)));
+    }
+
+    candidates.forEach(d => {
+      if (!latest || d > latest) latest = d;
+    });
+  });
+
+  // 만료 시각을 그날 23:59:59로 설정 (자정 직전까지 사용 가능)
+  if (latest) {
+    const endOfDay = new Date(latest);
+    endOfDay.setHours(23, 59, 59, 999);
+    return endOfDay;
+  }
+  return null;
 }

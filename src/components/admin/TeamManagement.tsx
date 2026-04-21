@@ -71,6 +71,10 @@ export default function TeamManagement() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newClassroomName, setNewClassroomName] = useState('');
   const [newClassroomTrack, setNewClassroomTrack] = useState('marketing');
+  const [newStartDate, setNewStartDate] = useState('');
+  const [newEndDate, setNewEndDate] = useState('');
+  const [newContractDays, setNewContractDays] = useState<string>('');
+  const [newContractUntil, setNewContractUntil] = useState('');
 
   // ─── 학생 배정 모드 ───
   const [isAssignMode, setIsAssignMode] = useState(false);
@@ -140,13 +144,32 @@ export default function TeamManagement() {
   };
 
   // ─── 교실 생성 ───
+  const resetCreateForm = () => {
+    setNewClassroomName('');
+    setNewStartDate('');
+    setNewEndDate('');
+    setNewContractDays('');
+    setNewContractUntil('');
+  };
   const handleCreateClassroom = async () => {
     if (!user?.id || !newClassroomName.trim()) return;
     const orgCode = user.orgCode || 'default';
-    const result = await createClassroomGroup(user.id, orgCode, newClassroomTrack, newClassroomName.trim());
+    const contractDaysNum = newContractDays.trim() ? Number(newContractDays.trim()) : null;
+    const result = await createClassroomGroup(
+      user.id,
+      orgCode,
+      newClassroomTrack,
+      newClassroomName.trim(),
+      {
+        startDate: newStartDate || null,
+        endDate: newEndDate || null,
+        contractDays: Number.isFinite(contractDaysNum) ? contractDaysNum : null,
+        contractUntil: newContractUntil || null,
+      },
+    );
     if (result) {
       setShowCreateModal(false);
-      setNewClassroomName('');
+      resetCreateForm();
       await loadData();
       setSelectedClassroomId(result.id);
     } else {
@@ -610,8 +633,8 @@ export default function TeamManagement() {
 
       {/* ─── 교실 생성 모달 ─── */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full mx-4 p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 my-8">
             <h3 className="font-bold text-gray-800 text-lg mb-4">교실 생성</h3>
             <div className="space-y-4">
               <div>
@@ -636,10 +659,63 @@ export default function TeamManagement() {
                   ))}
                 </select>
               </div>
+
+              <div className="border-t border-gray-100 pt-4">
+                <p className="text-xs font-semibold text-gray-700 mb-3">📅 수업 일정 + 계약</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">시작일</label>
+                    <input
+                      type="date"
+                      value={newStartDate}
+                      onChange={e => setNewStartDate(e.target.value)}
+                      className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">종료일</label>
+                    <input
+                      type="date"
+                      value={newEndDate}
+                      onChange={e => setNewEndDate(e.target.value)}
+                      className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">계약 일수 (종료 후)</label>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min={0}
+                        value={newContractDays}
+                        onChange={e => setNewContractDays(e.target.value)}
+                        placeholder="30"
+                        className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                      <span className="text-xs text-gray-400 flex-shrink-0">일</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">보장 만료일 (선택)</label>
+                    <input
+                      type="date"
+                      value={newContractUntil}
+                      onChange={e => setNewContractUntil(e.target.value)}
+                      className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <p className="text-[11px] text-gray-400 mt-2 leading-relaxed">
+                  학생 만료일 = MAX(종료일+계약일수, 보장 만료일)<br />
+                  비워두면 도구 사용 권한 없음
+                </p>
+              </div>
             </div>
             <div className="flex gap-2 mt-6">
               <button
-                onClick={() => { setShowCreateModal(false); setNewClassroomName(''); }}
+                onClick={() => { setShowCreateModal(false); resetCreateForm(); }}
                 className="flex-1 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 취소

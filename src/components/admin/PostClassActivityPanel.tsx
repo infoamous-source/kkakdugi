@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Calendar, Users, Activity, ChevronDown, ChevronUp, Copy, Check, RefreshCw, Loader2, Mail } from 'lucide-react';
+import { Calendar, Users, Activity, ChevronDown, ChevronUp, Check, RefreshCw, Loader2, Mail } from 'lucide-react';
 import {
   getPostClassActivity,
-  type PostClassSessionGroup,
+  type PostClassClassroomGroup,
 } from '../../services/postClassActivityService';
 
 function formatDate(iso: string | null): string {
@@ -24,17 +24,17 @@ function daysSince(iso: string | null): string {
 }
 
 export default function PostClassActivityPanel() {
-  const [groups, setGroups] = useState<PostClassSessionGroup[]>([]);
+  const [groups, setGroups] = useState<PostClassClassroomGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [openSessionIds, setOpenSessionIds] = useState<Set<string>>(new Set());
+  const [openClassroomIds, setOpenClassroomIds] = useState<Set<string>>(new Set());
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const loadData = async () => {
     setIsLoading(true);
     const data = await getPostClassActivity();
     setGroups(data);
-    // 기본: 학생이 있는 수업만 펼침
-    setOpenSessionIds(new Set(data.filter(g => g.students.length > 0).map(g => g.session.id)));
+    // 기본: 학생이 있는 교실만 펼침
+    setOpenClassroomIds(new Set(data.filter(g => g.students.length > 0).map(g => g.classroom.id)));
     setIsLoading(false);
   };
 
@@ -43,7 +43,7 @@ export default function PostClassActivityPanel() {
   }, []);
 
   const toggle = (id: string) => {
-    setOpenSessionIds(prev => {
+    setOpenClassroomIds(prev => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -117,7 +117,7 @@ export default function PostClassActivityPanel() {
       {/* 액션 바 */}
       <div className="flex items-center justify-between">
         <p className="text-xs text-gray-500">
-          수업 종료일 이후의 도구 사용 이력입니다. 졸업생 케어·재등록 안내에 활용하세요.
+          교실 종료일 이후 도구 사용 이력. 졸업생 케어·재등록 안내에 활용하세요.
         </p>
         <button
           onClick={loadData}
@@ -127,35 +127,37 @@ export default function PostClassActivityPanel() {
         </button>
       </div>
 
-      {/* 활동 있는 수업 */}
+      {/* 활동 있는 교실 */}
       {activeGroups.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
-          <p className="text-sm text-gray-500">수업 종료 이후 도구를 사용한 학생이 없습니다.</p>
+          <p className="text-sm text-gray-500">교실 종료 이후 도구를 사용한 학생이 없습니다.</p>
         </div>
       ) : (
         <div className="space-y-3">
           {activeGroups.map(group => {
-            const isOpen = openSessionIds.has(group.session.id);
+            const isOpen = openClassroomIds.has(group.classroom.id);
             const emails = group.students.map(s => s.studentEmail).filter(Boolean);
+            const expiry = group.expiryAt ? new Date(group.expiryAt) : null;
             return (
-              <div key={group.session.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+              <div key={group.classroom.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
                 <button
-                  onClick={() => toggle(group.session.id)}
+                  onClick={() => toggle(group.classroom.id)}
                   className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors text-left"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                        {group.session.org_code || '-'}
+                        {group.classroom.org_code || '-'}
                       </span>
                       <span className="text-sm font-semibold text-gray-800 truncate">
-                        {group.session.org_name || '기관 미지정'}
+                        {group.classroom.classroom_name}
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 truncate">
-                      {group.session.title || '(제목 없음)'}
-                      {' · '}
-                      종료: {group.session.end_date || '-'}
+                      종료: {group.classroom.end_date || '-'}
+                      {expiry && (
+                        <> · 만료일: {expiry.toLocaleDateString('ko-KR')}</>
+                      )}
                     </p>
                   </div>
                   <div className="flex items-center gap-4 flex-shrink-0">
@@ -172,13 +174,13 @@ export default function PostClassActivityPanel() {
                     <div className="flex items-center justify-between px-4 py-2 bg-gray-50 text-xs">
                       <span className="text-gray-500">{group.students.length}명 활동 중</span>
                       <button
-                        onClick={(e) => { e.stopPropagation(); copyEmails(`session-${group.session.id}`, emails); }}
+                        onClick={(e) => { e.stopPropagation(); copyEmails(`classroom-${group.classroom.id}`, emails); }}
                         disabled={emails.length === 0}
                         className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-indigo-600 hover:bg-indigo-50 rounded disabled:opacity-50"
                       >
-                        {copiedKey === `session-${group.session.id}`
+                        {copiedKey === `classroom-${group.classroom.id}`
                           ? <><Check className="w-3 h-3" /> 복사됨</>
-                          : <><Mail className="w-3 h-3" /> 이 수업 학생 이메일 전체 복사</>}
+                          : <><Mail className="w-3 h-3" /> 이 교실 학생 이메일 전체 복사</>}
                       </button>
                     </div>
                     <div className="divide-y divide-gray-100">
@@ -214,20 +216,20 @@ export default function PostClassActivityPanel() {
         </div>
       )}
 
-      {/* 종료됐지만 활동 없는 수업 (접어둠) */}
+      {/* 종료됐지만 활동 없는 교실 (접어둠) */}
       {emptyGroups.length > 0 && (
         <details className="bg-white rounded-xl border border-gray-100 p-4">
           <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
-            종료 이후 활동이 없는 수업 {emptyGroups.length}개 보기
+            종료 이후 활동이 없는 교실 {emptyGroups.length}개 보기
           </summary>
           <div className="mt-3 divide-y divide-gray-100">
             {emptyGroups.map(group => (
-              <div key={group.session.id} className="py-2 text-xs text-gray-500">
-                <span className="font-medium text-gray-600">{group.session.org_code || '-'}</span>
+              <div key={group.classroom.id} className="py-2 text-xs text-gray-500">
+                <span className="font-medium text-gray-600">{group.classroom.org_code || '-'}</span>
                 <span className="mx-1.5">·</span>
-                <span>{group.session.title || '(제목 없음)'}</span>
+                <span>{group.classroom.classroom_name}</span>
                 <span className="mx-1.5">·</span>
-                <span className="text-gray-400">종료 {group.session.end_date}</span>
+                <span className="text-gray-400">종료 {group.classroom.end_date}</span>
               </div>
             ))}
           </div>

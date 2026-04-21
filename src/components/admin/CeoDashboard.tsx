@@ -53,7 +53,7 @@ interface InstructorInfo {
 
 export default function CeoDashboard() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<CeoTab>('classes');
+  const [activeTab, setActiveTab] = useState<CeoTab>('organizations');
   const [instructors, setInstructors] = useState<InstructorInfo[]>([]);
   const [allStudents, setAllStudents] = useState<ProfileRow[]>([]);
   const [classSessions, setClassSessions] = useState<ClassSessionRow[]>([]);
@@ -167,7 +167,7 @@ export default function CeoDashboard() {
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-8 overflow-x-auto scrollbar-hide">
         {([
-          { id: 'classes' as CeoTab, icon: Calendar, label: '수업 관리' },
+          // 수업 관리는 교실 관리에 통합됨 (2026-04-22). 교실에서 시작·종료·계약일수·보장만료일까지 한 번에 관리.
           { id: 'organizations' as CeoTab, icon: Building2, label: '기관·학생' },
           { id: 'instructors' as CeoTab, icon: GraduationCap, label: '강사 관리' },
           { id: 'announcements' as CeoTab, icon: Megaphone, label: '공지 관리' },
@@ -193,17 +193,7 @@ export default function CeoDashboard() {
         })}
       </div>
 
-      {/* Classes Tab */}
-      {activeTab === 'classes' && (
-        <ClassSessionManager
-          sessions={classSessions}
-          onUpdate={async () => setClassSessions(await getClassSessions())}
-          userId={user?.id || ''}
-          instructors={instructors}
-          onSelectReport={setSelectedClassReport}
-          onShowDevReport={() => setShowDevReport(true)}
-        />
-      )}
+      {/* Classes Tab — 수업 관리는 교실(TeamManagement)에 통합됨. ClassSessionManager 함수는 보존(나중에 일정표 분리할 때 재사용 가능) */}
 
       {/* Organizations Tab */}
       {activeTab === 'organizations' && <OrganizationManagement />}

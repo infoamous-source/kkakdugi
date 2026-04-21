@@ -18,7 +18,7 @@ import type {
   SimulationResult,
 } from '../types/school';
 import { SCHOOL_CURRICULUM, PRO_DURATION_DAYS } from '../types/school';
-import { hasOrgProAccess, getOrgProExpiry } from '../lib/orgProAccess';
+import { getStudentContractExpiry } from '../services/teamService';
 
 // ─── Auto-repair: 결과 데이터는 있는데 stamp가 false인 경우 보정 ───
 
@@ -215,27 +215,41 @@ export function useSchoolProgress() {
     [progress],
   );
 
-  const orgCode = user?.orgCode;
+  // 학생이 속한 교실들의 계약 기반 만료일 (비동기 fetch)
+  const [classroomExpiry, setClassroomExpiry] = useState<Date | null>(null);
+  useEffect(() => {
+    if (!userId) {
+      setClassroomExpiry(null);
+      return;
+    }
+    let cancelled = false;
+    getStudentContractExpiry(userId).then(d => {
+      if (!cancelled) setClassroomExpiry(d);
+    });
+    return () => { cancelled = true; };
+  }, [userId]);
 
   const isProAccessValid = useMemo(() => {
-    if (hasOrgProAccess(orgCode)) return true;
-    if (!progress?.graduation.isGraduated || !progress.graduation.proExpiresAt) {
-      return false;
+    const now = new Date();
+    // 1) 교실 계약 기반 (대표님이 교실에 시작·종료·계약일수·보장만료일 입력해둔 것)
+    if (classroomExpiry && now < classroomExpiry) return true;
+    // 2) 졸업 보너스 (졸업 시 +30일)
+    if (progress?.graduation.isGraduated && progress.graduation.proExpiresAt) {
+      if (now < new Date(progress.graduation.proExpiresAt)) return true;
     }
-    return new Date() < new Date(progress.graduation.proExpiresAt);
-  }, [progress, orgCode]);
+    return false;
+  }, [progress, classroomExpiry]);
 
   const proRemainingDays = useMemo(() => {
-    const orgExpiry = getOrgProExpiry(orgCode);
     const personalExpiry = progress?.graduation.proExpiresAt
       ? new Date(progress.graduation.proExpiresAt)
       : null;
-    const candidates = [orgExpiry, personalExpiry].filter((d): d is Date => d !== null);
+    const candidates = [classroomExpiry, personalExpiry].filter((d): d is Date => d !== null);
     if (candidates.length === 0) return 0;
     const latest = candidates.reduce((a, b) => (a > b ? a : b));
     const diff = latest.getTime() - Date.now();
     return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  }, [progress, orgCode]);
+  }, [progress, classroomExpiry]);
 
   // ─── Aptitude ───
 

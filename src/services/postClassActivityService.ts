@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { ClassSessionRow } from '../types/database';
+import type { ClassroomGroup, ClassroomMember } from '../types/team';
 
 export interface PostClassStudentActivity {
   studentId: string;
@@ -10,115 +10,114 @@ export interface PostClassStudentActivity {
   toolsUsed: string[];
 }
 
-export interface PostClassSessionGroup {
-  session: ClassSessionRow;
+export interface PostClassClassroomGroup {
+  classroom: ClassroomGroup;
+  /** 학생 만료일 (end_date+contract_days, contract_until 중 늦은 것). 둘 다 없으면 null */
+  expiryAt: string | null;
   students: PostClassStudentActivity[];
   totalActiveStudents: number;
   totalActivityCount: number;
 }
 
+/** 교실의 만료일 계산. end_date+contract_days, contract_until 중 늦은 것. */
+function computeClassroomExpiry(c: ClassroomGroup): Date | null {
+  const candidates: Date[] = [];
+  if (c.end_date && typeof c.contract_days === 'number') {
+    const d = new Date(String(c.end_date).slice(0, 10));
+    d.setDate(d.getDate() + c.contract_days);
+    candidates.push(d);
+  }
+  if (c.contract_until) {
+    candidates.push(new Date(String(c.contract_until).slice(0, 10)));
+  }
+  if (candidates.length === 0) return null;
+  return candidates.reduce((a, b) => (a > b ? a : b));
+}
+
 /**
- * 종료된 수업별로 "수업 종료 이후" 도구 사용 학생 명단을 모은다.
+ * 종료된 교실(수업) × 그 교실 학생들의 "수업 종료 이후" 도구 사용 이력을 모은다.
  *
- * 1. end_date가 오늘 이전인 class_sessions를 모두 가져옴
- * 2. 각 session.org_code에 속한 profiles(학생)을 가져옴
- * 3. 그 학생들의 activity_logs 중 created_at > session.end_date 인 것만 집계
- *
- * 활동이 0인 학생은 제외, 활동이 0인 수업은 결과에 포함하되 students=[]
+ * 종료 판정: end_date가 오늘 이전 OR contract_until이 오늘 이전 (둘 다 없으면 종료 아님)
+ * 활동 기준: end_date 이후의 activity_logs.created_at
  */
-export async function getPostClassActivity(): Promise<PostClassSessionGroup[]> {
+export async function getPostClassActivity(): Promise<PostClassClassroomGroup[]> {
   const today = new Date().toISOString().slice(0, 10);
 
-  // 모든 수업을 가져와서 JS에서 "종료" 판정 (end_date 형식·NULL·status 다양성 대응)
-  const { data: sessionsData, error: sessionErr } = await supabase
-    .from('class_sessions')
+  // 1) 모든 교실 가져옴
+  const { data: classroomData, error: cErr } = await supabase
+    .from('classroom_groups')
     .select('*')
     .order('end_date', { ascending: false, nullsFirst: false });
-
-  if (sessionErr) {
-    console.error('[postClassActivity] sessions fetch error:', sessionErr.message);
+  if (cErr) {
+    console.error('[postClassActivity] classroom fetch error:', cErr.message);
     return [];
   }
+  const allClassrooms = (classroomData || []) as ClassroomGroup[];
 
-  const allSessions = (sessionsData || []) as ClassSessionRow[];
-  // 종료 판정: status === 'completed' OR end_date가 오늘 이전
-  const sessions = allSessions.filter(s => {
-    if (s.status === 'completed') return true;
-    if (!s.end_date) return false;
-    const endDate = String(s.end_date).slice(0, 10); // ISO timestamp 대응
-    return endDate < today;
+  // 2) 종료 판정 — end_date가 오늘 이전인 교실만
+  const endedClassrooms = allClassrooms.filter(c => {
+    if (!c.end_date) return false;
+    return String(c.end_date).slice(0, 10) < today;
   });
+  if (endedClassrooms.length === 0) return [];
 
-  if (sessions.length === 0) return [];
+  const classroomIds = endedClassrooms.map(c => c.id);
 
-  const orgCodes = Array.from(
-    new Set(sessions.map(s => s.org_code).filter((c): c is string => !!c).map(c => c.toUpperCase())),
-  );
-  if (orgCodes.length === 0) return [];
-
-  const { data: profileData, error: profileErr } = await supabase
-    .from('profiles')
-    .select('id, name, email, org_code, role')
-    .in('org_code', orgCodes)
-    .eq('role', 'student');
-
-  if (profileErr) {
-    console.error('[postClassActivity] profiles fetch error:', profileErr.message);
+  // 3) 멤버 조회 (활성 상태만)
+  const { data: memberData, error: mErr } = await supabase
+    .from('classroom_members')
+    .select('id, group_id, user_id, user_name, status')
+    .in('group_id', classroomIds)
+    .eq('status', 'active');
+  if (mErr) {
+    console.error('[postClassActivity] members fetch error:', mErr.message);
     return [];
   }
-  const profiles = (profileData || []) as Array<{ id: string; name: string | null; email: string | null; org_code: string | null }>;
+  const members = (memberData || []) as ClassroomMember[];
+  const studentIds = Array.from(new Set(members.map(m => m.user_id)));
 
-  const studentIds = profiles.map(p => p.id);
-  if (studentIds.length === 0) {
-    return sessions.map(session => ({
-      session,
-      students: [],
-      totalActiveStudents: 0,
-      totalActivityCount: 0,
-    }));
+  // 4) 학생 이메일 보강
+  let emailMap: Record<string, string> = {};
+  if (studentIds.length > 0) {
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('id, email')
+      .in('id', studentIds);
+    (profileData || []).forEach(p => {
+      if (p.email) emailMap[p.id] = p.email;
+    });
   }
 
-  // 모든 종료 시점 중 가장 빠른 것을 기준으로 logs 가져옴 (end_date 또는 updated_at)
-  const sessionEndTimes = sessions
-    .map(s => {
-      if (s.end_date) return String(s.end_date).slice(0, 10);
-      if (s.updated_at) return String(s.updated_at).slice(0, 10);
-      return null;
-    })
-    .filter((d): d is string => !!d);
-  const oldestEnd = sessionEndTimes.length > 0
-    ? sessionEndTimes.sort()[0]
-    : today;
-  const { data: logData, error: logErr } = await supabase
-    .from('activity_logs')
-    .select('user_id, action, created_at, metadata')
-    .in('user_id', studentIds)
-    .gt('created_at', oldestEnd)
-    .order('created_at', { ascending: false })
-    .limit(10000);
+  // 5) 활동 로그 조회 (모든 교실 종료일 중 가장 빠른 것 이후)
+  const oldestEnd = endedClassrooms
+    .map(c => String(c.end_date).slice(0, 10))
+    .sort()[0] ?? today;
 
-  if (logErr) {
-    console.error('[postClassActivity] logs fetch error:', logErr.message);
-    return [];
+  let logs: Array<{ user_id: string; created_at: string; metadata: Record<string, unknown> | null }> = [];
+  if (studentIds.length > 0) {
+    const { data: logData, error: lErr } = await supabase
+      .from('activity_logs')
+      .select('user_id, action, created_at, metadata')
+      .in('user_id', studentIds)
+      .gt('created_at', oldestEnd)
+      .order('created_at', { ascending: false })
+      .limit(10000);
+    if (lErr) {
+      console.error('[postClassActivity] logs fetch error:', lErr.message);
+    } else {
+      logs = (logData || []) as typeof logs;
+    }
   }
-  const logs = (logData || []) as Array<{ user_id: string; action: string; created_at: string; metadata: Record<string, unknown> | null }>;
 
-  return sessions.map(session => {
-    const orgCode = (session.org_code || '').toUpperCase();
-    // end_date가 없고 status=completed인 수업은 session.updated_at 기준 (강사가 수동 종료한 시점)
-    const sessionEnd = session.end_date
-      ? new Date(String(session.end_date).slice(0, 10))
-      : session.updated_at
-        ? new Date(session.updated_at)
-        : null;
+  // 6) 교실별로 묶기
+  return endedClassrooms.map(classroom => {
+    const sessionEnd = new Date(String(classroom.end_date).slice(0, 10));
+    const classroomMembers = members.filter(m => m.group_id === classroom.id);
 
-    const sessionStudents = profiles.filter(p => (p.org_code || '').toUpperCase() === orgCode);
-
-    const studentRows: PostClassStudentActivity[] = sessionStudents
-      .map(student => {
+    const studentRows: PostClassStudentActivity[] = classroomMembers
+      .map(member => {
         const studentLogs = logs.filter(l =>
-          l.user_id === student.id &&
-          (sessionEnd ? new Date(l.created_at) > sessionEnd : true),
+          l.user_id === member.user_id && new Date(l.created_at) > sessionEnd,
         );
         const tools = Array.from(new Set(
           studentLogs
@@ -126,9 +125,9 @@ export async function getPostClassActivity(): Promise<PostClassSessionGroup[]> {
             .filter((t): t is string => typeof t === 'string'),
         ));
         return {
-          studentId: student.id,
-          studentName: student.name || '(이름 없음)',
-          studentEmail: student.email || '',
+          studentId: member.user_id,
+          studentName: member.user_name || '(이름 없음)',
+          studentEmail: emailMap[member.user_id] || '',
           postClassUsageCount: studentLogs.length,
           lastActivityAt: studentLogs[0]?.created_at ?? null,
           toolsUsed: tools,
@@ -137,8 +136,11 @@ export async function getPostClassActivity(): Promise<PostClassSessionGroup[]> {
       .filter(s => s.postClassUsageCount > 0)
       .sort((a, b) => b.postClassUsageCount - a.postClassUsageCount);
 
+    const expiry = computeClassroomExpiry(classroom);
+
     return {
-      session,
+      classroom,
+      expiryAt: expiry ? expiry.toISOString() : null,
       students: studentRows,
       totalActiveStudents: studentRows.length,
       totalActivityCount: studentRows.reduce((sum, s) => sum + s.postClassUsageCount, 0),
