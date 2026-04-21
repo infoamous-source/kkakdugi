@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Plus, Trash2, Users, Building2, Copy, Check, RefreshCw, X,
+  Plus, Trash2, Users, Building2, Copy, Check, RefreshCw, X, Mail,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -11,6 +11,7 @@ import {
   getOrgStudentCount,
   type OrganizationRow,
 } from '../../services/organizationService';
+import { getStudentEmailsByOrg } from '../../services/postClassActivityService';
 import { SCHOOL_IDS, SCHOOL_NAMES, type SchoolId } from '../../types/enrollment';
 
 interface OrgWithCount extends OrganizationRow {
@@ -24,6 +25,8 @@ export default function OrganizationManagement() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newOrgName, setNewOrgName] = useState('');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [copiedEmailsFor, setCopiedEmailsFor] = useState<string | null>(null);
+  const [loadingEmailsFor, setLoadingEmailsFor] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [selectedProgramTypes, setSelectedProgramTypes] = useState<SchoolId[]>(['marketing']);
 
@@ -86,6 +89,24 @@ export default function OrganizationManagement() {
       setTimeout(() => setCopiedCode(null), 2000);
     } catch {
       // fallback
+    }
+  };
+
+  const handleCopyEmails = async (code: string) => {
+    setLoadingEmailsFor(code);
+    try {
+      const rows = await getStudentEmailsByOrg(code);
+      if (rows.length === 0) {
+        alert('이 기관에는 아직 가입한 학생이 없어요.');
+        return;
+      }
+      await navigator.clipboard.writeText(rows.map(r => r.email).join(', '));
+      setCopiedEmailsFor(code);
+      setTimeout(() => setCopiedEmailsFor(null), 2500);
+    } catch {
+      alert('이메일 복사에 실패했어요.');
+    } finally {
+      setLoadingEmailsFor(null);
     }
   };
 
@@ -183,7 +204,7 @@ export default function OrganizationManagement() {
                 )}
 
                 {/* 학생 수 + 생성일 */}
-                <div className="flex items-center justify-between text-xs text-gray-400">
+                <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
                   <span className="flex items-center gap-1">
                     <Users className="w-3.5 h-3.5" />
                     {org.studentCount}명
@@ -192,6 +213,23 @@ export default function OrganizationManagement() {
                     {new Date(org.created_at).toLocaleDateString('ko-KR')}
                   </span>
                 </div>
+
+                {/* 이메일 일괄 복사 */}
+                {org.studentCount > 0 && (
+                  <button
+                    onClick={() => handleCopyEmails(org.code)}
+                    disabled={loadingEmailsFor === org.code}
+                    className="w-full flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11px] font-medium text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-50 disabled:opacity-50 transition-colors"
+                  >
+                    {loadingEmailsFor === org.code ? (
+                      <><RefreshCw className="w-3 h-3 animate-spin" /> 불러오는 중...</>
+                    ) : copiedEmailsFor === org.code ? (
+                      <><Check className="w-3 h-3" /> 학생 이메일 복사됨!</>
+                    ) : (
+                      <><Mail className="w-3 h-3" /> 학생 {org.studentCount}명 이메일 복사</>
+                    )}
+                  </button>
+                )}
               </div>
             ))}
           </div>

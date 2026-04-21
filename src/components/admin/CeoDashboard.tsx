@@ -36,10 +36,11 @@ import {
 } from '../../services/systemAlertService';
 import OrganizationManagement from './OrganizationManagement';
 import TeamManagement from './TeamManagement';
+import PostClassActivityPanel from './PostClassActivityPanel';
 import ClassReport from '../reports/ClassReport';
 import DevReport from '../reports/DevReport';
 
-type CeoTab = 'classes' | 'organizations' | 'instructors' | 'announcements' | 'analytics' | 'settings';
+type CeoTab = 'classes' | 'organizations' | 'instructors' | 'announcements' | 'post-class' | 'analytics' | 'settings';
 
 interface InstructorInfo {
   id: string;
@@ -170,6 +171,7 @@ export default function CeoDashboard() {
           { id: 'organizations' as CeoTab, icon: Building2, label: '기관·학생' },
           { id: 'instructors' as CeoTab, icon: GraduationCap, label: '강사 관리' },
           { id: 'announcements' as CeoTab, icon: Megaphone, label: '공지 관리' },
+          { id: 'post-class' as CeoTab, icon: Users, label: '수업 후 활동' },
           { id: 'analytics' as CeoTab, icon: BarChart3, label: '통계' },
           { id: 'settings' as CeoTab, icon: Settings, label: '설정' },
         ]).map(tab => {
@@ -217,6 +219,9 @@ export default function CeoDashboard() {
 
       {/* Announcements Tab */}
       {activeTab === 'announcements' && <AnnouncementManager />}
+
+      {/* Post-class Activity Tab */}
+      {activeTab === 'post-class' && <PostClassActivityPanel />}
 
       {/* Analytics Tab */}
       {activeTab === 'analytics' && (
