@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Plus,
   Trash2,
+  Edit2,
   Users,
   UsersRound,
   ChevronDown,
@@ -16,6 +17,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getStudentsByInstructorCode } from '../../services/profileService';
 import {
   createClassroomGroup,
+  updateClassroomGroup,
   getClassroomGroups,
   deleteClassroomGroup,
   addClassroomMember,
@@ -67,8 +69,9 @@ export default function TeamManagement() {
   // 로딩
   const [isLoading, setIsLoading] = useState(true);
 
-  // ─── 교실 생성 모달 ───
+  // ─── 교실 생성/수정 모달 ───
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingClassroomId, setEditingClassroomId] = useState<string | null>(null);
   const [newClassroomName, setNewClassroomName] = useState('');
   const [newClassroomTrack, setNewClassroomTrack] = useState('marketing');
   const [newStartDate, setNewStartDate] = useState('');
@@ -143,29 +146,62 @@ export default function TeamManagement() {
     return classroom.members.filter(m => !teamUserIds.has(m.user_id));
   };
 
-  // ─── 교실 생성 ───
+  // ─── 교실 생성/수정 ───
   const resetCreateForm = () => {
+    setEditingClassroomId(null);
     setNewClassroomName('');
     setNewStartDate('');
     setNewEndDate('');
     setNewContractDays('');
     setNewContractUntil('');
   };
+  const startEditClassroom = (c: ClassroomGroup) => {
+    setEditingClassroomId(c.id);
+    setNewClassroomName(c.classroom_name);
+    setNewClassroomTrack(c.track);
+    setNewStartDate(c.start_date || '');
+    setNewEndDate(c.end_date || '');
+    setNewContractDays(c.contract_days != null ? String(c.contract_days) : '');
+    setNewContractUntil(c.contract_until || '');
+    setShowCreateModal(true);
+  };
   const handleCreateClassroom = async () => {
     if (!user?.id || !newClassroomName.trim()) return;
-    const orgCode = user.orgCode || 'default';
     const contractDaysNum = newContractDays.trim() ? Number(newContractDays.trim()) : null;
+    const contractFields = {
+      startDate: newStartDate || null,
+      endDate: newEndDate || null,
+      contractDays: Number.isFinite(contractDaysNum) ? contractDaysNum : null,
+      contractUntil: newContractUntil || null,
+    };
+
+    if (editingClassroomId) {
+      // 수정 모드
+      const ok = await updateClassroomGroup(editingClassroomId, {
+        classroom_name: newClassroomName.trim(),
+        start_date: contractFields.startDate,
+        end_date: contractFields.endDate,
+        contract_days: contractFields.contractDays,
+        contract_until: contractFields.contractUntil,
+      });
+      if (ok) {
+        setShowCreateModal(false);
+        resetCreateForm();
+        await loadData();
+      } else {
+        alert('교실 수정에 실패했습니다. 다시 시도해주세요.');
+      }
+      return;
+    }
+
+    // 생성 모드
+    const orgCode = user.orgCode || 'default';
     const result = await createClassroomGroup(
       user.id,
       orgCode,
       newClassroomTrack,
       newClassroomName.trim(),
-      {
-        startDate: newStartDate || null,
-        endDate: newEndDate || null,
-        contractDays: Number.isFinite(contractDaysNum) ? contractDaysNum : null,
-        contractUntil: newContractUntil || null,
-      },
+      contractFields,
     );
     if (result) {
       setShowCreateModal(false);
@@ -349,8 +385,8 @@ export default function TeamManagement() {
       {selectedClassroom && (
         <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-6">
           {/* 교실 헤더 */}
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
               <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
                 <ChevronRight className="w-5 h-5 text-purple-500" />
                 {selectedClassroom.group.classroom_name}
@@ -358,14 +394,49 @@ export default function TeamManagement() {
               <p className="text-xs text-gray-400 mt-1">
                 {trackInfo(selectedClassroom.group.track).label} • {selectedClassroom.members.length}명 • {selectedClassroom.teams.length}개 팀
               </p>
+              {/* 수업 일정 · 계약 정보 */}
+              <div className="flex flex-wrap items-center gap-2 mt-2 text-xs">
+                {selectedClassroom.group.start_date && selectedClassroom.group.end_date ? (
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full">
+                    📅 {selectedClassroom.group.start_date} ~ {selectedClassroom.group.end_date}
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full">
+                    📅 일정 미설정
+                  </span>
+                )}
+                {selectedClassroom.group.contract_days != null ? (
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full">
+                    📝 계약 {selectedClassroom.group.contract_days}일
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full">
+                    📝 계약 미설정
+                  </span>
+                )}
+                {selectedClassroom.group.contract_until && (
+                  <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full">
+                    🛡️ 보장 {selectedClassroom.group.contract_until}
+                  </span>
+                )}
+              </div>
             </div>
-            <button
-              onClick={() => handleDeleteClassroom(selectedClassroom.group.id)}
-              className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              title="교실 삭제"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button
+                onClick={() => startEditClassroom(selectedClassroom.group)}
+                className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                title="교실 정보 수정"
+              >
+                <Edit2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleDeleteClassroom(selectedClassroom.group.id)}
+                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                title="교실 삭제"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* ─ 교실 멤버 ─ */}
@@ -635,7 +706,7 @@ export default function TeamManagement() {
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 my-8">
-            <h3 className="font-bold text-gray-800 text-lg mb-4">교실 생성</h3>
+            <h3 className="font-bold text-gray-800 text-lg mb-4">{editingClassroomId ? '교실 수정' : '교실 생성'}</h3>
             <div className="space-y-4">
               <div>
                 <label className="text-sm text-gray-600 font-medium mb-1 block">교실 이름</label>
@@ -652,12 +723,16 @@ export default function TeamManagement() {
                 <select
                   value={newClassroomTrack}
                   onChange={e => setNewClassroomTrack(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  disabled={!!editingClassroomId}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                 >
                   {TRACK_OPTIONS.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
+                {editingClassroomId && (
+                  <p className="text-[11px] text-gray-400 mt-1">학과는 생성 후 변경할 수 없어요.</p>
+                )}
               </div>
 
               <div className="border-t border-gray-100 pt-4">
@@ -725,7 +800,7 @@ export default function TeamManagement() {
                 disabled={!newClassroomName.trim()}
                 className="flex-1 py-2.5 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                생성
+                {editingClassroomId ? '저장' : '생성'}
               </button>
             </div>
           </div>
