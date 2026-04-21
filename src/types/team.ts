@@ -15,6 +15,8 @@ export interface ClassroomGroup {
   contract_days?: number | null;
   /** 보장 만료일(선택). end_date+contract_days와 비교해 더 늦은 날짜를 적용 */
   contract_until?: string | null;
+  /** 보관 처리(숨김) 시각. NULL이면 활성 교실 */
+  archived_at?: string | null;
   created_at: string;
 }
 

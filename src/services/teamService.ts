@@ -65,12 +65,13 @@ export async function updateClassroomGroup(
   return true;
 }
 
-/** 강사의 교실 목록 조회 */
+/** 강사의 교실 목록 조회 (보관된 것 제외) */
 export async function getClassroomGroups(instructorId: string): Promise<ClassroomGroup[]> {
   const { data, error } = await supabase
     .from('classroom_groups')
     .select('*')
     .eq('instructor_id', instructorId)
+    .is('archived_at', null)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -78,6 +79,34 @@ export async function getClassroomGroups(instructorId: string): Promise<Classroo
     return [];
   }
   return data as ClassroomGroup[];
+}
+
+/** 교실 보관(숨김) 처리 */
+export async function archiveClassroomGroup(groupId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('classroom_groups')
+    .update({ archived_at: new Date().toISOString() })
+    .eq('id', groupId);
+
+  if (error) {
+    console.error('Archive classroom group error:', error.message);
+    return false;
+  }
+  return true;
+}
+
+/** 보관된 교실 복구 */
+export async function unarchiveClassroomGroup(groupId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('classroom_groups')
+    .update({ archived_at: null })
+    .eq('id', groupId);
+
+  if (error) {
+    console.error('Unarchive classroom group error:', error.message);
+    return false;
+  }
+  return true;
 }
 
 /** 교실 삭제 */

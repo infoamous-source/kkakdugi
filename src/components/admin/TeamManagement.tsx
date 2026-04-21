@@ -3,6 +3,7 @@ import {
   Plus,
   Trash2,
   Edit2,
+  Archive,
   Users,
   UsersRound,
   ChevronDown,
@@ -20,6 +21,7 @@ import {
   updateClassroomGroup,
   getClassroomGroups,
   deleteClassroomGroup,
+  archiveClassroomGroup,
   addClassroomMember,
   getClassroomMembers,
   removeClassroomMember,
@@ -219,6 +221,18 @@ export default function TeamManagement() {
     await deleteClassroomGroup(groupId);
     if (selectedClassroomId === groupId) setSelectedClassroomId(null);
     await loadData();
+  };
+
+  // ─── 교실 보관(숨김) ───
+  const handleArchiveClassroom = async (groupId: string) => {
+    if (!confirm('이 교실을 보관하시겠습니까? 목록에서 숨겨지지만 데이터는 유지됩니다.')) return;
+    const ok = await archiveClassroomGroup(groupId);
+    if (ok) {
+      if (selectedClassroomId === groupId) setSelectedClassroomId(null);
+      await loadData();
+    } else {
+      alert('보관 처리에 실패했어요.');
+    }
   };
 
   // ─── 학생 교실 배정 ───
@@ -430,9 +444,16 @@ export default function TeamManagement() {
                 <Edit2 className="w-4 h-4" />
               </button>
               <button
+                onClick={() => handleArchiveClassroom(selectedClassroom.group.id)}
+                className="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                title="교실 보관 (목록에서 숨김, 데이터는 유지)"
+              >
+                <Archive className="w-4 h-4" />
+              </button>
+              <button
                 onClick={() => handleDeleteClassroom(selectedClassroom.group.id)}
                 className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                title="교실 삭제"
+                title="교실 삭제 (영구 삭제)"
               >
                 <Trash2 className="w-4 h-4" />
               </button>

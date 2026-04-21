@@ -43,10 +43,11 @@ function computeClassroomExpiry(c: ClassroomGroup): Date | null {
 export async function getPostClassActivity(): Promise<PostClassClassroomGroup[]> {
   const today = new Date().toISOString().slice(0, 10);
 
-  // 1) 모든 교실 가져옴
+  // 1) 모든 활성 교실 가져옴 (보관된 것 제외)
   const { data: classroomData, error: cErr } = await supabase
     .from('classroom_groups')
     .select('*')
+    .is('archived_at', null)
     .order('end_date', { ascending: false, nullsFirst: false });
   if (cErr) {
     console.error('[postClassActivity] classroom fetch error:', cErr.message);
